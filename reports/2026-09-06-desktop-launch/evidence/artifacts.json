@@ -1,0 +1,14 @@
+{
+  "dist\\nfcraft-0.2.2-windows-unsigned.zip": {
+    "bytes": 29114627,
+    "sha256": "84aabeeab04d94f389bf728de9ca96ca2a1ad05cc76afa6b987d6137e89b3c6b"
+  },
+  "dist\\nfcraft\\nfcraft-desktop.exe": {
+    "bytes": 5927476,
+    "sha256": "289b1a7a1d0067bdbba1e144cc5c3c349791becdec02d8edbc01c6e36e1bd8d3"
+  },
+  "dist\\nfcraft\\nfcraft.exe": {
+    "bytes": 5932072,
+    "sha256": "45efc5834a5775e68e1fd4a88702283ed5e6eb68d24569d1fcb9aeb63bc8af34"
+  }
+}

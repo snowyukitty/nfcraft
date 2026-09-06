@@ -1,12 +1,12 @@
-# Desktop shortcut entrypoint. Keep the console hidden and the native window visible.
+# Legacy developer launcher; the installed shortcut targets the GUI executable directly.
 $ErrorActionPreference = 'Stop'
 $ProjectRoot = Split-Path $PSScriptRoot -Parent
-$PackagedApp = Join-Path $ProjectRoot 'dist\nfcraft\nfcraft.exe'
+$PackagedApp = Join-Path $ProjectRoot 'dist\nfcraft\nfcraft-desktop.exe'
 if (Test-Path -LiteralPath $PackagedApp) {
-    Start-Process -FilePath $PackagedApp -ArgumentList @('--desktop', '--tray') -WorkingDirectory $ProjectRoot -WindowStyle Hidden
+    # The GUI subsystem needs no console-hiding flag: SW_HIDE also hides WinForms.
+    Start-Process -FilePath $PackagedApp -WorkingDirectory $ProjectRoot
 } else {
     $WindowedPython = Join-Path $ProjectRoot '.venv\Scripts\pythonw.exe'
     if (-not (Test-Path -LiteralPath $WindowedPython)) { throw 'Build nfcraft or install the local desktop extra first.' }
-    $EntryPoint = Join-Path $ProjectRoot 'run.py'
-    Start-Process -FilePath $WindowedPython -ArgumentList @(('"' + $EntryPoint + '"'), '--desktop', '--tray') -WorkingDirectory $ProjectRoot -WindowStyle Hidden
+    Start-Process -FilePath $WindowedPython -ArgumentList @('-m', 'nfcraft.desktop_app') -WorkingDirectory $ProjectRoot
 }

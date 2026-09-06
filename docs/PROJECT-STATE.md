@@ -1,6 +1,12 @@
 # nfcraft — current project state
 
-Updated: 2026-09-06 (Asia/Tokyo). Current local version: **0.2.1**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+Updated: 2026-09-06 (Asia/Tokyo). Current local version: **0.2.2**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+
+## Desktop launch repair — 0.2.2
+
+The prior shortcut hid/minimized the native window. A dedicated GUI executable now opens directly, while the console entry remains compatible. The actual installed shortcut is verified visible and non-minimized at 1320x920; the app was left open for the owner. No owner UI approval or card write was automated. **118 Python / 16 Worker** checks pass, with packaged library, native lifecycle and real ShellExecute shortcut acceptance. Current portable ZIP: `dist/nfcraft-0.2.2-windows-unsigned.zip`.
+
+See [desktop repair report](../reports/2026-09-06-desktop-launch/REPORT.md). The normal startup target is `dist/nfcraft/nfcraft-desktop.exe`; the PowerShell installer only creates/configures shortcuts. Do not restore the old hidden launcher or assume IsWindowVisible alone means a usable window; require non-minimized dimensions too.
 
 ## Identity and guide checkpoint — 0.2.1
 

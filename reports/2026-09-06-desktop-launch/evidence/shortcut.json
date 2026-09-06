@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "checks": [
+    "PE GUI subsystem",
+    "real .lnk ShellExecute",
+    "visible, non-minimized native window",
+    "normal window dimensions",
+    "default desktop without --desktop argument",
+    "clean close"
+  ],
+  "scope": "temporary demo data only"
+}

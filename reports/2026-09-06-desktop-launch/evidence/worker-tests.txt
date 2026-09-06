@@ -1,0 +1,24 @@
+✔ active route renders a contact page (16.4325ms)
+✔ unknown identity returns 404 (0.279ms)
+✔ unknown path returns 404 (0.1966ms)
+✔ suspended card returns 410 (0.1889ms)
+✔ no mutation endpoint (0.2181ms)
+✔ HEAD body is empty (0.1818ms)
+✔ invalid profile returns 503 (0.1586ms)
+✔ html is escaped and javascript website is excluded (0.2236ms)
+✔ vcard UTF8 and safe filename (0.4059ms)
+✔ vcard fields cannot inject additional properties (0.1691ms)
+✔ vcard folds at 75 UTF8 bytes and preserves unicode (0.9539ms)
+✔ response is private-client agnostic, no analytics script (0.5292ms)
+✔ JSON null profile is handled without crashing (0.2016ms)
+✔ public route uses the shared preview renderer (0.3468ms)
+✔ preview actions are inert and unsafe markup is escaped (0.0761ms)
+✔ malformed route and credential URL cannot become public links (0.0476ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 80.7092

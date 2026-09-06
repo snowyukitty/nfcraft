@@ -1,8 +1,8 @@
 # nfcraft
 
-[English / 繁體中文 app guide](nfcraft/web/guide.html) · [Checkpoint report](reports/2026-09-06-checkpoint/REPORT.md)
+[English / 繁體中文 app guide](nfcraft/web/guide.html) · [Desktop repair report](reports/2026-09-06-desktop-launch/REPORT.md)
 
-Open the guide locally, or choose **Guide / 使用說明** inside the app. Desktop shortcuts open the native workshop and offline guide. GitHub displays HTML source; this is not a hosted public site.
+Open the guide locally, or choose **Guide / 使用說明** inside the app. The **nfcraft** desktop shortcut directly opens `nfcraft-desktop.exe` as a normal Windows GUI app; PowerShell is not used at launch. The second shortcut opens the offline guide. GitHub displays HTML source; this is not a hosted public site.
 
 ![nfcraft identity](nfcraft/web/icons/icon-192.png)
 
@@ -10,11 +10,11 @@ Open the guide locally, or choose **Guide / 使用說明** inside the app. Deskt
 
 Prepare a batch with an AI agent. Approve it in the app. Present one card at a time. Keep every assignment and uncertain outcome in a durable journal.
 
-**Version 0.2.1 — Card workshop. A working Windows app, still awaiting physical-reader qualification.**
+**Version 0.2.2 — Card workshop. A working Windows app, still awaiting physical-reader qualification.**
 
 **Owner: start with [START-HERE.zh-TW.md](START-HERE.zh-TW.md).** Agents: read [AGENTS.md](AGENTS.md) and the full [bootstrap execution prompt](prompts/BOOTSTRAP-LOCAL-AGENT.md). This archive is complete; the old NFC Card Ops download is not required.
 
-**New in 0.2.0:** searchable card library with filters and pagination, card detail/evidence views, live recipient preview using the public site's renderer, and public export review that refuses stale content. Review explicitly warns about shared-profile updates beyond selected routes. **114 Python tests and 16 Worker tests pass.** The unsigned Windows app is in `dist/nfcraft`; see the [current milestone report](reports/2026-09-06-library/REPORT.md) and [Windows bootstrap history](reports/2026-09-06-bootstrap/REPORT.md). Hardware, phone QA and cloud deployment remain separate gates.
+**New in 0.2.0:** searchable card library with filters and pagination, card detail/evidence views, live recipient preview using the public site's renderer, and public export review that refuses stale content. Review explicitly warns about shared-profile updates beyond selected routes. **118 Python tests and 16 Worker tests pass.** The unsigned Windows app is in `dist/nfcraft`; see the [current milestone report](reports/2026-09-06-library/REPORT.md) and [Windows bootstrap history](reports/2026-09-06-bootstrap/REPORT.md). Hardware, phone QA and cloud deployment remain separate gates.
 
 This release adds safer legacy-data handling, stricter public exports, an occupied-write-region guard, repeatable local checks and a deployment/iteration handoff. [Current state](docs/PROJECT-STATE.md) · [Changelog](CHANGELOG.md) · [Deployment](docs/DEPLOYMENT.md) · [Continue next version](prompts/CONTINUE-ITERATION.md)
 

@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.2 — 2026-09-06 desktop launch repair
+
+- Replace hidden-script startup with a dedicated Windows GUI executable and normal-window desktop shortcut.
+- Preserve console/browser/CLI behavior and share packaged dependencies.
+- Show native startup errors without logging operator capabilities.
+- Add startup-error regressions and real ShellExecute shortcut acceptance, including non-minimized dimensions.
+
+
 ## 0.2.1 — 2026-09-06 local checkpoint
 
 - Ship reviewed IconFlow card identity across Windows executable/window/tray and web UI.

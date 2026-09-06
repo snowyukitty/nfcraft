@@ -28,7 +28,7 @@ def parser():
     return p
 
 
-def main(argv=None):
+def main(argv=None, *, on_error=None):
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8")
@@ -38,6 +38,8 @@ def main(argv=None):
     try:
         directory = workspace(args.mode, args.data_dir)
     except OpsError as exc:
+        if on_error:
+            on_error(exc.as_dict())
         print(json.dumps({"error": exc.as_dict()}), file=sys.stderr)
         return 2
     lock = None
@@ -91,9 +93,13 @@ def main(argv=None):
     except KeyboardInterrupt:
         pass
     except OpsError as exc:
+        if on_error:
+            on_error(exc.as_dict())
         print(json.dumps({"error":exc.as_dict()}), file=sys.stderr)
         return 2
     except OSError as exc:
+        if on_error:
+            on_error({"code": "STARTUP_IO", "message": "Could not start nfcraft. Another copy may already be running, or the workspace/port may be unavailable. Close the existing app before retrying."})
         print(json.dumps({"error":{"code":"STARTUP_IO", "message":"Could not start the local workstation. Check the workspace and whether its port is already in use.", "detail":str(exc)}}), file=sys.stderr)
         return 2
     finally:

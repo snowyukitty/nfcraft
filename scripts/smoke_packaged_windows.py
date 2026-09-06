@@ -35,6 +35,7 @@ def main():
     user32.EnumWindows.argtypes = [callback_type, wintypes.LPARAM]
     user32.GetWindowThreadProcessId.argtypes = [wintypes.HWND, ctypes.POINTER(wintypes.DWORD)]
     user32.GetWindowTextW.argtypes = [wintypes.HWND, wintypes.LPWSTR, ctypes.c_int]
+    user32.IsWindowVisible.argtypes = [wintypes.HWND]
 
     def app_window(pid):
         found = []
@@ -45,7 +46,7 @@ def main():
             if owner.value == pid:
                 title = ctypes.create_unicode_buffer(128)
                 user32.GetWindowTextW(handle, title, 128)
-                if title.value == "nfcraft":
+                if title.value == "nfcraft" and user32.IsWindowVisible(handle):
                     found.append(handle)
             return True
         user32.EnumWindows(visit, 0)
@@ -54,7 +55,7 @@ def main():
     checks = []
     for run in range(2):
         with (root / f"native-{run}.stderr").open("wb") as log:
-            proc = subprocess.Popen([str(package / "nfcraft.exe"), "--desktop", "--tray", "--mode", "demo",
+            proc = subprocess.Popen([str(package / "nfcraft-desktop.exe"), "--mode", "demo",
                     "--data-dir", str(root / "workspace"), "--port", "0"], cwd=package,
                     stdout=subprocess.DEVNULL, stderr=log, creationflags=subprocess.CREATE_NO_WINDOW)
             try:
@@ -65,7 +66,7 @@ def main():
                     if handle and (root / "workspace/demo/agent-runtime.json").exists():
                         break
                     time.sleep(0.2)
-                assert handle and proc.poll() is None, "Packaged native window failed to open"
+                assert handle and proc.poll() is None, "Packaged native window must be visible"
                 # Allow asynchronous WebView2 creation before sending native close.
                 # DOM/render acceptance is separately covered by smoke_desktop/browser.
                 time.sleep(3)

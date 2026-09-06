@@ -13,6 +13,6 @@ if ($InstallDependencies) {
 & $Python scripts\verify.py --require-node
 if ($LASTEXITCODE -ne 0) { throw 'Tests failed or Node tests were skipped.' }
 # This recipe is supplied for local qualification; no signed installer is claimed.
-& $Python -m PyInstaller --noconfirm --clean --onedir --name nfcraft --icon nfcraft/web/icons/build/icon.ico --collect-data nfcraft --collect-all webview --hidden-import pystray._win32 --collect-all smartcard run.py
+& $Python -m PyInstaller --noconfirm --clean packaging/windows.spec
 if ($LASTEXITCODE -ne 0) { throw 'Packaging failed.' }
 Write-Host 'Unsigned build: dist\nfcraft. Test on a clean Windows profile; do not call this hardware-qualified.'

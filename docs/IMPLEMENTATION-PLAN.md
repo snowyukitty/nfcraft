@@ -48,3 +48,7 @@ Choose one or a few bounded tasks. For each: state the user outcome; inspect rel
 ## 0.2.1 checkpoint
 
 W01/U01: reviewed app/tray/favicon identity and English / Traditional Chinese offline guide delivered, with desktop shortcuts and repeatable guide checks. Full operator UI localization remains separate. Source-history/GitHub checkpoint is authorized; see latest session report. H01/H02/P02 remain dependent on real equipment and destination approval.
+
+## 0.2.2 W01 follow-up
+
+Dedicated windowed executable and direct normal-window shortcut replace hidden-script startup. Real ShellExecute and non-minimized dimensions are now required evidence. The prior shortcut-property-only check did not cover actual usability.

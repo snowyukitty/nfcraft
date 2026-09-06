@@ -1,5 +1,10 @@
 # nfcraft — verification evidence
 
+## 0.2.2 desktop repair
+
+118 Python / 16 Worker checks pass. Real shortcut acceptance now checks GUI subsystem, visible/non-minimized window, normal dimensions and clean close. The actual owner desktop shortcut was opened and its window metadata verified; no owner UI operation was automated. See [repair report](../reports/2026-09-06-desktop-launch/REPORT.md).
+
+
 ## 0.2.1 checkpoint
 
 Baseline 113 Python / 16 Worker PASS; final 114 Python / 16 Worker PASS. Guide/static security and native/icon packaging checks are indexed in [the checkpoint report](../reports/2026-09-06-checkpoint/REPORT.md). Historic evidence below remains unchanged.

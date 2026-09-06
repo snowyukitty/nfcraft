@@ -1,0 +1,14 @@
+{
+  "result": "PASS",
+  "window": {
+    "visible": true,
+    "minimized": false,
+    "bounds": [
+      152,
+      152,
+      1472,
+      1072
+    ]
+  },
+  "scope": "actual installed shortcut, no UI or write actions"
+}
