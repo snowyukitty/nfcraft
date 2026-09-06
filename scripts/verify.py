@@ -17,6 +17,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main(argv=None):
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", type=Path, default=ROOT / ".local" / "verification")
     parser.add_argument("--require-node", action="store_true")
@@ -42,6 +45,9 @@ def main(argv=None):
                 run = subprocess.run(command, cwd=ROOT, capture_output=True, timeout=120)
                 text = run.stdout.decode("utf-8", "replace") + run.stderr.decode("utf-8", "replace")
                 (output / (name + ".txt")).write_text(text, encoding="utf-8")
+                if run.returncode:
+                    # Hosted runners must expose the failure, not only a local log path.
+                    print(text, flush=True)
                 result = {"name": name, "status": "PASS" if run.returncode == 0 else "FAIL", "exit_code": run.returncode,
                           "seconds": round(time.monotonic() - started, 3), "log": name + ".txt"}
             except (OSError, subprocess.TimeoutExpired) as exc:
