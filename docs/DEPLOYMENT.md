@@ -1,6 +1,6 @@
 # nfcraft — deployment runbook
 
-There are **four different deployments/acceptance paths**. Completing one does not complete the others. This handoff has not changed the owner's machine, cloud account or NFC cards.
+There are **four different deployments/acceptance paths**. Completing one does not complete the others. The 2026-09-06 session validated local Windows setup, an unsigned package and local Worker/D1. It did not change cloud resources or NFC cards. See `reports/2026-09-06-bootstrap/REPORT.md`.
 
 | Path | Target | Evidence required |
 |---|---|---|
@@ -33,17 +33,21 @@ Follow `HARDWARE.md` and `QUALITY-GATES.md` first. Installing pyscard is not ins
 After local validation, the Windows build recipe is:
 
 ```powershell
-# Review before executing. This script is not claimed tested on Windows here.
+# Validated locally on Windows 11; still unsigned and not hardware-qualified.
 .\scripts\build-windows.ps1 -InstallDependencies
 ```
 
-It uses the repo venv and creates an **unsigned** PyInstaller `dist\nfcraft` directory. Resolve/pin dependencies for the target platform, test on a clean Windows user profile, and capture the actual output and hash. A file named `.exe` is not proof of a signed installer, antivirus compatibility, desktop tray correctness or hardware support.
+It uses the repo venv and creates an **unsigned** PyInstaller `dist\nfcraft` directory. `-InstallDependencies` installs `requirements-windows.lock` before the editable app. This file is the actual Python 3.12 Windows resolution (`pip freeze --exclude-editable`), not a cross-platform or hash-verified lock. Re-resolve and validate deliberately on another Python/platform. Keep the entire portable directory with the executable. Clean-machine and tray-menu visual testing remain outstanding.
+
+Start `dist\nfcraft\nfcraft.exe` for the browser app, or use `dist\nfcraft\nfcraft.exe --desktop` for a native window; `--tray` is optional. Close the native window to stop it. Browser mode stops with Ctrl+C in its console. Defaults retain the normal per-user data root, outside `dist`. Do not copy only the EXE or delete a journal to test a new build.
 
 ## C. Public-site tooling and destination
 
 The public Worker has no control API, no reader bridge, no AI calls and no private profile data. Local operator tokens and SQLite journals must never be bundled or uploaded. Use the existing `cloudflare/worker.mjs`, not the loopback server.
 
 Resolve Wrangler against its current official engine requirements and pin the tested version locally in `cloudflare/package.json`/lockfile. Use local installed tooling thereafter; do not use an unrecorded global version or claim an invented lockfile was resolved. `package.json` initially contains test scripts only.
+
+Wrangler **4.129.0** is now pinned in `cloudflare/package.json` with an npm-generated lockfile. Node 24.18.0 satisfied its declared `>=22.0.0` requirement in the local run. Install with `npm ci` from `cloudflare/`. Syntax was checked against the official references below and this installed CLI's `--help`.
 
 The local agent must identify the **intended** Cloudflare account and environment from approved project configuration or a specific owner decision. An authenticated CLI session can point at the wrong account. Request a scoped approval if the destination is unresolved; do not block other local tasks.
 
@@ -52,6 +56,14 @@ Use `wrangler.example.toml` for preview and `wrangler.production.example.toml` f
 No implicit production default: every command below names a config. Database creation is a remote mutation and requires the destination decision. For example, create `nfcraft-preview` or `nfcraft-production` **only after** confirming the account and need; do not copy a database ID from unrelated projects.
 
 ## D. Local/preview integration before production
+
+For the repeatable, account-free integration check, run from the repository root:
+
+```powershell
+.\.venv\Scripts\python.exe scripts\smoke_public.py
+```
+
+It creates a fresh synthetic demo export, a local-only config with a dummy database ID, and a separate D1 state directory under `.local/evidence/public-*`. It applies schema/data with explicit `--local`, starts `wrangler dev --local` on an OS-assigned loopback port, checks real HTTP routes, and stops its process tree. It does not select a cloud account or touch preview/production configs. Repeated imports and rejection of older revisions are checked; unrelated workspace/equal-revision conflicts remain unresolved, so this is not an automatic publishing system.
 
 From the repo root, export a disposable demo manifest using the app or CLI and convert it to SQL for review:
 

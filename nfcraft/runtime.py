@@ -35,12 +35,13 @@ class WorkspaceLock:
         if os.name != "nt":
             directory.chmod(0o700)
         self.file = open(directory / "writer.lock", "a+b")
-        self.file.seek(0)
-        if self.file.read(1) == b"":
-            self.file.write(b"0")
-            self.file.flush()
-        self.file.seek(0)
         try:
+            # Windows byte-range locks also deny reads by a second process.
+            # Inspect size without touching the locked byte and close on failure.
+            if os.fstat(self.file.fileno()).st_size == 0:
+                self.file.write(b"0")
+                self.file.flush()
+            self.file.seek(0)
             if os.name == "nt":
                 import msvcrt
                 msvcrt.locking(self.file.fileno(), msvcrt.LK_NBLCK, 1)

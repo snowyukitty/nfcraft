@@ -1,12 +1,20 @@
 # nfcraft
 
+[English / 繁體中文 app guide](nfcraft/web/guide.html) · [Checkpoint report](reports/2026-09-06-checkpoint/REPORT.md)
+
+Open the guide locally, or choose **Guide / 使用說明** inside the app. Desktop shortcuts open the native workshop and offline guide. GitHub displays HTML source; this is not a hosted public site.
+
+![nfcraft identity](nfcraft/web/icons/icon-192.png)
+
 **A small, local-first workshop for your NTAG215 business cards.**
 
 Prepare a batch with an AI agent. Approve it in the app. Present one card at a time. Keep every assignment and uncertain outcome in a durable journal.
 
-**Version 0.1.1 — renamed and hardened local-agent handoff; not a hardware-qualified release.**
+**Version 0.2.1 — Card workshop. A working Windows app, still awaiting physical-reader qualification.**
 
 **Owner: start with [START-HERE.zh-TW.md](START-HERE.zh-TW.md).** Agents: read [AGENTS.md](AGENTS.md) and the full [bootstrap execution prompt](prompts/BOOTSTRAP-LOCAL-AGENT.md). This archive is complete; the old NFC Card Ops download is not required.
+
+**New in 0.2.0:** searchable card library with filters and pagination, card detail/evidence views, live recipient preview using the public site's renderer, and public export review that refuses stale content. Review explicitly warns about shared-profile updates beyond selected routes. **114 Python tests and 16 Worker tests pass.** The unsigned Windows app is in `dist/nfcraft`; see the [current milestone report](reports/2026-09-06-library/REPORT.md) and [Windows bootstrap history](reports/2026-09-06-bootstrap/REPORT.md). Hardware, phone QA and cloud deployment remain separate gates.
 
 This release adds safer legacy-data handling, stricter public exports, an occupied-write-region guard, repeatable local checks and a deployment/iteration handoff. [Current state](docs/PROJECT-STATE.md) · [Changelog](CHANGELOG.md) · [Deployment](docs/DEPLOYMENT.md) · [Continue next version](prompts/CONTINUE-ITERATION.md)
 
@@ -21,13 +29,13 @@ This release adds safer legacy-data handling, stricter public exports, an occupi
 | NDEF encoder, guarded write plan, reservation journal, byte-for-byte readback | Implemented and tested with simulated cards |
 | Agent-safe CLI and stdio MCP facade | Implemented; no AI API key or model subscription required by this app |
 | ACS ACR1552U PC/SC adapter | Experimental source; **no physical tests**; read-only by default |
-| Desktop window / tray integration | Optional source using pywebview / pystray; **not built or tested on Windows here** |
-| Public card page and contact.vcf | Cloudflare Worker/D1 source; local handler tests only; **not deployed** |
+| Desktop window / tray integration | Unsigned Windows portable build; browser/native lifecycle tested on this host; clean-machine and tray-menu visual QA outstanding |
+| Public card page and contact.vcf | Shared recipient renderer; real local Worker/D1 and narrow-browser tests pass; **not remotely deployed** |
 | Android Web NFC / native Android bridge | Design documents only; **not implemented** |
 | Permanent locking, password changes, arbitrary rewrites | Deliberately absent |
 | Signed installer, automatic cloud synchronization, multilingual UI, public AI chat | Not included in v0.1 |
 
-The main app is English. Chinese setup documentation is included. This is a source repository, not a precompiled Windows executable. The owner's primary target is Windows 11. The actual local shell/runtime, NFC reader, firmware and hostname still need validation. The repository does not assume ownership of any personal domain.
+The main app is English. Chinese setup documentation is included. This source repository also produces an ignored local Windows portable build; keep the complete `dist/nfcraft` folder with its executable. Windows 11 has been validated locally. NFC reader, firmware and hostname still need qualification/approval. The repository does not assume ownership of any personal domain.
 
 ## Try it now, with no NFC reader
 
@@ -41,7 +49,7 @@ On Windows, `Start nfcraft.cmd` invokes the same command and prefers a repo-loca
 
 1. In **Public profile**, replace the demo name and introduction. This saves a local draft, not a public page.
 2. In **Workbench**, create a batch of 10. The default `https://tap.example.com` is deliberately a **simulation-only** destination.
-3. Click **Arm this batch** and type `ARM <exact batch name>`. Approval expires after ten minutes or its attempt limit.
+3. Click **Arm this batch**, set the maximum attempts and expiry (15–600 seconds), and type `ARM <exact batch name>`. Approval ends at the first limit reached. Recovery always targets one original identity.
 4. Click **Place virtual card**, wait for the verified result, then **Remove**. Repeat.
 5. Try **Interrupted write**. The assignment is quarantined. In **Card inventory**, use **Review & recover**, approve again, and observe that it retains its original identity and URL.
 
@@ -114,6 +122,10 @@ Agents cannot arm a run, change the public profile, send raw APDUs, overwrite un
 This is an API capability boundary, **not isolation from an unrestricted local agent running as your OS user**. Such an agent could edit the code, read browser state or drive the UI. See [SECURITY.md](SECURITY.md).
 
 ## Publish a usable business card
+
+In **Card inventory**, search by batch, label, URL or private UID; combine batch/write-result/route-intent filters. Results show 25 rows per page. CSV and **Review public export** use all matching rows across pages. Public export excludes unverified cards. Click a card label for identity and separate write/export/public-availability/phone-QA facts.
+
+In **Public profile**, preview edits before saving; the preview stays local and its actions are disabled. **Review public export** shows saved public fields, destinations, enabled/suspended routes and omitted unverified matches. Download validates that the reviewed content is still current. If it changed, review again. Profiles are shared: importing a changed profile can affect public cards outside the filtered route selection. No automatic cloud sync or publication receipt is implemented.
 
 The tag contains one canonical HTTPS NDEF URI with a random 128-bit route identifier. The public Worker serves the contact page and a downloadable vCard. Updating the public profile does not require physically rewriting the tag.
 

@@ -1,0 +1,52 @@
+# IconFlow project brief and deterministic build contract.
+# Relative paths are resolved from this file.
+schema_version = 1
+
+[project]
+name = "nfcraft"
+master = "master.svg"
+output = "nfcraft/web/icons"
+casebook = "casebook"
+
+[brief]
+app_intent = "Local card workshop with a recipient web profile"
+user_job = "Turn a card into a durable connection"
+essence = "connect"
+personality = ["precise", "calm", "crafted"]
+
+[design]
+palette = ["#315e50", "#eee6ce"]
+cliches = ["Wi-Fi fan", "letter tile", "chip pins", "QR pattern"]
+signature_device = "Broad curved tap impression cut through a clipped card"
+device_family = "negative-space"
+device_detail = "128-unit curved aperture and 144-unit clipped corner"
+concept_lens = "object-action"
+
+[build]
+targets = ["web", "electron", "tray"]
+theme_color = "#315e50"
+background_color = "#f6f5ef"
+electron_radius = 0
+tray_ts = false
+tray_svg = ""
+tray_template_mode = "alpha"
+color_scheme = "light"
+optimize_png = true
+
+[neighbours]
+# Shape collision at 16px against named sets (docs/NEIGHBOURHOOD.md). Paths and
+# globs resolve from this file; "@collision" and "@house" name the bundled sets.
+# avoid gates `check`; family is never compared; portfolio counts toward a rut.
+avoid = ["@collision"]
+family = []
+portfolio = []
+
+[review]
+status = "pending"
+source_sha256 = ""
+contract_sha256 = ""
+# Review Lab receipt is preferred. For this manual fallback, set status to
+# "approved" and copy both hashes from the exported receipt; `ship` requires every
+# score >= 4 and rejects any changed source, target, or visual transform.
+scores = {}
+notes = ""

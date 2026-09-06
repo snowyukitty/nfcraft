@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "source": "master.svg",
+  "source_sha256": "c61a886371bf241eca0c3459064ad6c9ec20c10c3c66470938af36e218a6ad7a",
+  "contract_sha256": "f2448bbc8902edd8369f4e2541cc0033f8ba7da99078b38c999073155c2d7583",
+  "project": "nfcraft",
+  "user_job": "Turn a card into a durable connection",
+  "essence": "connect",
+  "personality": "precise, calm, crafted",
+  "signature_device": "Broad curved tap impression cut through a clipped card",
+  "cliches": [
+    "Wi-Fi fan",
+    "letter tile",
+    "chip pins",
+    "QR pattern"
+  ],
+  "targets": [
+    "web",
+    "electron",
+    "tray"
+  ],
+  "build": {
+    "theme_color": "#315E50",
+    "background_color": "#F6F5EF",
+    "electron_radius": 0,
+    "tray_template_mode": "alpha",
+    "color_scheme": "light",
+    "tray_source_sha256": null
+  },
+  "warnings": [],
+  "scores": {
+    "legibility": 4,
+    "distinctiveness": 4,
+    "balance": 4,
+    "color": 4,
+    "scalability": 4,
+    "craft": 4
+  },
+  "notes": "Clipped contact card remains a card at 16 and 128px. The broad curved aperture survives alpha/template reduction; the device-free control loses the tap cue. Warm keyline preserves dark/gray contrast. All six axes 4: deliberate compact mark with modest small-size presence. Static sheet and actual Review Lab target contexts inspected.",
+  "status": "ready"
+}

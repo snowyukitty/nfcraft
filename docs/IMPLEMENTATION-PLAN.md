@@ -35,4 +35,16 @@ The repository's `.github/workflows/ci.yml` is supplied configuration. Its execu
 
 ## Session discipline
 
+### 0.2.0 card workshop progress
+
+O03 search, combined filters, bounded UI pages, matching CSV and actionable quarantine shortcut are implemented; advanced print/physical labels remain backlog. U01 gains stable row focus, clear empty states and progressive card detail. U02 live recipient preview is implemented using the public Worker renderer. O01 gains local export review/stale-content refusal and shared-profile scope warnings, but **no publication receipt, cloud sync, workspace namespace or equal-revision conflict handling**. O02 displays existing facts and explicitly unknown stages; it does not persist new phone/issuance attestations. No schema migration was needed.
+
+### 2026-09-06 progress
+
+L01 complete locally (Git author identity still required for commits). L02 source and packaged browser acceptance passed; hidden-region refusal and pause-between-pages remain unit evidence, not additional browser/physical claims. P01 real local D1/Worker checks and pinned tooling complete; P02 blocked on approved account/hostname/profile. W01 unsigned package and native lifecycle passed on this host; clean-machine and tray-menu visual checks remain. D01 synthetic backup/restore and Windows dependency snapshot complete; future schema migrations remain separate work. U01 approval cap/expiry controls added and browser tested. H01/H02 blocked: no connected reader, PC/SC unavailable. O01/O02 and multi-workspace publication conflict protection remain backlog; do not automate publication yet.
+
 Choose one or a few bounded tasks. For each: state the user outcome; inspect related code; design a failure/recovery test; implement; run; record evidence. Create ADRs only for decisions with enduring consequences. Keep a useful working app after each increment. End with updated project state and one actionable continuation, not a long speculative feature list.
+
+## 0.2.1 checkpoint
+
+W01/U01: reviewed app/tray/favicon identity and English / Traditional Chinese offline guide delivered, with desktop shortcuts and repeatable guide checks. Full operator UI localization remains separate. Source-history/GitHub checkpoint is authorized; see latest session report. H01/H02/P02 remain dependent on real equipment and destination approval.

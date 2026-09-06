@@ -1,4 +1,27 @@
-# nfcraft 0.1.1 — handoff verification report
+# nfcraft — verification evidence
+
+## 0.2.1 checkpoint
+
+Baseline 113 Python / 16 Worker PASS; final 114 Python / 16 Worker PASS. Guide/static security and native/icon packaging checks are indexed in [the checkpoint report](../reports/2026-09-06-checkpoint/REPORT.md). Historic evidence below remains unchanged.
+
+
+## Card workshop 0.2.0 — 2026-09-06
+
+**PASS:** 113 Python tests (12 new library/export regressions), 16 Worker tests (3 shared-renderer regressions), syntax/compilation and CLI/MCP smoke. Dedicated browser acceptance used 56 freshly simulated cards to check 25-row pagination, filters/CSV, quarantine/empty views, detail facts, safe recipient preview, cross-window stale export rejection and shared-profile scope. The existing write/recovery browser workflow also passes. Real local Worker/D1 and 375px recipient rendering/vCard download pass. Source/packaged native and browser evidence is recorded in [the current session report](../reports/2026-09-06-library/REPORT.md).
+
+These are local/synthetic checks. Hardware, actual phone/printed QR, remote deployment, clean-machine/AV and tray-menu visual qualification remain blocked or NOT_RUN as described below. The Python journal and public manifest remain schema 1. Fresh logs are separate from the baseline and original delivery evidence.
+
+## Windows bootstrap — 2026-09-06
+
+**PASS:** 101 Python tests, 13 Worker handler tests, compilation, JS syntax, disposable daemon/CLI/MCP; source and unsigned packaged Edge workflow; native desktop, packaged desktop/tray lifecycle; local Wrangler/D1 integration; synthetic backup/restore and original-identity recovery. Windows 11, Python 3.12.10, Node 24.18.0, Wrangler 4.129.0. Approval cap and expiry are exercised through the real UI.
+
+**Initial FAIL, resolved:** 98-test baseline had one Windows lock error; process smoke failed on Windows JSON encoding and cleanup. A later Unicode-workspace startup run exposed console encoding failure, also fixed. Native-package harness initially closed WebView2 before initialization and failed to print its Unicode evidence path; corrected harness passed. These failed logs remain locally preserved.
+
+**BLOCKED:** physical NFC (no attached reader/PCSC service unavailable), phone/printed-card QA, remote cloud preview/production (no approved destination/profile). **NOT_RUN:** clean-machine installer/antivirus acceptance, tray-menu visual inspection, hosted CI, real external agent-client configuration. Signing is not implemented; Authenticode reports `NotSigned`.
+
+Fresh evidence is under ignored `.local/evidence/` and `.local/verification/`. The full command/evidence map is in [the session report](../reports/2026-09-06-bootstrap/REPORT.md). Original delivery logs below and `docs/test-evidence/` are preserved unchanged.
+
+## Original 0.1.1 handoff verification report
 
 Date: 2026-09-05. Environment: **Linux container, Python 3.13.5, Node v22.16.0**. These checks were run while creating this handoff, not on the owner's Windows computer.
 

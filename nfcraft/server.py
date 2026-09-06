@@ -9,6 +9,7 @@ import mimetypes
 from . import __version__
 from .errors import OpsError
 from .exporting import inventory_csv, qr_svg
+from .library import normalize_filters, select_cards, inventory_page, publication_review
 
 WEB = Path(__file__).parent / "web"
 
@@ -98,6 +99,21 @@ class Handler(BaseHTTPRequestHandler):
         if role != "operator":
             raise OpsError("OPERATOR_REQUIRED", "This operation is not available through agent credentials.")
 
+    def _inventory_query(self, paged=False):
+        try:
+            query = parse_qs(urlsplit(self.path).query, keep_blank_values=True, max_num_fields=8)
+        except ValueError as exc:
+            raise OpsError("INVALID_FILTER", "Too many inventory filters.") from exc
+        allowed = {"q", "batch", "status", "route"} | ({"offset", "limit"} if paged else set())
+        if set(query) - allowed or any(len(values) != 1 for values in query.values()):
+            raise OpsError("INVALID_FILTER", "Unknown or repeated inventory filter.")
+        filters = normalize_filters({k: v[0] for k, v in query.items() if k not in ("offset", "limit")})
+        try:
+            offset, limit = int(query.get("offset", ["0"])[0]), int(query.get("limit", ["50"])[0])
+        except ValueError as exc:
+            raise OpsError("INVALID_PAGE", "Page values must be integers.") from exc
+        return filters, offset, limit
+
     def do_GET(self):
         try:
             path = urlsplit(self.path).path
@@ -105,13 +121,19 @@ class Handler(BaseHTTPRequestHandler):
             engine = self.server.engine
             if path == "/api/state":
                 return self._response(200, engine.snapshot())
+            if path == "/api/inventory":
+                filters, offset, limit = self._inventory_query(paged=True)
+                with engine.lock:
+                    value = inventory_page(engine.store, filters, offset, limit)
+                return self._response(200, value)
             if path == "/api/manifest":
                 with engine.lock:
                     value = engine.store.manifest()
                 return self._response(200, value, filename="routes-manifest.json")
             if path == "/api/inventory.csv":
+                filters, _, _ = self._inventory_query()
                 with engine.lock:
-                    text = inventory_csv(engine.store.inventory())
+                    text = inventory_csv(select_cards(engine.store.inventory(), filters))
                 return self._response(200, text, "text/csv", "inventory.csv")
             if path == "/api/qr":
                 cid = parse_qs(urlsplit(self.path).query).get("id", [""])[0]
@@ -124,7 +146,10 @@ class Handler(BaseHTTPRequestHandler):
                 with engine.lock:
                     value = engine.store.check_audit()
                 return self._response(200, value)
-            static = {"/":"index.html", "/app.js":"app.js", "/style.css":"style.css"}
+            static = {"/":"index.html", "/app.js":"app.js", "/style.css":"style.css",
+                      "/public-card.mjs":"public-card.mjs", "/library.js":"library.js",
+                      "/guide.html":"guide.html", "/guide.css":"guide.css", "/guide.js":"guide.js",
+                      "/icons/favicon.svg":"icons/favicon.svg", "/icons/favicon.ico":"icons/favicon.ico"}
             if path in static:
                 f = WEB / static[path]
                 return self._response(200, f.read_bytes(), mimetypes.guess_type(f.name)[0] or "application/octet-stream")
@@ -147,6 +172,18 @@ class Handler(BaseHTTPRequestHandler):
             if path == "/api/pause":
                 return self._response(200, engine.pause())
             self._operator(role)
+            if path in ("/api/publication/review", "/api/publication/export"):
+                with engine.lock:
+                    review = publication_review(engine.store, payload.get("filters"))
+                    if path.endswith("/review"):
+                        return self._response(200, review)
+                    digest = payload.get("sha256")
+                    if not isinstance(digest, str) or digest != review["manifest"]["sha256"]:
+                        raise OpsError("EXPORT_CHANGED", "Public content changed since review. Review the current export again.")
+                    if not review["manifest"]["routes"]:
+                        raise OpsError("NOTHING_TO_EXPORT", "No verified routes match these filters.")
+                    engine.store.audit("public_export_prepared", {"sha256": digest, "routes": len(review["manifest"]["routes"]), "deployed": False})
+                    return self._response(200, review["manifest"], filename="routes-manifest.json")
             if path == "/api/arm":
                 return self._response(200, engine.arm(payload))
             if path == "/api/profile":

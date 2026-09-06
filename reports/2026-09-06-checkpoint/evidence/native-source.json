@@ -1,0 +1,11 @@
+{
+  "result": "PASS",
+  "scope": "source native desktop, disposable demo",
+  "checks": [
+    "native WebView2 loads authenticated demo UI",
+    "operator fragment removed",
+    "window close stops server and releases runtime/lock"
+  ],
+  "packaged_desktop": "NOT_RUN",
+  "tray_menu": "NOT_RUN"
+}

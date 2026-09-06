@@ -5,6 +5,7 @@ import os
 import sys
 import threading
 import webbrowser
+from pathlib import Path
 from . import __version__
 from .runtime import workspace, WorkspaceLock
 from .store import Store
@@ -28,6 +29,9 @@ def parser():
 
 
 def main(argv=None):
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     args = parser().parse_args(argv)
     if not 0 <= args.port <= 65535:
         raise SystemExit("Invalid port.")
@@ -39,6 +43,7 @@ def main(argv=None):
     lock = None
     engine = None
     server = None
+    server_thread = None
     runtime_path = directory / "agent-runtime.json"
     tray = None
     try:
@@ -61,7 +66,8 @@ def main(argv=None):
         with os.fdopen(fd, "w", encoding="utf-8") as f:
             json.dump({"origin":server.origin,"token":server.agent_token,"mode":args.mode}, f)
         engine.start_worker()
-        threading.Thread(target=server.serve_forever, name="local-api", daemon=True).start()
+        server_thread = threading.Thread(target=server.serve_forever, name="local-api", daemon=True)
+        server_thread.start()
         print(f"nfcraft {__version__} | {args.mode.upper()} | workspace: {directory}", flush=True)
         print(f"Operator app: {server.operator_url}", flush=True)
         print("Keep this operator URL private. Ctrl+C stops the workstation.", flush=True)
@@ -76,7 +82,7 @@ def main(argv=None):
                 webbrowser.open(server.operator_url)
             else:
                 webview.create_window("nfcraft", server.operator_url, width=1320, height=920, min_size=(960,700))
-                webview.start()
+                webview.start(icon=str(Path(__file__).parent / "web/icons/build/icon.ico"))
                 return 0
         elif not args.no_browser:
             webbrowser.open(server.operator_url)
@@ -94,7 +100,10 @@ def main(argv=None):
         if tray:
             tray.stop()
         if server:
-            server.shutdown()
+            # shutdown() waits forever if serve_forever() never started.
+            if server_thread is not None and server_thread.is_alive():
+                server.shutdown()
+                server_thread.join(timeout=5)
             server.server_close()
         if engine:
             engine.shutdown()

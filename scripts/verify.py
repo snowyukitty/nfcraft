@@ -28,6 +28,8 @@ def main(argv=None):
               ("python-compile", [sys.executable, "-m", "compileall", "-q", "nfcraft", "scripts", "tests"]),
               ("demo-process-smoke", [sys.executable, "scripts/smoke_demo.py"]),
               ("ui-syntax", [node, "--check", "nfcraft/web/app.js"] if node else None),
+              ("library-syntax", [node, "--check", "nfcraft/web/library.js"] if node else None),
+              ("guide-syntax", [node, "--check", "nfcraft/web/guide.js"] if node else None),
               ("worker-syntax", [node, "--check", "cloudflare/worker.mjs"] if node else None),
               ("worker-tests", [node, "--test", "cloudflare/worker.test.mjs"] if node else None)]
     results = []

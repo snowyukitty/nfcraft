@@ -5,6 +5,7 @@ The token inside the generated agent-runtime file is used locally, never logged.
 """
 from __future__ import annotations
 import json
+import os
 from pathlib import Path
 import subprocess
 import sys
@@ -17,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 def main():
-    with tempfile.TemporaryDirectory(prefix="nfcraft-smoke-") as directory:
+    with tempfile.TemporaryDirectory(prefix="nfcraft-smoke-測試 space-") as directory:
         root = Path(directory)
         proc = subprocess.Popen([sys.executable, str(ROOT / "run.py"), "--mode", "demo", "--data-dir", str(root),
                                  "--port", "0", "--no-browser"], cwd=ROOT, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
@@ -50,14 +51,19 @@ def main():
                         {"jsonrpc": "2.0", "method": "notifications/initialized"},
                         {"jsonrpc": "2.0", "id": 2, "method": "tools/call", "params": {"name": "nfc_status", "arguments": {}}}]
             result = subprocess.run(prefix + ["mcp"], input="".join(json.dumps(m) + "\n" for m in messages),
-                                    cwd=ROOT, capture_output=True, text=True, timeout=10, check=True)
+                                    cwd=ROOT, capture_output=True, text=True, encoding="utf-8", timeout=10, check=True)
             replies = [json.loads(line) for line in result.stdout.splitlines()]
             assert len(replies) == 2 and replies[0]["result"]["serverInfo"]["name"] == "nfcraft"
             payload = json.loads(replies[1]["result"]["content"][0]["text"])
             assert payload["mode"] == "demo" and payload["armed"] is None
             print(json.dumps({"result": "PASS", "scope": "temporary mock workspace only", "checks": ["daemon startup", "CLI state", "CLI draft batch", "agent arming denied", "MCP initialize/notification/tool"], "physical_nfc": "NOT_RUN"}, indent=2))
         finally:
-            proc.terminate()
+            if os.name == "nt" and proc.poll() is None:
+                # The Windows venv redirector may own a child interpreter.
+                subprocess.run(["taskkill", "/PID", str(proc.pid), "/T", "/F"],
+                               capture_output=True, timeout=10, check=True)
+            elif proc.poll() is None:
+                proc.terminate()
             try:
                 proc.wait(timeout=8)
             except subprocess.TimeoutExpired:

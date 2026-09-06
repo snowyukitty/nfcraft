@@ -200,11 +200,18 @@ class Store:
             self.db.execute("UPDATE cards SET route_state=?,revision=revision+1 WHERE id=?", (state,cid))
             self.audit("route_state_changed", {"card_id":cid,"state":state,"requires_redeployment":True})
 
-    def manifest(self):
+    def manifest(self, cards=None):
         # No UID or inspection dumps leave the local database.
         routes = [dict(r) for r in self.db.execute("""SELECT c.slug,c.url,c.route_state AS state,c.revision,b.profile_id
                     FROM cards c JOIN batches b ON b.id=c.batch_id WHERE c.status='verified' ORDER BY c.slug""")]
-        body = {"schema":1,"simulated":self.mode=="demo","profiles":self.profiles(),"routes":routes}
+        profiles = self.profiles()
+        if cards is not None:
+            slugs = {c["slug"] for c in cards}
+            routes = [r for r in routes if r["slug"] in slugs]
+            if routes:
+                used = {r["profile_id"] for r in routes}
+                profiles = [p for p in profiles if p["id"] in used]
+        body = {"schema":1,"simulated":self.mode=="demo","profiles":profiles,"routes":routes}
         return {**body,"sha256":hashlib.sha256(canonical(body).encode()).hexdigest(),"generated_at":now()}
 
     def events(self):

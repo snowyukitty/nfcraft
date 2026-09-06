@@ -1,0 +1,19 @@
+{
+  "status": "PASS",
+  "widths": [
+    1440,
+    375
+  ],
+  "languages": [
+    "en",
+    "zh-Hant"
+  ],
+  "checks": [
+    "offline assets",
+    "language switch",
+    "start anchors",
+    "FAQ interaction",
+    "no overflow",
+    "no page errors"
+  ]
+}

@@ -64,8 +64,8 @@ function render() {
     $('#latest-result').className='result'+(r.ok?'':' error');
     $('#latest-result').innerHTML=`<span class="result-mark">${r.ok?'✓':'!'}</span><div><strong>${r.ok?escapeHtml(r.batch_name)+' / '+String(r.ordinal).padStart(4,'0'):escapeHtml(r.code)}</strong><p>${escapeHtml(r.ok?r.url:r.message)}</p></div>${r.ok?`<span class="elapsed">${r.simulated?'SIMULATED · ':''}${r.elapsed_ms} ms<br>NOT PUBLISHED</span>`:''}`;
   }
-  $('#inventory-body').innerHTML=s.cards.length?s.cards.map(c=>`<tr><td><b>${escapeHtml(c.batch_name)} / ${String(c.ordinal).padStart(4,'0')}</b><small>${escapeHtml(c.uid)}</small></td><td class="url">${escapeHtml(c.url)}</td><td><span class="status-badge ${escapeHtml(c.status)}">${escapeHtml(c.status)}</span>${c.last_error?`<small>${escapeHtml(c.last_error)}</small>`:''}</td><td>${escapeHtml(c.route_state)}<small>Local intent only</small></td><td><div class="actions">${c.status==='verified'?`<button data-action="copy" data-id="${c.id}">Copy URL</button><button data-action="qr" data-id="${c.id}">QR SVG</button><button data-action="route" data-id="${c.id}">${c.route_state==='enabled'?'Suspend':'Enable'}</button>`:''}${c.status==='quarantined'?`<button data-action="recover" data-id="${c.id}">Review & recover</button>`:''}${demo?`<button data-action="present" data-id="${c.id}">Present again</button>`:''}</div></td></tr>`).join(''):'<tr><td colspan="5" class="empty-state">No assignments yet. Create a batch in the workbench.</td></tr>';
   if (!profileLoaded && s.profiles[0]) { for (const k of ['name','headline','bio','email','website']) $('#profile-form').elements[k].value=s.profiles[0][k]; profileLoaded=true; }
+  library.render(s);
   $('#audit-status').textContent=s.audit.ok?`Audit chain intact · ${s.audit.count} recorded events`:`Audit check failed near event ${s.audit.bad_seq}. Stop and investigate.`;
   $('#events').innerHTML=s.events.length?s.events.map(e=>`<div class="event-row"><time>${escapeHtml(new Date(e.at).toLocaleString())}</time><b>${escapeHtml(e.kind.replaceAll('_',' '))}</b><code>${escapeHtml(e.data)}</code></div>`).join(''):'<p>No events yet.</p>';
 }
@@ -79,6 +79,10 @@ async function download(path,name) {const blob=await (await api(path)).blob();co
 function openArm(recover=null) {
   const b=batch(); if(!b)return notify('Create a batch first.',true);
   $('#recover-uid').value=recover || '';
+  $('#arm-limit').value=recover?1:Math.max(1,b.target-b.allocated);
+  $('#arm-limit').max=recover?1:Math.max(1,b.target-b.allocated);
+  $('#arm-limit').readOnly=Boolean(recover);
+  $('#arm-seconds').value=600;
   $('#arm-summary').textContent=`${b.name} · ${recover?'Recover one reserved identity':b.target-b.allocated+' remaining new cards'} · ${b.base}`;
   $('#confirm-label').firstChild.textContent=`Type ARM ${b.name}`;
   $('#arm-confirmation').value=''; $('#arm-confirmation').placeholder=`ARM ${b.name}`;
@@ -91,18 +95,19 @@ $('#new-batch').onclick=()=>{if(state?.mode==='hardware')$('#batch-form').elemen
 $('#batch-form').onsubmit=e=>{e.preventDefault();action(async()=>{const data=Object.fromEntries(new FormData(e.target));data.target=Number(data.target);const created=await json('batches',data);selected=created.id;localStorage.setItem('nfc-selected-batch',selected);$('#batch-dialog').close();notify('Draft batch created. No cards written.');});};
 $('#batch-select').onchange=e=>{selected=e.target.value;localStorage.setItem('nfc-selected-batch',selected);render();};
 $('#arm-button').onclick=()=>openArm();
-$('#arm-form').onsubmit=e=>{e.preventDefault();action(async()=>{const b=batch(), uid=$('#recover-uid').value;if(uid && state.mode==='demo'){await json('mock/remove',{});await json('mock/insert',{uid});await json('mock/clear-fault',{});}await json('arm',{batch_id:b.id,confirmation:$('#arm-confirmation').value,limit:uid?1:Math.max(1,b.target-b.allocated),seconds:600,recover_uid:uid||null});$('#arm-dialog').close();changeView('workbench');notify('Run armed. Only the approved batch can be written.');});};
+$('#arm-form').onsubmit=e=>{e.preventDefault();action(async()=>{const b=batch(), uid=$('#recover-uid').value;if(uid && state.mode==='demo'){await json('mock/remove',{});await json('mock/insert',{uid});await json('mock/clear-fault',{});}await json('arm',{batch_id:b.id,confirmation:$('#arm-confirmation').value,limit:uid?1:Number($('#arm-limit').value),seconds:Number($('#arm-seconds').value),recover_uid:uid||null});$('#arm-dialog').close();changeView('workbench');notify('Run armed. Only the approved batch can be written.');});};
 $('#pause-top').onclick=()=>action(()=>json('pause',{}));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!document.querySelector('dialog[open]')) action(()=>json('pause',{}));});
 $('#insert-card').onclick=()=>action(async()=>{await json('mock/insert',{scenario:$('#scenario').value});notify('Virtual card presented.');});
 $('#remove-card').onclick=()=>action(()=>json('mock/remove',{}));
 $('#inspect-button').onclick=()=>action(async()=>{const d=await json('inspect',{});$('#inspection-output').textContent=JSON.stringify(d,null,2);$('#inspect-dialog').showModal();});
-$('#export-csv').onclick=()=>action(()=>download('inventory.csv','nfc-inventory.csv'));
-$('#export-manifest').onclick=()=>action(()=>download('manifest','routes-manifest.json'));
-$('#profile-form').onsubmit=e=>{e.preventDefault();action(async()=>{await json('profile',Object.fromEntries(new FormData(e.target)));notify('Profile draft saved locally. Export and deploy to publish.');});};
+$('#export-csv').onclick=()=>action(()=>download('inventory.csv?'+library.query(),'nfc-inventory.csv'));
+$('#export-manifest').onclick=()=>action(()=>library.review());
+$('#profile-form').onsubmit=e=>{e.preventDefault();action(async()=>{library.saved(await json('profile',Object.fromEntries(new FormData(e.target))));notify('Profile draft saved locally. Export and deploy to publish.');});};
 $('#backup-button').onclick=()=>action(async()=>{const d=await json('backup',{});notify('Saved: '+d.saved_to);});
-$('#inventory-body').onclick=e=>{const button=e.target.closest('button[data-action]');if(!button)return;const c=state.cards.find(c=>c.id===button.dataset.id);if(!c)return;action(async()=>{
+$('#inventory-body').onclick=e=>{const button=e.target.closest('button[data-action]');if(!button)return;const c=library.card(button.dataset.id);if(!c)return;action(async()=>{
   switch(button.dataset.action){
+    case 'details': library.details(c.id);break;
     case 'copy': await navigator.clipboard.writeText(c.url);notify('Card URL copied.');break;
     case 'qr': await download('qr?id='+encodeURIComponent(c.id),`${c.id}.svg`);break;
     case 'route': await json('route',{card_id:c.id,state:c.route_state==='enabled'?'suspended':'enabled'});notify('Local route intent changed. Export and deploy to apply publicly.');break;
@@ -110,4 +115,5 @@ $('#inventory-body').onclick=e=>{const button=e.target.closest('button[data-acti
     case 'recover': selected=c.batch_id;render();openArm(c.uid);break;
   }
 });};
+const library = new CardLibrary({getState:()=>state, json, api, notify, escapeHtml});
 refresh();setInterval(refresh,1200);

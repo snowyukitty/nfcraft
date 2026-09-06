@@ -51,6 +51,10 @@ class Client:
 
 
 def main(argv=None):
+    # CLI and MCP are UTF-8 protocols, independent of the Windows code page.
+    for stream in (sys.stdin, sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8")
     parser = argparse.ArgumentParser(description="nfcraft agent-safe CLI; outputs JSON")
     parser.add_argument("--version", action="version", version="nfcraftctl " + __version__)
     parser.add_argument("--mode", choices=("demo","hardware"), default="demo")

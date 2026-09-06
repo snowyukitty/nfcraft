@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nfcraft"
-version = "0.1.1"
+version = "0.2.1"
 description = "Local-first, agent-assisted NTAG215 provisioning workbench"
 requires-python = ">=3.11"
 license = {text = "MIT"}
@@ -26,7 +26,7 @@ nfcctl = "nfcraft.cli:main"
 include = ["nfcraft*"]
 
 [tool.setuptools.package-data]
-nfcraft = ["web/*"]
+nfcraft = ["web/*", "web/icons/*", "web/icons/build/*", "web/icons/tray/*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

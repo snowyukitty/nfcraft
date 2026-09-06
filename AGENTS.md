@@ -1,6 +1,6 @@
 # nfcraft — instructions for coding and operating agents
 
-**Canonical product, repo and Python package name: `nfcraft`.** This is the continuation of NFC Card Ops, not an invitation to generate a second repository. Start in the current repository root. Current handoff version: **0.1.1**, still an unqualified hardware prototype.
+**Canonical product, repo and Python package name: `nfcraft`.** This is the continuation of NFC Card Ops, not an invitation to generate a second repository. Start in the current repository root. Current local version: **0.2.1**, still an unqualified hardware prototype.
 
 ## Read in this order
 

@@ -1,0 +1,72 @@
+{
+  "generated_at": "2026-09-06T01:57:01.424625+00:00",
+  "product": "nfcraft",
+  "python": "3.12.10",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "overall": "PASS",
+  "scope": "hardware-free local checks; not reader/phone/Windows-package/cloud qualification",
+  "checks": [
+    {
+      "name": "python-unittest",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 22.531,
+      "log": "python-unittest.txt"
+    },
+    {
+      "name": "python-compile",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.234,
+      "log": "python-compile.txt"
+    },
+    {
+      "name": "demo-process-smoke",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 1.813,
+      "log": "demo-process-smoke.txt"
+    },
+    {
+      "name": "ui-syntax",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.062,
+      "log": "ui-syntax.txt"
+    },
+    {
+      "name": "library-syntax",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.047,
+      "log": "library-syntax.txt"
+    },
+    {
+      "name": "guide-syntax",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.047,
+      "log": "guide-syntax.txt"
+    },
+    {
+      "name": "worker-syntax",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.047,
+      "log": "worker-syntax.txt"
+    },
+    {
+      "name": "worker-tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.141,
+      "log": "worker-tests.txt"
+    }
+  ],
+  "not_run": [
+    "physical NFC",
+    "phone/printed QR",
+    "desktop/tray packaging",
+    "Cloudflare deployment"
+  ]
+}

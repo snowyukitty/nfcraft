@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import worker, {makeVcard, foldVcard, vescape} from './worker.mjs';
+import {renderCardMarkup, renderCardDocument} from '../nfcraft/web/public-card.mjs';
 const slug='A'.repeat(22), base=`https://tap.example.com/c/${slug}`;
 const profile={name:'啓真',headline:'A small introduction',bio:'Hello',email:'hello@example.com',website:'https://example.com'};
 function env(row={state:'enabled',body:JSON.stringify(profile)}) {return {DB:{prepare(sql){assert.ok(sql.includes('WHERE r.slug=?'));return {bind(key){assert.equal(key,slug);return {async first(){return row;}};}};}}};}
@@ -17,3 +18,16 @@ test('vcard fields cannot inject additional properties',()=>{const t=makeVcard({
 test('vcard folds at 75 UTF8 bytes and preserves unicode',()=>{const original='FN:'+'貓咪'.repeat(80),folded=foldVcard(original);for(const line of folded.split('\r\n'))assert.ok(Buffer.byteLength(line)<=75);assert.equal(folded.replaceAll('\r\n ',''),original);});
 test('response is private-client agnostic, no analytics script',async()=>{const r=await worker.fetch(new Request(base),env());const html=await r.text();assert.equal(r.headers.get('cache-control'),'no-store');assert.match(r.headers.get('content-security-policy'),/default-src 'none'/);assert.ok(!html.includes('<script'));assert.ok(!html.includes('uid='));});
 test('JSON null profile is handled without crashing',async()=>{const r=await worker.fetch(new Request(base),env({state:'enabled',body:'null'}));assert.equal(r.status,503);});
+test('public route uses the shared preview renderer',async()=>{
+ const response=await worker.fetch(new Request(base),env());
+ assert.equal(await response.text(),renderCardDocument(profile,slug));
+});
+test('preview actions are inert and unsafe markup is escaped',()=>{
+ const html=renderCardMarkup({...profile,name:'</h1><img src=x onerror=alert(1)>',website:'javascript:alert(1)'},slug,{preview:true});
+ assert.ok(!html.includes('<img'));assert.ok(!html.includes('href='));assert.ok(html.includes('disabled'));
+ assert.ok(html.includes('&lt;img'));assert.ok(!html.includes('Visit website'));
+});
+test('malformed route and credential URL cannot become public links',()=>{
+ const html=renderCardMarkup({...profile,website:'https://user:password@example.com'},'" onclick="bad');
+ assert.ok(!html.includes('href='));assert.ok(!html.includes('onclick='));
+});
