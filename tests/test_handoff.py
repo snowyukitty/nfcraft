@@ -65,7 +65,8 @@ class HandoffTests(unittest.TestCase):
         self.assertFalse((self.root / "nfcraft").exists())
 
     def test_explicit_root_can_use_existing_workspace(self):
-        self.assertEqual(workspace("demo", self.root / "old"), self.directory)
+        # Windows TEMP may use an 8.3 alias while workspace() resolves the long name.
+        self.assertTrue(workspace("demo", self.root / "old").samefile(self.directory))
 
     def test_invalid_mode_rejected(self):
         with self.assertRaises(OpsError):

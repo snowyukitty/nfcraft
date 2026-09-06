@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-09-06T01:57:01.424625+00:00",
+  "generated_at": "2026-09-06T02:10:19.865482+00:00",
   "product": "nfcraft",
   "python": "3.12.10",
   "platform": "Windows-11-10.0.26200-SP0",
@@ -10,28 +10,28 @@
       "name": "python-unittest",
       "status": "PASS",
       "exit_code": 0,
-      "seconds": 22.531,
+      "seconds": 24.797,
       "log": "python-unittest.txt"
     },
     {
       "name": "python-compile",
       "status": "PASS",
       "exit_code": 0,
-      "seconds": 0.234,
+      "seconds": 0.094,
       "log": "python-compile.txt"
     },
     {
       "name": "demo-process-smoke",
       "status": "PASS",
       "exit_code": 0,
-      "seconds": 1.813,
+      "seconds": 1.906,
       "log": "demo-process-smoke.txt"
     },
     {
       "name": "ui-syntax",
       "status": "PASS",
       "exit_code": 0,
-      "seconds": 0.062,
+      "seconds": 0.234,
       "log": "ui-syntax.txt"
     },
     {
@@ -45,21 +45,21 @@
       "name": "guide-syntax",
       "status": "PASS",
       "exit_code": 0,
-      "seconds": 0.047,
+      "seconds": 0.063,
       "log": "guide-syntax.txt"
     },
     {
       "name": "worker-syntax",
       "status": "PASS",
       "exit_code": 0,
-      "seconds": 0.047,
+      "seconds": 0.046,
       "log": "worker-syntax.txt"
     },
     {
       "name": "worker-tests",
       "status": "PASS",
       "exit_code": 0,
-      "seconds": 0.141,
+      "seconds": 0.344,
       "log": "worker-tests.txt"
     }
   ],

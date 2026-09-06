@@ -6,7 +6,7 @@ Updated: 2026-09-06 (Asia/Tokyo). Current local version: **0.2.1**. Treat this f
 
 Reviewed IconFlow assets now serve the executable, native window, tray, app sidebar and browser. The offline English / Traditional Chinese guide is `nfcraft/web/guide.html`, linked from the app. Two content-addressed desktop shortcuts open the native app and guide. **114 Python / 16 Worker** tests pass; packaged bilingual guide, 56-card workflow and native lifecycle checks pass. No recipient service or physical acceptance claim changed.
 
-Original source staging is preserved as root commit `b61881e`. The explicit GitHub checkpoint request resolved source backup: verified account `snowyukitty`, repository-local GitHub noreply identity, new private `snowyukitty/nfcraft` remote. The session report records final checks and push confirmation. Current package: `dist/nfcraft-0.2.1-windows-unsigned.zip`; old ZIPs remain available. See [checkpoint report](../reports/2026-09-06-checkpoint/REPORT.md).
+Original source staging is preserved as root commit `b61881e`. The explicit GitHub checkpoint request resolved source backup: verified account `snowyukitty`, repository-local GitHub noreply identity, new private `snowyukitty/nfcraft` remote. The session report records final checks and push confirmation. Initial hosted Windows runs exposed an 8.3 TEMP-alias test assumption; the test now verifies filesystem identity, and failed verification output is visible in CI. See the latest GitHub run for cross-platform status. Current package: `dist/nfcraft-0.2.1-windows-unsigned.zip`; old ZIPs remain available. See [checkpoint report](../reports/2026-09-06-checkpoint/REPORT.md).
 
 ## Card workshop milestone — 0.2.0
 

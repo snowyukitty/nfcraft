@@ -44,7 +44,8 @@ def main(argv=None):
             try:
                 run = subprocess.run(command, cwd=ROOT, capture_output=True, timeout=120)
                 text = run.stdout.decode("utf-8", "replace") + run.stderr.decode("utf-8", "replace")
-                (output / (name + ".txt")).write_text(text, encoding="utf-8")
+                text = text.replace("\r\n", "\n")
+                (output / (name + ".txt")).write_text(text, encoding="utf-8", newline="\n")
                 if run.returncode:
                     # Hosted runners must expose the failure, not only a local log path.
                     print(text, flush=True)

@@ -7,6 +7,7 @@
 - Add static allowlist regression, guide syntax and desktop/mobile bilingual browser acceptance.
 - Preserve original source in a separate root commit and prepare the authorized private GitHub checkpoint.
 - Keep card identities, schemas and safety boundaries unchanged; physical and remote acceptance remain separate.
+- Expose hosted verification failures and compare Windows short/long workspace aliases by filesystem identity.
 
 
 ## 0.2.0 — Card workshop (local milestone) — 2026-09-06

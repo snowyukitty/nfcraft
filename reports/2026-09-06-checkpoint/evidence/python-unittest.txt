@@ -114,6 +114,6 @@ test_failed_runtime_file_creation_does_not_hang_shutdown (test_runtime.Workspace
 test_second_process_refused_without_removing_owner_runtime (test_runtime.WorkspaceLockTests.test_second_process_refused_without_removing_owner_runtime) ... ok
 
 ----------------------------------------------------------------------
-Ran 114 tests in 22.307s
+Ran 114 tests in 24.467s
 
 OK

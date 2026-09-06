@@ -51,4 +51,10 @@ Tracked evidence copies normalize Windows line endings; original local logs rema
 
 Physical reader qualification, a separately approved single-card write, real phone/printed-QR acceptance, code signing, clean-machine acceptance and public deployment remain unfulfilled. Cloud destination/profile approval is still required. Next bounded engineering task: publication plan/receipt with workspace namespace and equal-revision conflict protection, independently of hardware qualification.
 
+## Hosted Windows follow-up
+
+Initial checkpoint `217c0fb` reached private `origin/main`, with a matching remote SHA and clean worktree. GitHub run `34005519265` passed both Linux jobs but failed both Windows jobs. This was a real test failure, not a billing refusal. The verifier initially hid failure details in runner-local files, so `5774466` exposes failed command output with UTF-8 diagnostics. A bounded branch dispatch (`34005673040`) identified the exact failure: an existing handoff test compared the Windows TEMP 8.3 alias `RUNNER~1` with its resolved long path even though both identify the same existing directory.
+
+The test now uses `Path.samefile` to prove the original directory is reused. No runtime path behavior, database operation, safety check or package byte changed. A clean local clone without site packages also passed all 114 tests, explaining why the hosted alias was needed to expose this assumption. Verifier evidence files now normalize CRLF once to prevent duplicated carriage returns. Final hosted results remain attached to the corresponding GitHub commit/run; previous failures are preserved in history.
+
 Lease: released after final checks with `uv run atlas lease release nfcraft --agent codex-nfcraft`; Atlas confirmed release. No subagents.
