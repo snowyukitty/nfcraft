@@ -1,0 +1,58 @@
+{
+  "generated_at": "2026-09-05T10:26:52.496611+00:00",
+  "product": "nfcraft",
+  "python": "3.13.5",
+  "platform": "Linux-6.18.35-x86_64-with-glibc2.41",
+  "overall": "PASS",
+  "scope": "hardware-free local checks; not reader/phone/Windows-package/cloud qualification",
+  "checks": [
+    {
+      "name": "python-unittest",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 7.992,
+      "log": "python-unittest.txt"
+    },
+    {
+      "name": "python-compile",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.834,
+      "log": "python-compile.txt"
+    },
+    {
+      "name": "demo-process-smoke",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 4.098,
+      "log": "demo-process-smoke.txt"
+    },
+    {
+      "name": "ui-syntax",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.035,
+      "log": "ui-syntax.txt"
+    },
+    {
+      "name": "worker-syntax",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.029,
+      "log": "worker-syntax.txt"
+    },
+    {
+      "name": "worker-tests",
+      "status": "PASS",
+      "exit_code": 0,
+      "seconds": 0.272,
+      "log": "worker-tests.txt"
+    }
+  ],
+  "not_run": [
+    "physical NFC",
+    "phone/printed QR",
+    "desktop/tray packaging",
+    "Cloudflare deployment"
+  ]
+}

@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "nfcraft": {
+      "command": "C:\\YOUR_PATH\\nfcraft\\.venv\\Scripts\\python.exe",
+      "args": ["C:\\YOUR_PATH\\nfcraft\\nfcraftctl.py", "mcp"]
+    }
+  }
+}

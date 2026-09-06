@@ -1,0 +1,9 @@
+{
+  "browser": "Chromium with in-process loopback API bridge (managed navigation restricted)",
+  "javascript_errors": [],
+  "verified_simulated_cards": 6,
+  "interrupted_recovered": 1,
+  "manifest_download": true,
+  "qr_download": true,
+  "mobile_horizontal_overflow": false
+}

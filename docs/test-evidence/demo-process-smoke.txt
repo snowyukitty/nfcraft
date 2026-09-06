@@ -1,0 +1,12 @@
+{
+  "result": "PASS",
+  "scope": "temporary mock workspace only",
+  "checks": [
+    "daemon startup",
+    "CLI state",
+    "CLI draft batch",
+    "agent arming denied",
+    "MCP initialize/notification/tool"
+  ],
+  "physical_nfc": "NOT_RUN"
+}

@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "nfcraft"
+version = "0.1.1"
+description = "Local-first, agent-assisted NTAG215 provisioning workbench"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+dependencies = []
+
+[project.optional-dependencies]
+hardware = ["pyscard>=2.2,<3"]
+desktop = ["pywebview>=5,<7", "pystray>=0.19,<1", "Pillow>=10,<13"]
+qr = ["qrcode>=8,<9"]
+test = ["pytest>=8,<10"]
+build = ["pyinstaller>=6,<7"]
+
+[project.scripts]
+nfcraft = "nfcraft.__main__:main"
+nfcraftctl = "nfcraft.cli:main"
+nfcctl = "nfcraft.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["nfcraft*"]
+
+[tool.setuptools.package-data]
+nfcraft = ["web/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

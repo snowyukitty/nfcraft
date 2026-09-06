@@ -1,0 +1,88 @@
+TAP version 13
+# Subtest: active route renders a contact page
+ok 1 - active route renders a contact page
+  ---
+  duration_ms: 152.201995
+  type: 'test'
+  ...
+# Subtest: unknown identity returns 404
+ok 2 - unknown identity returns 404
+  ---
+  duration_ms: 0.537273
+  type: 'test'
+  ...
+# Subtest: unknown path returns 404
+ok 3 - unknown path returns 404
+  ---
+  duration_ms: 0.36061
+  type: 'test'
+  ...
+# Subtest: suspended card returns 410
+ok 4 - suspended card returns 410
+  ---
+  duration_ms: 0.305397
+  type: 'test'
+  ...
+# Subtest: no mutation endpoint
+ok 5 - no mutation endpoint
+  ---
+  duration_ms: 0.548804
+  type: 'test'
+  ...
+# Subtest: HEAD body is empty
+ok 6 - HEAD body is empty
+  ---
+  duration_ms: 0.362114
+  type: 'test'
+  ...
+# Subtest: invalid profile returns 503
+ok 7 - invalid profile returns 503
+  ---
+  duration_ms: 0.455082
+  type: 'test'
+  ...
+# Subtest: html is escaped and javascript website is excluded
+ok 8 - html is escaped and javascript website is excluded
+  ---
+  duration_ms: 0.540256
+  type: 'test'
+  ...
+# Subtest: vcard UTF8 and safe filename
+ok 9 - vcard UTF8 and safe filename
+  ---
+  duration_ms: 1.285103
+  type: 'test'
+  ...
+# Subtest: vcard fields cannot inject additional properties
+ok 10 - vcard fields cannot inject additional properties
+  ---
+  duration_ms: 0.465252
+  type: 'test'
+  ...
+# Subtest: vcard folds at 75 UTF8 bytes and preserves unicode
+ok 11 - vcard folds at 75 UTF8 bytes and preserves unicode
+  ---
+  duration_ms: 0.284887
+  type: 'test'
+  ...
+# Subtest: response is private-client agnostic, no analytics script
+ok 12 - response is private-client agnostic, no analytics script
+  ---
+  duration_ms: 0.695787
+  type: 'test'
+  ...
+# Subtest: JSON null profile is handled without crashing
+ok 13 - JSON null profile is handled without crashing
+  ---
+  duration_ms: 0.289864
+  type: 'test'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 13
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 232.817872

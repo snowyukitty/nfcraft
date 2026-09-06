@@ -1,0 +1,13 @@
+# Not usable until the owner approves the account, database and durable hostname.
+# Copy to ignored wrangler.production.toml. Do not reuse the preview DB.
+name = "nfcraft-tap"
+main = "worker.mjs"
+compatibility_date = "2026-09-01"
+account_id = "REPLACE_WITH_APPROVED_ACCOUNT_ID"
+workers_dev = false
+routes = [{ pattern = "REPLACE_WITH_APPROVED_HOSTNAME", custom_domain = true }]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nfcraft-production"
+database_id = "REPLACE_WITH_PRODUCTION_D1_ID"

@@ -1,0 +1,3 @@
+PASS: built nfcraft-0.1.1-py3-none-any.whl using pip wheel . --no-deps --no-build-isolation.
+PASS: Python modules, web assets, migration/manifest code and nfcraft/nfcraftctl/nfcctl entrypoints are bundled.
+This is a Python wheel, not a Windows executable or installer.

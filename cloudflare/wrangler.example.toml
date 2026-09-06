@@ -1,0 +1,11 @@
+# Preview only. Copy to ignored wrangler.preview.toml and fill approved values.
+name = "nfcraft-tap-preview"
+main = "worker.mjs"
+compatibility_date = "2026-09-01"
+account_id = "REPLACE_WITH_APPROVED_ACCOUNT_ID"
+workers_dev = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nfcraft-preview"
+database_id = "REPLACE_WITH_PREVIEW_D1_ID"
