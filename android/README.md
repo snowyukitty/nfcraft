@@ -104,13 +104,15 @@ as done on an assumption.
 ## Build
 
 ```sh
-JAVA_HOME=/path/to/jdk-21 gradle assembleDebug
+JAVA_HOME=/path/to/jdk-21 ./gradlew assembleDebug
 # app/build/outputs/apk/debug/app-debug.apk
 ```
 
-Create `local.properties` with `sdk.dir=` pointing at your Android SDK; it is
-machine-specific and deliberately not committed. The project has no third-party
-dependencies, so the build works offline once Gradle and the SDK are present.
+The Gradle wrapper is committed, so a JDK 21 and an Android SDK are the only
+things a machine needs. Create `local.properties` with `sdk.dir=` pointing at
+that SDK; it is machine-specific and deliberately not committed. The project
+has no third-party dependencies, so once the wrapper distribution, the Android
+Gradle plugin and SDK platform 35 are cached, the build works offline.
 
 ## Install
 
