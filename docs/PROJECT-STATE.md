@@ -8,6 +8,8 @@ Updated: 2026-09-06 (Asia/Tokyo). Current local version: **0.2.2**. Treat this f
 
 The bench problem it was written to fix was **write reliability, not correctness**. One presentation issues around thirty radio exchanges and the first build attempted each exactly once, so a weakly coupled wooden card failed roughly half of all taps and the operator had to nudge it until a pass survived. Every exchange is now retried with reconnection, writes are retried safely and confirmed by read-back, NAK codes are separated into transient and final, FAST_READ steps down before falling back to plain READ, and only pages that would change are written. The screen says "weak contact" while it is happening and the receipt records what the link cost.
 
+See the [phone writer reliability report](../reports/2026-09-16-phone-writer-reliability/REPORT.md).
+
 **This is checked, not qualified.** 1,087 pruned-plan states and 10 link behaviours pass on a desktop JVM against a simulated misbehaving card, alongside the encoder parity check. None of it has met a wooden card since the change, and the recipient-facing check — tapping a written card on a *different* phone — remains NOT_RUN. See `android/README.md` for the full list of what is and is not proved.
 
 ## Desktop launch repair — 0.2.2

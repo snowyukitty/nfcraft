@@ -1,6 +1,6 @@
 # nfcraft
 
-[English / 繁體中文 app guide](nfcraft/web/guide.html) · [Desktop repair report](reports/2026-09-06-desktop-launch/REPORT.md)
+[English / 繁體中文 app guide](nfcraft/web/guide.html) · [Desktop repair report](reports/2026-09-06-desktop-launch/REPORT.md) · [Phone writer reliability report](reports/2026-09-16-phone-writer-reliability/REPORT.md)
 
 Open the guide locally, or choose **Guide / 使用說明** inside the app. The **nfcraft** desktop shortcut directly opens `nfcraft-desktop.exe` as a normal Windows GUI app; PowerShell is not used at launch. The second shortcut opens the offline guide. GitHub displays HTML source; this is not a hosted public site.
 
