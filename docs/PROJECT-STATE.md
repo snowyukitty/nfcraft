@@ -1,6 +1,25 @@
 # nfcraft — current project state
 
-Updated: 2026-09-06 (Asia/Tokyo). Current local version: **0.2.2**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+Updated: 2026-09-17 (Asia/Tokyo). Current local version: **0.2.2**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+
+## Phone writer hardware verification — Card Writer 0.2.0 (2026-09-17)
+
+The 2026-09-16 reliability fix below had never met a phone. This session built
+`51f5c18`, installed it on two phones, and closed both items that report left
+`NOT_RUN`: real `link N retries, M reconnect` lines appeared on a genuinely
+weak link and every write still finished; and tapping a written card with the
+app backgrounded opened the destination in the phone's browser on its own.
+Dozens of cards were written across both phones with no unrecovered failure.
+One real, device-specific finding: the two phones' NFC antennas sit in
+different spots on the back panel, so a card position calibrated on one did
+not work on the other until recalibrated — a hardware fact, not a defect.
+
+See the [phone writer hardware verification report](../reports/2026-09-17-phone-writer-hardware-verification/REPORT.md).
+
+Still open: the refusal paths (locked/protected/foreign card) and the
+torn-write resume path have not met real hardware — every card written so far
+started blank or already carrying this app's own record. PC/SC desktop
+hardware writing remains untouched.
 
 ## Phone writer reliability — Card Writer 0.2.0 (2026-09-16)
 

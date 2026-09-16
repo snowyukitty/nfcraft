@@ -1,5 +1,25 @@
 # Changelog
 
+## 2026-09-17 — the phone writer meets real hardware
+
+No code change. `51f5c18` was built and installed on two phones, closing both
+items the 09-16 reliability fix left `NOT_RUN`:
+
+- A real weak link produced the `link N retries, M reconnect` receipt line for
+  the first time, matching a `Tag lost, restarting polling loop` event in the
+  platform's own log at the same moment. Dozens of cards were written across
+  both phones with every write still reaching `Written`, none lost to `Card
+  moved` or `Write interrupted`.
+- The recipient-facing check passed: with the app backgrounded, tapping a
+  written card opened its destination in the phone's browser unassisted.
+- One real finding, not a defect: the two phones' NFC antennas sit in
+  different spots on their back panels, so a card position calibrated on one
+  needed recalibrating on the other. The retry budget did not mask a
+  genuinely absent link — a misplaced card still returned `Card moved` until
+  repositioned.
+
+See [phone writer hardware verification report](reports/2026-09-17-phone-writer-hardware-verification/REPORT.md).
+
 ## 2026-09-16 — the phone writer joins the repository, and stops giving up on a weak card
 
 Card Writer (`android/`) 0.2.0, versionCode 2:

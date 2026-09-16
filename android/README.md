@@ -4,11 +4,13 @@ Writes one HTTPS URL to one NTAG215 card, verifies it by reading the whole
 advertised area back, and does it with no PC, no cable, no network and no
 hosted page.
 
-**Status: physically proved on one NTAG215, on one phone.** The encoder is
-checked byte-for-byte against the Python reference in
-[`nfcraft/ndef.py`](../nfcraft/ndef.py), an independent review has been applied,
-and the command layer now rides out a link that stutters. The recipient-facing
-check is still outstanding — see "What is proved, and what is not".
+**Status: physically proved across two phones, dozens of NTAG215 cards, and
+the recipient side.** The encoder is checked byte-for-byte against the Python
+reference in [`nfcraft/ndef.py`](../nfcraft/ndef.py), an independent review
+has been applied, the command layer has ridden out a real stuttering link and
+held, and a card written by this app has been tapped outside the app and
+opened its own destination unassisted. See "What is proved, and what is not"
+for the exact shape of that evidence and what still isn't covered.
 
 ## Why this exists
 
@@ -147,37 +149,55 @@ change to either encoder.
 
 ## What is proved, and what is not
 
-One NTAG215 has been written and verified on a real phone. The app only reaches
-the green "Written" state after the whole chain succeeds, so that single tap
-cleared a good deal at once:
+Dozens of NTAG215 cards have now been written and verified across two phones.
+The app only reaches the green "Written" state after the whole chain
+succeeds, so each of those taps cleared a good deal at once:
 
-* `GET_VERSION` returned the exact NTAG215 vector on a real tag.
-* The identity and configuration checks passed against a real card — CC
+* `GET_VERSION` returned the exact NTAG215 vector on real tags, on both phones.
+* The identity and configuration checks passed against real cards — CC
   `E1103E00`, clear static and dynamic lock bytes, factory `AUTH0`, no
   mirroring or access limits.
-* A full 496-byte read of pages 0x04–0x7F completed over a real NFC stack.
-* Every page write in the plan was accepted, so the WRITE acknowledgement
-  handling works on that HAL.
-* The verifying readback equalled the intended area **plus the untouched
-  tail**, and the re-inspection matched the pre-write one byte for byte.
+* Full 496-byte reads of pages 0x04–0x7F completed over two different real
+  NFC stacks.
+* Every page write in each plan was accepted, so the WRITE acknowledgement
+  handling works on both HALs.
+* Every verifying readback equalled the intended area **plus the untouched
+  tail**, and every re-inspection matched the pre-write one byte for byte.
+* **The reliability work met a wooden card and held.** Real
+  `Tag lost, restarting polling loop` events happened mid-batch on both
+  phones — dozens across the session — and every write still reached
+  `Written`, never `Card moved` or `Write interrupted`. The
+  `link N retries, M reconnect` receipt line has now been seen for real, not
+  just in `LinkTest`.
+* **The recipient-facing check passed.** With the app backgrounded, tapping a
+  written card brought the phone's own browser to the foreground loading that
+  card's destination — not a placeholder, not this app catching its own tag.
+* **`Already done` fired correctly** on a re-tap of a card whose stored
+  destination already matched, outside any simulation.
+
+See
+[`reports/2026-09-17-phone-writer-hardware-verification/REPORT.md`](../reports/2026-09-17-phone-writer-hardware-verification/REPORT.md)
+for the session this evidence came from.
+
+One real, device-specific finding came out of that session, and it is a
+hardware fact about the phones, not a defect in this app: the two phones' NFC
+antennas sit in different spots on their back panels, so a card position
+calibrated on one did not couple on the other until recalibrated. The retry
+budget did not paper over a genuinely absent link — cards presented off a
+phone's coil kept returning `Card moved` until the position was corrected,
+which is the refusal path behaving exactly as intended rather than masking a
+bad jig.
 
 Still **NOT_RUN**, and worth keeping honest:
 
-* **The reliability work above has not met a wooden card.** It is checked
-  against a simulated link that misbehaves far more than a real one, and that
-  is not the same as a bench result. The number to watch is how often the
-  receipt reports retries at all.
-* **The recipient-facing check.** Nothing yet confirms that tapping a written
-  card on a *different* phone opens the destination. A rig that drifts produces
-  cards that read back perfectly at the station and still fail in someone's
-  hand. Do this before any card is handed over.
 * The refusal paths — a locked, protected or foreign card — have not met real
-  hardware.
+  hardware. Every card written so far started blank or already carried this
+  app's own record.
 * The torn-write resume path, which is the fix for the review's highest-severity
   finding, has been exercised in checks but not by pulling a card away
-  mid-write.
-* This phone's HAL mapping of the 4-bit Type 2 ACK/NAK, and the wooden-card
-  coupling margin. Both need a physical card.
+  mid-write on real hardware.
+* PC/SC desktop hardware writing remains untouched by this and the prior
+  session and is unqualified.
 
 ## Independent review
 

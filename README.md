@@ -1,6 +1,6 @@
 # nfcraft
 
-[English / 繁體中文 app guide](nfcraft/web/guide.html) · [Desktop repair report](reports/2026-09-06-desktop-launch/REPORT.md) · [Phone writer reliability report](reports/2026-09-16-phone-writer-reliability/REPORT.md)
+[English / 繁體中文 app guide](nfcraft/web/guide.html) · [Desktop repair report](reports/2026-09-06-desktop-launch/REPORT.md) · [Phone writer reliability report](reports/2026-09-16-phone-writer-reliability/REPORT.md) · [Phone writer hardware verification](reports/2026-09-17-phone-writer-hardware-verification/REPORT.md)
 
 Open the guide locally, or choose **Guide / 使用說明** inside the app. The **nfcraft** desktop shortcut directly opens `nfcraft-desktop.exe` as a normal Windows GUI app; PowerShell is not used at launch. The second shortcut opens the offline guide. GitHub displays HTML source; this is not a hosted public site.
 
@@ -33,7 +33,7 @@ This release adds safer legacy-data handling, stricter public exports, an occupi
 | ACS ACR1552U PC/SC adapter | Experimental source; **no physical tests**; read-only by default |
 | Desktop window / tray integration | Unsigned Windows portable build; browser/native lifecycle tested on this host; clean-machine and tray-menu visual QA outstanding |
 | Public card page and contact.vcf | Shared recipient renderer; real local Worker/D1 and narrow-browser tests pass; **not remotely deployed** |
-| Android phone writer (`android/`) | Implemented as a separate single-card tool; one physical card written and verified, no batch station |
+| Android phone writer (`android/`) | Implemented as a separate single-card tool; dozens of physical cards written and verified across two phones, recipient-side tap-to-open confirmed, no batch station |
 | Permanent locking, password changes, arbitrary rewrites | Deliberately absent |
 | Signed installer, automatic cloud synchronization, multilingual UI, public AI chat | Not included in v0.1 |
 
