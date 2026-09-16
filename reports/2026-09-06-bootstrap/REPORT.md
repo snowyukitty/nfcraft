@@ -8,7 +8,7 @@ Date: 2026-09-06, Asia/Tokyo. Product/source version: nfcraft 0.1.1 plus the loc
 - No `.git` existed. Initialized branch `work/local-bootstrap`; original source staged before edits. Git commit failed because no author name/email is configured. The owner has been asked; no identity was invented and no remote/push/release was created.
 - Original staged source also preserved in ignored `.local/evidence/source-handoff.patch`. Keep that checkpoint until author identity permits the initial commit. Current implementation changes are unstaged/new files on top of that staged source. Original `MANIFEST.sha256` describes the delivered handoff, not the changed tree; it was not hand-edited.
 - Preflight found no legacy journal. Tests used only self-created synthetic workspaces. No owner journal, card assignment, URL or profile was migrated or reset.
-- Scope: this repository's runtime/CLI, approval UI, launchers/build recipe, local test tooling and documentation. Atlas lease `nfcraft`, agent `codex-nfcraft`, was claimed before writes; release status is recorded below.
+- Scope: this repository's runtime/CLI, approval UI, launchers/build recipe, local test tooling and documentation. The owner's cross-project work lease for this repository was claimed before writes; release status is recorded below.
 
 ## Reproduced defects and changes
 
@@ -90,4 +90,4 @@ The owner was asked for Git author name/email and the intended Cloudflare accoun
 
 No data schema changed; legacy aliases, card identity and URL formats are retained. Roll back application code/package against a stopped, backed-up compatible workspace; do not delete or replace a journal. Owner data was not changed, so no owner-data rollback is necessary. Keep test evidence private and preserve the initial handoff checkpoint.
 
-Lease state: `nfcraft` lease released with `uv run atlas lease release nfcraft --agent codex-nfcraft` after final repository checks. No delegated agents or test daemons are intentionally left running.
+Lease state: the work lease for this repository was released after final repository checks. No delegated agents or test daemons are intentionally left running.

@@ -2,6 +2,14 @@
 
 Updated: 2026-09-06 (Asia/Tokyo). Current local version: **0.2.2**. Treat this file as the index for the next agent, not as evidence in place of test logs.
 
+## Phone writer reliability — Card Writer 0.2.0 (2026-09-16)
+
+`android/` holds Card Writer, a native single-card rewrite tool that needs no PC. It shares `nfcraft/ndef.py`'s encoder through a Java port, and `android/tools/parity.sh` diffs the two byte for byte on every run.
+
+The bench problem it was written to fix was **write reliability, not correctness**. One presentation issues around thirty radio exchanges and the first build attempted each exactly once, so a weakly coupled wooden card failed roughly half of all taps and the operator had to nudge it until a pass survived. Every exchange is now retried with reconnection, writes are retried safely and confirmed by read-back, NAK codes are separated into transient and final, FAST_READ steps down before falling back to plain READ, and only pages that would change are written. The screen says "weak contact" while it is happening and the receipt records what the link cost.
+
+**This is checked, not qualified.** 1,087 pruned-plan states and 10 link behaviours pass on a desktop JVM against a simulated misbehaving card, alongside the encoder parity check. None of it has met a wooden card since the change, and the recipient-facing check — tapping a written card on a *different* phone — remains NOT_RUN. See `android/README.md` for the full list of what is and is not proved.
+
 ## Desktop launch repair — 0.2.2
 
 The prior shortcut hid/minimized the native window. A dedicated GUI executable now opens directly, while the console entry remains compatible. The actual installed shortcut is verified visible and non-minimized at 1320x920; the app was left open for the owner. No owner UI approval or card write was automated. **118 Python / 16 Worker** checks pass, with packaged library, native lifecycle and real ShellExecute shortcut acceptance. Current portable ZIP: `dist/nfcraft-0.2.2-windows-unsigned.zip`.
@@ -12,7 +20,7 @@ See [desktop repair report](../reports/2026-09-06-desktop-launch/REPORT.md). The
 
 Reviewed IconFlow assets now serve the executable, native window, tray, app sidebar and browser. The offline English / Traditional Chinese guide is `nfcraft/web/guide.html`, linked from the app. Two content-addressed desktop shortcuts open the native app and guide. **114 Python / 16 Worker** tests pass; packaged bilingual guide, 56-card workflow and native lifecycle checks pass. No recipient service or physical acceptance claim changed.
 
-Original source staging is preserved as root commit `b61881e`. The explicit GitHub checkpoint request resolved source backup: verified account `snowyukitty`, repository-local GitHub noreply identity, new private `snowyukitty/nfcraft` remote. The session report records final checks and push confirmation. Initial hosted Windows runs exposed an 8.3 TEMP-alias test assumption; the test now verifies filesystem identity, and failed verification output is visible in CI. See the latest GitHub run for cross-platform status. Current package: `dist/nfcraft-0.2.1-windows-unsigned.zip`; old ZIPs remain available. See [checkpoint report](../reports/2026-09-06-checkpoint/REPORT.md).
+Original source staging is preserved as the root commit of the owner's working repository. The explicit GitHub checkpoint request resolved source backup: a verified account, a repository-local GitHub noreply identity, and a remote for the working history. The session report records final checks and push confirmation. Initial hosted Windows runs exposed an 8.3 TEMP-alias test assumption; the test now verifies filesystem identity, and failed verification output is visible in CI. See the latest GitHub run for cross-platform status. Current package: `dist/nfcraft-0.2.1-windows-unsigned.zip`; old ZIPs remain available. See [checkpoint report](../reports/2026-09-06-checkpoint/REPORT.md).
 
 ## Card workshop milestone — 0.2.0
 

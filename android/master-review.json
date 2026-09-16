@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "source": "master.svg",
+  "source_sha256": "f2e0ea2b40349bcee110afaef46da95cd207352e5027837ff4766b48a6a96324",
+  "contract_sha256": "4c0b7dbe256bd235f3ef08519833d550a1b7995253ade88de430cc033b54113a",
+  "project": "card-writer",
+  "user_job": "Give this card a new address, right now",
+  "essence": "restamp",
+  "personality": "decisive, handmade, field-ready",
+  "signature_device": "Detached amber imprint struck below the press",
+  "cliches": [
+    "NFC wave arcs",
+    "contact card with a tap cue",
+    "pencil over a card",
+    "letter tile",
+    "circular refresh arrow"
+  ],
+  "targets": [
+    "web"
+  ],
+  "build": {
+    "theme_color": "#9C3F1E",
+    "background_color": "#9C3F1E",
+    "electron_radius": 0.0,
+    "tray_template_mode": "alpha",
+    "color_scheme": "light",
+    "tray_source_sha256": null
+  },
+  "warnings": [],
+  "scores": {
+    "legibility": 4,
+    "distinctiveness": 4,
+    "balance": 4,
+    "color": 4,
+    "scalability": 4,
+    "craft": 4
+  },
+  "notes": "Reviewed from the rendered sheet at actual sizes (16-256px on light, dark and mid grey), the pixel zooms, both silhouette strips, and the four adaptive crops. Name-the-thing: the visual silhouette reads as a hand press at 128px and still at 16px, so the mark is a specific object rather than a shape on a tile. Legibility 4: the three-band structure survives the 16px pixel zoom; it is faint on white, but the shipped ground is the rust tile, where it is crisp. Distinctiveness 4: neighbourhood proof puts the nearest avoid-set neighbour (plus sign) at 0.196, well outside the 0.12 gate, and nfcraft's own contact-card mark at 0.483, so the sibling surface is not a variation of it. Balance 4: centred on 512; the grip's visual weight is carried by the wider platen. Color 4: rust ground with cream and one amber accent - warm, ownable, and a deliberate hue shift away from nfcraft's forest green. Scalability 4: platen 720u, grip 320u, neck 160u, imprint 380x144u and the platen-to-imprint gap 128u all hold at least two rendered pixels at 16px. Craft 4: four radii in one family, no stray detail, no crossing opaque elements. Second pass: the first draft put the imprint's corners outside the 40% maskable safe circle; tightening the composition to 154-870 and narrowing the imprint to 380u brought every extreme inside it without losing 16px mass.",
+  "status": "ready"
+}

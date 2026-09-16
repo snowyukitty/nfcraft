@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Warm paper neo-brutalism. Fills, outlines, shadows and type are applied in
+     MainActivity through Nb, because a hard offset shadow is a LayerDrawable
+     rather than anything the XML theme can express, and the hero card has to
+     recolour itself per result. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:fitsSystemWindows="true"
+    android:focusable="true"
+    android:focusableInTouchMode="true">
+
+    <LinearLayout
+        android:id="@+id/destinationCard"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="18dp"
+        android:paddingTop="15dp"
+        android:paddingRight="25dp"
+        android:paddingBottom="22dp">
+
+        <TextView
+            android:id="@+id/destinationLabel"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DESTINATION"
+            android:textSize="11sp" />
+
+        <EditText
+            android:id="@+id/url"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:background="@null"
+            android:padding="0dp"
+            android:inputType="textUri"
+            android:singleLine="true"
+            android:imeOptions="actionDone"
+            android:textSize="20sp"
+            android:hint="https://tgs.best" />
+
+        <TextView
+            android:id="@+id/urlProblem"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textSize="12sp"
+            android:lineSpacingExtra="2dp"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/stage"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="14dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingLeft="22dp"
+        android:paddingTop="20dp"
+        android:paddingRight="29dp"
+        android:paddingBottom="27dp">
+
+        <TextView
+            android:id="@+id/headline"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="44sp"
+            android:lineSpacingExtra="-4dp"
+            android:text="Starting" />
+
+        <TextView
+            android:id="@+id/detail"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:layout_marginTop="12dp"
+            android:textSize="15sp"
+            android:lineSpacingExtra="4dp" />
+
+        <TextView
+            android:id="@+id/counter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="22dp"
+            android:paddingLeft="14dp"
+            android:paddingTop="7dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="11dp"
+            android:textSize="11sp" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/evidence"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:paddingLeft="18dp"
+        android:paddingTop="14dp"
+        android:paddingRight="25dp"
+        android:paddingBottom="21dp"
+        android:textSize="12sp"
+        android:minLines="3"
+        android:lineSpacingExtra="4dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:orientation="horizontal"
+        android:baselineAligned="false">
+
+        <LinearLayout
+            android:id="@+id/inspectOnly"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingLeft="14dp"
+            android:paddingTop="12dp"
+            android:paddingRight="21dp"
+            android:paddingBottom="19dp">
+
+            <TextView
+                android:id="@+id/inspectOnlyTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="INSPECT ONLY"
+                android:lines="2"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/inspectOnlyState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="12dp"
+            android:layout_height="1dp" />
+
+        <LinearLayout
+            android:id="@+id/allowUnknown"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:paddingLeft="14dp"
+            android:paddingTop="12dp"
+            android:paddingRight="21dp"
+            android:paddingBottom="19dp">
+
+            <TextView
+                android:id="@+id/allowUnknownTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="OVERWRITE UNKNOWN"
+                android:lines="2"
+                android:textSize="10sp" />
+
+            <TextView
+                android:id="@+id/allowUnknownState"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="3dp"
+                android:textSize="17sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/footnote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="14dp"
+        android:gravity="center"
+        android:textSize="10sp"
+        android:lineSpacingExtra="3dp"
+        android:text="NEVER LOCKS · WRITES PAGES 04–7F ONLY" />
+
+</LinearLayout>

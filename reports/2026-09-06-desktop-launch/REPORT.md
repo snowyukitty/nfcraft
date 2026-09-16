@@ -43,4 +43,4 @@ Package: `dist/nfcraft-0.2.2-windows-unsigned.zip`, 29,114,627 bytes, SHA-256 `8
 GUI executable SHA-256: `289b1a7a1d0067bdbba1e144cc5c3c349791becdec02d8edbc01c6e36e1bd8d3`.
 Console executable SHA-256: `45efc5834a5775e68e1fd4a88702283ed5e6eb68d24569d1fcb9aeb63bc8af34`.
 
-GitHub checkpoint: the existing private `snowyukitty/nfcraft` repository, both `main` and the work branch. No release, visibility or deployment change. Source and CI evidence are attached to the final commit. Staged credential scan and whitespace check pass. Atlas confirmed release of the `nfcraft` lease held by `codex-nfcraft` after local verification. No subagents.
+GitHub checkpoint: the owner's existing working repository, both `main` and the work branch. No release, visibility or deployment change. Source and CI evidence are attached to the final commit. Staged credential scan and whitespace check pass. No subagents.

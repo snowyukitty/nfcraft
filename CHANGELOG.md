@@ -1,5 +1,39 @@
 # Changelog
 
+## 2026-09-16 — the phone writer joins the repository, and stops giving up on a weak card
+
+Card Writer (`android/`) 0.2.0, versionCode 2:
+
+- Retry every radio exchange instead of failing the whole card presentation on
+  the first one that stutters. Around thirty exchanges ran per tap with no
+  second attempt, so a link that dropped two per cent of them failed roughly
+  half of all taps — which is what the bench saw.
+- Re-establish the connection between attempts, so a presence check or a hand
+  movement landing between two commands no longer needs the card lifted.
+- Retry the first connect, which used to turn away a card resting slightly off
+  the antenna before anything had been read.
+- Treat a wrong-length answer as a failed exchange rather than as a card with
+  something different to say.
+- Read a WRITE acknowledgement for what it is: NAK `1h` and `5h` are retried,
+  `0h` and `4h` stop the run, and a swallowed answer is settled by reading the
+  page back.
+- Walk FAST_READ down from 16 pages to 8 to 4 before falling back to plain
+  `READ`, and name the path that answered on the receipt.
+- Write only the pages that would change, so resuming a torn card is short.
+- Say "weak contact, hold still" while the link is struggling, and put what it
+  cost on the receipt afterwards.
+- Add `PlanTest` and `LinkTest` to `tools/parity.sh`: 1,087 pruned-plan states
+  and 10 link behaviours, all on a desktop JVM against a simulated misbehaving
+  card. No safety check was loosened to get any of it.
+
+Repository:
+
+- Publish the desktop workshop and the phone writer together. They share one
+  encoder, and the parity check proves it on every run.
+- Make `tools/ref.py` and `tools/parity.sh` find the Python reference by
+  relative path or `NFCRAFT_ROOT` instead of a hard-coded one.
+
+
 ## 0.2.2 — 2026-09-06 desktop launch repair
 
 - Replace hidden-script startup with a dedicated Windows GUI executable and normal-window desktop shortcut.
@@ -13,7 +47,7 @@
 - Ship reviewed IconFlow card identity across Windows executable/window/tray and web UI.
 - Add responsive offline English / Traditional Chinese app guide, linked in-app and on the desktop.
 - Add static allowlist regression, guide syntax and desktop/mobile bilingual browser acceptance.
-- Preserve original source in a separate root commit and prepare the authorized private GitHub checkpoint.
+- Preserve original source in a separate root commit and prepare the authorized GitHub checkpoint.
 - Keep card identities, schemas and safety boundaries unchanged; physical and remote acceptance remain separate.
 - Expose hosted verification failures and compare Windows short/long workspace aliases by filesystem identity.
 

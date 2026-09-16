@@ -2,7 +2,7 @@
 
 Execution note: retain the Windows desktop workstation and its web interface. Deliver searchable/paged inventory, matching exports, shared recipient preview, and explicit public export review with stale-content refusal. No card/URL/schema migration, cloud mutation, or new hardware authority. Validate selection and export safety in Python; shared rendering in Worker tests; real UI and local D1; rebuild the unsigned Windows package. Rollback is code/package replacement against the unchanged schema-1 journal after stopping and backing up.
 
-Baseline: `scripts/verify.py --require-node --output .local/evidence/library-baseline` PASS (101 Python, 13 Worker tests plus compilation/syntax/process smoke). The earlier source checkpoint remains staged; commits still await owner Git identity. This session holds the `nfcraft` Atlas lease as `codex-nfcraft`.
+Baseline: `scripts/verify.py --require-node --output .local/evidence/library-baseline` PASS (101 Python, 13 Worker tests plus compilation/syntax/process smoke). The earlier source checkpoint remains staged; commits still await owner Git identity. This session holds the work lease for this repository.
 
 ## Outcome
 
@@ -75,4 +75,4 @@ Owner input still needed: approved Cloudflare account/hostname/public profile, r
 
 The next product increment is an authoritative publication plan/receipt with workspace namespace and conflict-safe imports; it must prove destination and exact URLs before claiming availability. Hardware qualification can proceed independently when a reader is available. Research references and their influence are recorded in ADR 0002, with Cloudflare CLI/type checks separate from runtime evidence.
 
-Lease: released after final checks with `uv run atlas lease release nfcraft --agent codex-nfcraft`; Atlas confirmed release. No subagents were used.
+Lease: the work lease for this repository was released after final checks, and the release was confirmed. No subagents were used.

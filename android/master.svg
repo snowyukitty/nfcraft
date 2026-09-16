@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <!-- Card Writer - a hand press, and the imprint it has just struck.
+       Essence: restamp. The press is one cream mass (grip, neck and platen
+       share a fill, so no two opaque elements cross). The signature device is
+       the detached amber imprint: 144 units tall with a 128-unit gap under
+       the platen, so both the mark and its separation hold two deliberate
+       pixels at 16px. The composition is centred on 512 and every extreme
+       corner stays inside the 40% maskable safe circle. nfcraft owns the
+       contact card with a tap aperture; this sibling is a different object
+       doing a different job. -->
+  <g id="iconflow-mark">
+    <g id="iconflow-core" fill="#eee6ce">
+      <rect x="352" y="154" width="320" height="210" rx="68"/>
+      <rect x="432" y="348" width="160" height="104" rx="20"/>
+      <rect x="152" y="430" width="720" height="168" rx="32"/>
+    </g>
+    <rect id="iconflow-signature" x="322" y="726" width="380" height="144" rx="72"
+          fill="#e2a13c"/>
+  </g>
+</svg>

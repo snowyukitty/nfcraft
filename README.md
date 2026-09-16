@@ -8,6 +8,8 @@ Open the guide locally, or choose **Guide / 使用說明** inside the app. The *
 
 **A small, local-first workshop for your NTAG215 business cards.**
 
+Two programs share one encoder. The desktop workshop drives a USB PC/SC reader and keeps the journal; [Card Writer](android/README.md) puts one card's destination on a phone with no PC at all. What they write is byte-for-byte identical, and a check proves it on every commit.
+
 Prepare a batch with an AI agent. Approve it in the app. Present one card at a time. Keep every assignment and uncertain outcome in a durable journal.
 
 **Version 0.2.2 — Card workshop. A working Windows app, still awaiting physical-reader qualification.**
@@ -31,7 +33,7 @@ This release adds safer legacy-data handling, stricter public exports, an occupi
 | ACS ACR1552U PC/SC adapter | Experimental source; **no physical tests**; read-only by default |
 | Desktop window / tray integration | Unsigned Windows portable build; browser/native lifecycle tested on this host; clean-machine and tray-menu visual QA outstanding |
 | Public card page and contact.vcf | Shared recipient renderer; real local Worker/D1 and narrow-browser tests pass; **not remotely deployed** |
-| Android Web NFC / native Android bridge | Design documents only; **not implemented** |
+| Android phone writer (`android/`) | Implemented as a separate single-card tool; one physical card written and verified, no batch station |
 | Permanent locking, password changes, arbitrary rewrites | Deliberately absent |
 | Signed installer, automatic cloud synchronization, multilingual UI, public AI chat | Not included in v0.1 |
 
@@ -164,6 +166,7 @@ scripts/             preflight, verification, demo smoke, legacy import, SQL exp
 examples/            MCP client config and suggested agent prompt
 tests/               hardware-independent Python tests
 docs/                architecture, runbooks, limitations, research, test evidence
+android/             Card Writer, the phone-only single-card rewrite tool
 ```
 
 ## Test and extend

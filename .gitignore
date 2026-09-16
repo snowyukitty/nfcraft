@@ -16,6 +16,13 @@ cloudflare/wrangler.toml
 cloudflare/.wrangler/
 cloudflare/routes.sql
 node_modules/
+
+# Android
+.gradle/
+local.properties
+*.apk
+*.keystore
+*.jks
 .env*
 
 # nfcraft local-only state, evidence and scoped cloud configuration

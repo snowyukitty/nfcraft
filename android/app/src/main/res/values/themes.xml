@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- A light theme so system-drawn parts (cursor, selection handles, the
+         status bar) sit on paper rather than fighting it. -->
+    <style name="Paper" parent="@android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">#FFF4DE</item>
+        <item name="android:statusBarColor">#FFF4DE</item>
+        <item name="android:navigationBarColor">#FFF4DE</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+        <item name="android:colorAccent">#EB5B32</item>
+        <item name="android:textColorHighlight">#FFD64A</item>
+    </style>
+</resources>

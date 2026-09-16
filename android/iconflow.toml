@@ -1,0 +1,54 @@
+# IconFlow project brief and deterministic build contract.
+# Relative paths are resolved from this file.
+schema_version = 1
+
+[project]
+name = "card-writer"
+master = "master.svg"
+output = "icons"
+casebook = "casebook"
+
+[brief]
+app_intent = "Pocket tool that rewrites one NFC card's destination, with no PC"
+user_job = "Give this card a new address, right now"
+essence = "restamp"
+personality = ["decisive", "handmade", "field-ready"]
+
+[design]
+# nfcraft already owns the contact card with a tap aperture; a sibling surface
+# must not ship a weaker variation of it.
+palette = ["#9c3f1e", "#eee6ce"]
+cliches = [
+    "NFC wave arcs",
+    "contact card with a tap cue",
+    "pencil over a card",
+    "letter tile",
+    "circular refresh arrow",
+]
+signature_device = "Detached amber imprint struck below the press"
+device_family = "detached-accent"
+device_detail = "144-unit imprint with a 128-unit gap below the platen"
+concept_lens = "verb"
+
+[build]
+targets = ["web"]
+theme_color = "#9c3f1e"
+background_color = "#9c3f1e"
+electron_radius = 0
+tray_ts = false
+tray_svg = ""
+tray_template_mode = "alpha"
+color_scheme = "light"
+optimize_png = true
+
+[neighbours]
+avoid = ["@collision"]
+family = ["../../master.svg"]
+portfolio = []
+
+[review]
+status = "pending"
+source_sha256 = ""
+contract_sha256 = ""
+scores = {}
+notes = ""
