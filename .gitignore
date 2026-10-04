@@ -42,3 +42,8 @@ work/
 !nfcraft/web/icons/build/
 !nfcraft/web/icons/build/*
 nfcraft/web/icons/build/shortcut-icon-*.ico
+
+# iOS (SwiftPM build products; Xcode user state)
+ios/NfcraftKit/.build/
+ios/NfcraftKit/.swiftpm/
+xcuserdata/

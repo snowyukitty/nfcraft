@@ -1,6 +1,19 @@
 # nfcraft — current project state
 
-Updated: 2026-09-29 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.3.0**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+Updated: 2026-10-04 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.3.0**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+
+## iPhone writer core — 2026-10-04
+
+`ios/NfcraftKit` is a Swift package holding the iPhone writer's encoder,
+NTAG215 command layer, per-tap decision logic and history, ported from the
+Android writer and pinned byte for byte to `nfcraft/ndef.py`. It imports no
+Core NFC, so `ios/tools/check.sh` runs it on Windows through Docker: 47 Swift
+tests and a 110-line parity diff pass. Command CRC framing is established per
+tag by a read-only GET_VERSION probe, because Apple's current reference says
+the app must append the CRC and that is unverified on hardware. **No iOS app
+target, Xcode build, iPhone or card has been involved.** Android validation was
+found to diverge from `ndef.py` on port edge cases (unchanged). See
+[session report](../reports/2026-10-04-ios-core/REPORT.md).
 
 ## Mobile history, identity and store preparation — 2026-09-29
 
@@ -96,7 +109,7 @@ No `.git` existed in the handoff. A local `work/local-bootstrap` branch was init
 | Public export review | Implemented with stale-content refusal and shared-profile warning; not deployment/receipt tracking |
 | Multiple profiles, advanced labels, multilingual UI | Backlog, not shipped |
 | Android writing app | Native standalone nfcraft 0.3.0 in `android/`; local history/build tests pass; physical release acceptance outstanding |
-| iPhone writing app | Not implemented; Core NFC prototype and Mac/iPhone validation required |
+| iPhone writing app | Platform-neutral core in `ios/NfcraftKit` checked off-device; no app target, Core NFC adapter, Xcode build or device test |
 | Signed installer, auto-update, physical write protection | Not implemented |
 
 `docs/TEST-REPORT.md` is the current evidence summary. Original prototype screenshots/results live in `docs/history/v0.1.0/`; they are explicitly historical, not fresh nfcraft UI or hardware results.

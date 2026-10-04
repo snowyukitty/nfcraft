@@ -1,5 +1,16 @@
 # Changelog
 
+## iOS core (unreleased) — 2026-10-04
+
+- Add `ios/NfcraftKit`: Swift ports of the encoder, NTAG215 command layer,
+  history and per-tap decision logic, with no Core NFC dependency.
+- Establish command CRC framing with a read-only GET_VERSION probe, bare frame
+  first, before any read of the user area or write.
+- Add `ios/tools/check.sh`: 47 Swift tests and byte parity with
+  `nfcraft/ndef.py`, including port and length edge cases.
+- Record that Android URL validation differs from `ndef.py` on port edge cases.
+  No iOS app, build or device test exists yet.
+
 ## Android 0.3.0 — 2026-09-29
 
 - Add ten device-local recent HTTPS destinations with explicit saving, reuse,
