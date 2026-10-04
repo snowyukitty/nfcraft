@@ -10,7 +10,9 @@ Internet permission or cloud synchronization.
 
 The current destination, up to 10 recent destinations, and app switches are
 saved in the app's private storage on your phone. These settings are not
-uploaded by nfcraft. Android app backup is disabled. Card identifiers and
+uploaded by nfcraft. Android cloud backup is disabled for the app. On some
+Android 12 or later phones, a direct phone-to-phone transfer can still copy
+these settings to your new phone. Card identifiers and
 readback results are used locally and shown on screen during an operation;
 the app does not persist a card-identifier log or send identifiers to us.
 
