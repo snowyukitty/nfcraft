@@ -54,10 +54,13 @@ public struct Framing: Equatable, CustomStringConvertible {
     /// carry two stray bytes. Returns nil when neither frame is answered
     /// exactly: not an NTAG215, or a link too weak to tell, and either way
     /// nothing may be written.
-    public static func probe(_ link: Type2Link, rounds: Int = 2) async -> Framing? {
-        for _ in 0..<rounds {
-            for appendsCRC in [false, true] {
-                let command: [UInt8] = appendsCRC ? CRCA.append([0x60]) : [0x60]
+    public static func probe(_ link: Type2Link, attempts: Int = 4) async -> Framing? {
+        // Every bare attempt is spent before any CRC-carrying one, so a
+        // momentary drop on a weak link cannot hand the decision to the
+        // ambiguous frame.
+        for appendsCRC in [false, true] {
+            let command: [UInt8] = appendsCRC ? CRCA.append([0x60]) : [0x60]
+            for _ in 0..<attempts {
                 guard let response = try? await link.transceive(command) else { continue }
                 if response == Ndef.version {
                     return Framing(appendsCRC: appendsCRC, responseCarriesCRC: false)

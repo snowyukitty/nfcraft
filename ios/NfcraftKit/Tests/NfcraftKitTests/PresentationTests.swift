@@ -201,6 +201,15 @@ final class PresentationTests: XCTestCase {
         XCTAssertEqual(outcome.verdict, .written)
     }
 
+    func testADroppedBareProbeDoesNotHandTheChoiceToTheCRCFrame() async {
+        // A lenient tag on a weak link: the first bare GET_VERSION is lost.
+        let card = SimulatedNTAG215()
+        card.lenientLength = true
+        let flaky = DropFirst(card, count: 1)
+        let framing = await Framing.probe(flaky)
+        XCTAssertEqual(framing, .platformHandlesCRC)
+    }
+
     func testWrongFixedFramingFailsClosed() async {
         let card = SimulatedNTAG215()
         card.requiresAppCRC = true
@@ -217,6 +226,20 @@ final class PresentationTests: XCTestCase {
         XCTAssertEqual(outcome.verdict, .notNtag215)
         XCTAssertEqual(card.writeCommands, 0)
         XCTAssertNil(outcome.framing)
+    }
+}
+
+/// Loses the first `count` exchanges, then behaves.
+final class DropFirst: Type2Link {
+    let inner: SimulatedNTAG215
+    var remaining: Int
+    init(_ inner: SimulatedNTAG215, count: Int) { self.inner = inner; remaining = count; inner.dropEvery = 0 }
+    var maxResponseBytes: Int? { nil }
+    func connect() async throws { try await inner.connect() }
+    func disconnect() async {}
+    func transceive(_ command: [UInt8]) async throws -> [UInt8] {
+        if remaining > 0 { remaining -= 1; throw LinkError("Simulated lost exchange.") }
+        return try await inner.transceive(command)
     }
 }
 
