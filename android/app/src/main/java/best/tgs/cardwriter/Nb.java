@@ -52,6 +52,15 @@ final class Nb {
     private Nb() {
     }
 
+    private static final class Surface extends GradientDrawable {
+        int fill;
+
+        @Override public void setColor(int color) {
+            fill = color;
+            super.setColor(color);
+        }
+    }
+
     static int dp(Context context, float value) {
         return Math.round(TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, value,
                 context.getResources().getDisplayMetrics()));
@@ -64,7 +73,7 @@ final class Nb {
         slab.setCornerRadius(dp(context, radiusDp));
         slab.setColor(INK);
 
-        GradientDrawable face = new GradientDrawable();
+        GradientDrawable face = new Surface();
         face.setShape(GradientDrawable.RECTANGLE);
         face.setCornerRadius(dp(context, radiusDp));
         face.setColor(fill);
@@ -143,12 +152,7 @@ final class Nb {
         Drawable background = view.getBackground();
         if (background instanceof LayerDrawable) {
             Drawable face = ((LayerDrawable) background).getDrawable(1);
-            if (face instanceof GradientDrawable) {
-                android.content.res.ColorStateList tint = ((GradientDrawable) face).getColor();
-                if (tint != null) {
-                    return tint.getDefaultColor();
-                }
-            }
+            if (face instanceof Surface) return ((Surface) face).fill;
         }
         return fallback;
     }

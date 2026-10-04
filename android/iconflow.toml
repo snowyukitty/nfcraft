@@ -1,51 +1,35 @@
-# IconFlow project brief and deterministic build contract.
-# Relative paths are resolved from this file.
 schema_version = 1
-
 [project]
-name = "card-writer"
+name = "nfcraft"
 master = "master.svg"
 output = "icons"
 casebook = "casebook"
-
 [brief]
-app_intent = "Pocket tool that rewrites one NFC card's destination, with no PC"
-user_job = "Give this card a new address, right now"
-essence = "restamp"
-personality = ["decisive", "handmade", "field-ready"]
-
+app_intent = "Pocket NFC card writer with reusable web destinations"
+user_job = "Keep destinations handy and give each card the right link"
+essence = "keep"
+personality = ["tactile", "calm", "precise"]
 [design]
-# nfcraft already owns the contact card with a tap aperture; a sibling surface
-# must not ship a weaker variation of it.
-palette = ["#9c3f1e", "#eee6ce"]
-cliches = [
-    "NFC wave arcs",
-    "contact card with a tap cue",
-    "pencil over a card",
-    "letter tile",
-    "circular refresh arrow",
-]
-signature_device = "Detached amber imprint struck below the press"
-device_family = "detached-accent"
-device_detail = "144-unit imprint with a 128-unit gap below the platen"
-concept_lens = "verb"
-
+palette = ["#214b40", "#e2a13c", "#fff4de"]
+cliches = ["NFC radio arcs", "letter tile", "pen over card", "check badge"]
+signature_device = "Broad thumb-cut sleeve cradling one brass destination card"
+device_family = "negative-space"
+device_detail = "256-unit mouth cut into the pocket silhouette"
+concept_lens = "metaphor"
 [build]
-targets = ["web"]
-theme_color = "#9c3f1e"
-background_color = "#9c3f1e"
+targets = ["web", "electron"]
+theme_color = "#214b40"
+background_color = "#214b40"
 electron_radius = 0
 tray_ts = false
 tray_svg = ""
 tray_template_mode = "alpha"
 color_scheme = "light"
 optimize_png = true
-
 [neighbours]
 avoid = ["@collision"]
-family = ["../../master.svg"]
+family = ["../master.svg"]
 portfolio = []
-
 [review]
 status = "pending"
 source_sha256 = ""

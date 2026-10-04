@@ -1,6 +1,28 @@
 # nfcraft — current project state
 
-Updated: 2026-09-06 (Asia/Tokyo). Current local version: **0.2.2**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+Updated: 2026-09-29 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.3.0**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+
+## Mobile history, identity and store preparation — 2026-09-29
+
+The Android launcher/store name is now **nfcraft**, as selected by the owner.
+`best.tgs.cardwriter` and existing preferences are retained. The app keeps up
+to ten valid, distinct recent destinations; Save link / keyboard Done / a
+validated write-mode card operation remembers a URL, and selecting a history
+entry moves it to the front. Clear history is confirmed and persists across
+restart, while current input remains. Existing valid input is imported once.
+No web content is fetched and history is not a write receipt.
+
+The Android build now targets API 36, includes scrollable UI and local privacy
+information, and has a reviewed pocket-card logo with native adaptive/themed
+assets. Robolectric tests cover API 28/36 activity and preference behavior;
+native graphics are inspected as simulated UI evidence. Physical QA remains
+outstanding. Android 0.3.0 APK is debug-signed; its preparation AAB is unsigned.
+
+The owner chose **individual** Apple/Google developer accounts; neither account,
+Mac nor iPhone is ready. [Store preparation and enrollment guide](STORE-RELEASE.md)
+and `android/store/` contain local drafts and exact remaining gates. No account
+was created, fee paid, key generated or app uploaded. There is no iOS app yet.
+See [session report](../reports/2026-09-29-mobile-history-brand-release/REPORT.md).
 
 ## Phone writer reliability — Card Writer 0.2.0 (2026-09-16)
 
@@ -73,7 +95,8 @@ No `.git` existed in the handoff. A local `work/local-bootstrap` branch was init
 | Search, filters, card details, live recipient preview | Implemented in 0.2.0; browser acceptance passed |
 | Public export review | Implemented with stale-content refusal and shared-profile warning; not deployment/receipt tracking |
 | Multiple profiles, advanced labels, multilingual UI | Backlog, not shipped |
-| Android or iPhone writing app | Not implemented |
+| Android writing app | Native standalone nfcraft 0.3.0 in `android/`; local history/build tests pass; physical release acceptance outstanding |
+| iPhone writing app | Not implemented; Core NFC prototype and Mac/iPhone validation required |
 | Signed installer, auto-update, physical write protection | Not implemented |
 
 `docs/TEST-REPORT.md` is the current evidence summary. Original prototype screenshots/results live in `docs/history/v0.1.0/`; they are explicitly historical, not fresh nfcraft UI or hardware results.

@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Card Writer</string>
+    <string name="app_name">nfcraft</string>
+    <string name="save_destination">Save link</string>
+    <string name="destination_saved">Link saved on this phone</string>
+    <string name="recent_count">Recent (%1$d/10)</string>
+    <string name="recent_title">Recent destinations</string>
+    <string name="recent_empty">Save a valid HTTPS link or use it with a card. Your last 10 destinations stay on this phone.</string>
+    <string name="clear_history">Clear history</string>
+    <string name="clear_history_message">Remove all saved recent links from this phone? The current destination stays in the input field. No card is changed.</string>
+    <string name="privacy_title">Privacy</string>
+    <string name="privacy_body">Your destination, up to 10 recent links, and switches are stored only on this phone. Clear recent links from Recent → Clear history. To remove the current destination, delete it from the input field. Android app storage settings can remove all app settings.\n\nThe app has no Internet permission, account, advertising, or analytics. NFC card identifiers and readback appear on screen during use; the app does not upload them. App backup is disabled.\n\nA link written to a card is readable by anyone who scans it. The destination website has its own privacy practices. Clearing app history does not erase a card.</string>
 </resources>

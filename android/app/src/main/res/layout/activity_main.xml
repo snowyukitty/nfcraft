@@ -3,12 +3,16 @@
      MainActivity through Nb, because a hard offset shadow is a LayerDrawable
      rather than anything the XML theme can express, and the hero card has to
      recolour itself per result. -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:fitsSystemWindows="true">
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical"
     android:padding="16dp"
-    android:fitsSystemWindows="true"
     android:focusable="true"
     android:focusableInTouchMode="true">
 
@@ -40,7 +44,10 @@
             android:singleLine="true"
             android:imeOptions="actionDone"
             android:textSize="20sp"
-            android:hint="https://tgs.best" />
+            android:hint="https://example.com"
+            android:importantForAutofill="no"
+            android:autofillHints=""
+            android:contentDescription="HTTPS destination" />
 
         <TextView
             android:id="@+id/urlProblem"
@@ -51,12 +58,36 @@
             android:lineSpacingExtra="2dp"
             android:visibility="gone" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+            <Button
+                android:id="@+id/saveUrl"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:minHeight="48dp"
+                android:textAllCaps="false"
+                android:text="@string/save_destination" />
+            <Button
+                android:id="@+id/recentUrls"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:minHeight="48dp"
+                android:textAllCaps="false" />
+        </LinearLayout>
+
     </LinearLayout>
 
     <LinearLayout
         android:id="@+id/stage"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="220dp"
         android:layout_weight="1"
         android:layout_marginTop="14dp"
         android:orientation="vertical"
@@ -189,4 +220,14 @@
         android:lineSpacingExtra="3dp"
         android:text="NEVER LOCKS · WRITES PAGES 04–7F ONLY" />
 
+    <Button
+        android:id="@+id/privacy"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:minHeight="48dp"
+        android:textAllCaps="false"
+        android:text="@string/privacy_title" />
+
 </LinearLayout>
+</ScrollView>

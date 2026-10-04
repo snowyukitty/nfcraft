@@ -1,10 +1,15 @@
-# Card Writer — native Android rewrite tool
+# nfcraft — native Android writer (formerly Card Writer)
+
+Current Android version: **0.3.0**. Display name changed; application ID
+`best.tgs.cardwriter` and existing settings remain compatible. See
+[`docs/STORE-RELEASE.md`](../docs/STORE-RELEASE.md) for store preparation and
+individual developer account enrollment. No store release or iOS app exists yet.
 
 Writes one HTTPS URL to one NTAG215 card, verifies it by reading the whole
 advertised area back, and does it with no PC, no cable, no network and no
 hosted page.
 
-**Status: physically proved on one NTAG215, on one phone.** The encoder is
+**Historical status: one earlier build physically proved on one NTAG215, on one phone.** The encoder is
 checked byte-for-byte against the Python reference in
 [`nfcraft/ndef.py`](../nfcraft/ndef.py), an independent review has been applied,
 and the command layer now rides out a link that stutters. The recipient-facing
@@ -112,7 +117,17 @@ The Gradle wrapper is committed, so a JDK 21 and an Android SDK are the only
 things a machine needs. Create `local.properties` with `sdk.dir=` pointing at
 that SDK; it is machine-specific and deliberately not committed. The project
 has no third-party dependencies, so once the wrapper distribution, the Android
-Gradle plugin and SDK platform 35 are cached, the build works offline.
+Gradle plugin and SDK platform 36/build-tools 35.0.0 are cached, the build works
+offline. The wrapper uses Gradle 8.11.1 and the project pins AGP 8.10.1.
+
+```powershell
+.\gradlew.bat testDebugUnitTest lintDebug assembleDebug bundleRelease
+```
+
+Robolectric/JUnit are test-only dependencies and need an initial download.
+`bundleRelease` produces an **unsigned** AAB unless all four documented upload
+signing environment variables are supplied. A successful build is not store
+submission or hardware qualification.
 
 ## Install
 
@@ -122,8 +137,9 @@ adb install -r app/build/outputs/apk/debug/app-debug.apk
 
 Debug-signed for sideloading. A phone that already carries a build signed with
 the same debug keystore accepts an update without being uninstalled first;
-one signed elsewhere does not. Settings are per-device: the destination, both
-toggles and the written count live in each phone's own storage.
+one signed elsewhere does not. The destination, recent links and both toggles
+are stored per-device; the written count is session-only. Do not uninstall an
+existing app to bypass a signature mismatch and lose its settings.
 
 ## Checks
 
@@ -131,7 +147,7 @@ toggles and the written count live in each phone's own storage.
 tools/parity.sh
 ```
 
-Three suites, none of which needs a phone. `Ndef.java` and `Tag215.java` have no
+Four suites, none of which needs a phone. `Ndef.java` and `Tag215.java` have no
 Android imports beyond `NfcA`, which is stubbed for the desktop JVM, so all of
 this runs on an ordinary JDK.
 
@@ -140,6 +156,12 @@ this runs on an ordinary JDK.
 | Encoder parity | Area bytes, the page-by-page write plan, the strict decode round trip, emptiness and the occupied-region guard, diffed against `nfcraft/ndef.py` for the same inputs |
 | `PlanTest` | Every torn and partial state ends at the intended area once the pruned plan is applied, and no length is ever advertised while the body is in flight |
 | `LinkTest` | What the command layer does to a link that drops exchanges, truncates answers, swallows acknowledgements, answers NAK or dies outright |
+| `HistoryTest` | Ten-entry cap, exact URL deduplication, MRU reuse, validation, restore and clear |
+
+`gradlew testDebugUnitTest` also exercises the real Activity, preferences,
+dialogs and one-time legacy import on API 28/36 through Robolectric. Native
+graphics under `app/build/reports/visual` are simulated render evidence, not
+physical phone screenshots or NFC acceptance.
 
 A card written by this phone therefore carries the same bytes as one written by
 the PC/SC path, and still decodes under the Python tooling. Re-run after any
@@ -202,6 +224,10 @@ lock, a password or an OTP brick. It found seven real problems. All are fixed:
 | Control | Effect |
 | --- | --- |
 | Destination | The HTTPS URL, validated live with the same rules as the Python encoder, remembered between launches |
+| Save link / keyboard Done | Remember the complete valid destination without needing to write a card |
+| Recent (n/10) | Reuse the ten most recent distinct destinations, newest first; does not browse or download webpages |
+| Clear history | Confirm deletion of the list; current input remains and no card is changed |
+| Privacy | Read how local preferences and NFC transfers are handled |
 | Inspect only — never write | Reports what a card holds and writes nothing |
 | Allow overwriting unrecognised content | Required before replacing content this app cannot decode |
 
@@ -223,14 +249,17 @@ The launcher mark was designed with IconFlow and lives in `master.svg`, with the
 scored receipt in `master-review.json`, the shipped raster set in `icons/`, and
 the design record in `casebook/`.
 
-Essence **restamp**; a cream hand press on a rust ground with the amber imprint
-it has just struck held clear beneath it. The cliché avoided was the NFC wave
-fan, and equally a second contact card with a tap cue — nfcraft already owns
-that object, and a sibling surface needs a different one rather than a restyled
-copy. Six rubric axes all scored 4/5. The Android adaptive layers in
-`app/src/main/res/mipmap-*` are derived from the shipped `icon-512*.png`, with
-the mark at 72/108 of the foreground canvas so it sits inside the guaranteed
-safe circle.
+Essence **keep**: a cream thumb-cut sleeve holds a tilted brass card on forest
+green. This replaces the press metaphor with the mobile job of keeping reusable
+destinations handy. NFC wave fans, pen-over-card clip art and bare initials were
+rejected. Scores: legibility 4, distinctiveness 4, balance 4, color 5,
+scalability 4, craft 4. Static and interactive review and the ship gate passed.
+
+`tools/build-icons.ps1` rebuilds the IconFlow outputs and legacy launcher PNGs.
+The semantic foreground is authored as a native VectorDrawable with the exact
+master paths at 90% scale in a 108dp canvas. Keep that linked geometry in sync
+when redesigning. Android 13+ also receives a monochrome layer. `store/` has
+opaque 512px/1024px icons. These files do not imply an iOS app or store approval.
 
 The icon is yours: no attribution required, commercial use unrestricted,
 nothing viral attached.

@@ -1,6 +1,7 @@
 package best.tgs.cardwriter;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.media.AudioManager;
@@ -18,11 +19,18 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -42,14 +50,14 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
     private static final String KEY_URL = "url";
     private static final String KEY_INSPECT = "inspect_only";
     private static final String KEY_ALLOW = "allow_unknown";
+    private static final String KEY_RECENT = "recent_urls_v1";
 
     /**
      * Where the current batch of cards points. This is only the starting value:
      * whatever is in the field is what gets written, and an edit is saved and
-     * restored on the next launch. A blank field falls back here rather than
-     * being remembered, because an empty destination is never writable anyway.
+     * restored on the next launch. Fresh installs require an explicit destination.
      */
-    private static final String DEFAULT_URL = "https://tgs.best";
+    private static final String DEFAULT_URL = "";
 
     /**
      * Wooden cards couple weakly and a whole plan — inspect, full read, up to
@@ -92,6 +100,9 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
     private TextView allowUnknownTitle;
 
     private SharedPreferences prefs;
+    private RecentUrls recentUrls;
+    private TextView recentButton;
+    private volatile long historyRevision;
     private ToneGenerator tones;
     private Vibrator vibrator;
 
@@ -143,6 +154,9 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         allowUnknownTitle = findViewById(R.id.allowUnknownTitle);
 
         prefs = getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        loadRecentUrls();
+        recentButton = findViewById(R.id.recentUrls);
+        updateRecentButton();
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         dress();
@@ -169,6 +183,17 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
             }
         });
 
+        findViewById(R.id.saveUrl).setOnClickListener(v -> saveDestination());
+        url.setOnEditorActionListener((v, action, event) -> {
+            if (action != EditorInfo.IME_ACTION_DONE) return false;
+            saveDestination();
+            return true;
+        });
+        recentButton.setOnClickListener(v -> showRecentUrls());
+        findViewById(R.id.privacy).setOnClickListener(v -> new AlertDialog.Builder(this)
+                .setTitle(R.string.privacy_title).setMessage(R.string.privacy_body)
+                .setPositiveButton(android.R.string.ok, null).show());
+
         inspectOnly.setOnClickListener(v -> {
             boolean next = !inspectOnlyNow;
             prefs.edit().putBoolean(KEY_INSPECT, next).apply();
@@ -184,6 +209,84 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
 
         showUrlProblem(targetUrl);
         paint(Nb.PAPER, "Starting", "", null);
+    }
+
+    private void loadRecentUrls() {
+        List<String> saved = new ArrayList<>();
+        try {
+            JSONArray data = new JSONArray(prefs.getString(KEY_RECENT, "[]"));
+            for (int i = 0; i < data.length(); i++) {
+                Object value = data.opt(i);
+                if (value instanceof String) saved.add((String) value);
+            }
+        } catch (JSONException ignored) {
+            // Malformed history cannot change the destination or authorize a write.
+        }
+        recentUrls = new RecentUrls(saved);
+        if (!prefs.contains(KEY_RECENT)) {
+            recentUrls.remember(prefs.getString(KEY_URL, ""));
+        }
+        persistRecentUrls();
+    }
+
+    private void persistRecentUrls() {
+        prefs.edit().putString(KEY_RECENT, new JSONArray(recentUrls.entries()).toString()).apply();
+    }
+
+    private void updateRecentButton() {
+        recentButton.setText(getString(R.string.recent_count, recentUrls.entries().size()));
+    }
+
+    private void rememberDestination(String value) {
+        if (recentUrls.remember(value)) {
+            persistRecentUrls();
+            updateRecentButton();
+        }
+    }
+
+    private void saveDestination() {
+        String value = url.getText().toString().trim();
+        String problem = Ndef.validate(value);
+        if (problem != null) {
+            urlProblem.setText(problem);
+            urlProblem.setVisibility(View.VISIBLE);
+            url.requestFocus();
+            return;
+        }
+        rememberDestination(value);
+        url.clearFocus();
+        InputMethodManager keyboard = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+        keyboard.hideSoftInputFromWindow(url.getWindowToken(), 0);
+        Toast.makeText(this, R.string.destination_saved, Toast.LENGTH_SHORT).show();
+    }
+
+    private void showRecentUrls() {
+        List<String> entries = recentUrls.entries();
+        AlertDialog.Builder dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.recent_title)
+                .setNegativeButton(android.R.string.cancel, null);
+        if (entries.isEmpty()) {
+            dialog.setMessage(R.string.recent_empty);
+        } else {
+            dialog.setItems(entries.toArray(new String[0]), (d, index) -> {
+                String selected = entries.get(index);
+                url.setText(selected);
+                url.setSelection(selected.length());
+                rememberDestination(selected);
+            });
+            dialog.setNeutralButton(R.string.clear_history, (d, which) ->
+                    new AlertDialog.Builder(this)
+                            .setTitle(R.string.clear_history)
+                            .setMessage(R.string.clear_history_message)
+                            .setNegativeButton(android.R.string.cancel, null)
+                            .setPositiveButton(R.string.clear_history, (confirmation, button) -> {
+                                historyRevision++;
+                                recentUrls.clear();
+                                persistRecentUrls();
+                                updateRecentButton();
+                            }).show());
+        }
+        dialog.show();
     }
 
     /** Apply the paper surface, the ink outlines and the two typefaces. */
@@ -202,6 +305,14 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
 
         Nb.pressable(inspectOnly, Nb.PAPER, 18);
         Nb.pressable(allowUnknown, Nb.PAPER, 18);
+        for (int id : new int[]{R.id.saveUrl, R.id.recentUrls, R.id.privacy}) {
+            TextView button = findViewById(id);
+            button.setBackgroundTintList(null);
+            Nb.pressable(button, id == R.id.saveUrl ? Nb.YELLOW : Nb.BEIGE, 10);
+            button.setTypeface(Nb.mono(this, true));
+            button.setTextSize(12);
+            button.setTextColor(Nb.INK);
+        }
 
         Nb.label(findViewById(R.id.destinationLabel));
         Nb.label(inspectOnlyTitle);
@@ -308,6 +419,10 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
             return;
         }
         writeStage = STAGE_UNTOUCHED;
+        final String destination = targetUrl;
+        final boolean inspect = inspectOnlyNow;
+        final boolean allow = allowUnknownNow;
+        final long revision = historyRevision;
         try {
             post(new Outcome(Nb.YELLOW, "Working", "Hold the card still.", null, SOUND_NONE));
             Outcome outcome;
@@ -327,7 +442,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                     card.watch(() -> post(new Outcome(Nb.TERRACOTTA, "Weak contact",
                             "Hold the card still against the back of the phone."
                                     + " Still trying.", null, SOUND_NONE)));
-                    outcome = handle(card);
+                    outcome = handle(card, destination, inspect, allow, revision);
                 } catch (Tag215.Refusal refusal) {
                     outcome = new Outcome(Nb.TERRACOTTA, refusal.headline, refusal.getMessage(),
                             receipt(card, null), SOUND_FAIL);
@@ -396,7 +511,8 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         return body + "\nlink   " + card.effort() + (path.isEmpty() ? "" : " · " + path);
     }
 
-    private Outcome handle(Tag215 card) throws IOException, Tag215.Refusal {
+    private Outcome handle(Tag215 card, String target, boolean inspect, boolean allow,
+                           long revision) throws IOException, Tag215.Refusal {
         Tag215.Inspection before = card.inspect();
         String identity = "uid    " + before.uidHex();
         String problem = before.unsafe();
@@ -412,7 +528,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         }
         String held = Ndef.decodeArea(original);
 
-        if (inspectOnlyNow) {
+        if (inspect) {
             String label = held != null
                     ? held
                     : (Ndef.isEmpty(original) ? "(blank)" : "(content this app does not recognise)");
@@ -422,11 +538,15 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                     receipt(card, identity + "\nheld   " + label), SOUND_VERIFIED);
         }
 
-        String target = targetUrl;
         String invalid = Ndef.validate(target);
         if (invalid != null) {
             return new Outcome(Nb.TERRACOTTA, "No destination", invalid, receipt(card, identity), SOUND_FAIL);
         }
+        // History is convenience state, never a write receipt. All list and
+        // persistence changes are serialized on the UI thread, including clear.
+        ui.post(() -> {
+            if (!isDestroyed() && historyRevision == revision) rememberDestination(target);
+        });
 
         byte[] area;
         try {
@@ -449,7 +569,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                     receipt(card, facts), SOUND_VERIFIED);
         }
 
-        if (!allowUnknownNow && !resumable) {
+        if (!allow && !resumable) {
             if (held == null && !Ndef.isEmpty(original)) {
                 return new Outcome(Nb.TERRACOTTA, "Unfamiliar content",
                         "This card holds data this app does not recognise. Nothing was written."

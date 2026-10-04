@@ -1,5 +1,16 @@
 # nfcraft — verification evidence
 
+## Android 0.3.0 — 2026-09-29
+
+**PASS:** 118 Python / 16 Worker tests, daemon/CLI/MCP demo smoke, Java/Python
+encoder parity, 1,087 write-plan states, 10 link behaviors, new history policy
+suite and 5 Robolectric Activity tests across API 28/36. Debug APK and unsigned
+release AAB build. Lint: **0 errors, 42 warnings**. IconFlow check/ship/casebook
+pass; native drawable and synthetic UI renders visually inspected. **NOT_RUN:**
+physical phones/NFC, recipient QA and store upload. **BLOCKED:** signed store
+release and iOS build pending prerequisites. See the
+[session report](../reports/2026-09-29-mobile-history-brand-release/REPORT.md).
+
 ## 0.2.2 desktop repair
 
 118 Python / 16 Worker checks pass. Real shortcut acceptance now checks GUI subsystem, visible/non-minimized window, normal dimensions and clean close. The actual owner desktop shortcut was opened and its window metadata verified; no owner UI operation was automated. See [repair report](../reports/2026-09-06-desktop-launch/REPORT.md).

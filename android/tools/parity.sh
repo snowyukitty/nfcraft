@@ -43,6 +43,8 @@ cp "$here/best/tgs/cardwriter/Harness.java" "$out/src/best/tgs/cardwriter/"
 cp "$here/best/tgs/cardwriter/PlanTest.java" "$out/src/best/tgs/cardwriter/"
 cp "$root/app/src/main/java/best/tgs/cardwriter/Tag215.java" "$out/src/best/tgs/cardwriter/"
 cp "$here/best/tgs/cardwriter/LinkTest.java" "$out/src/best/tgs/cardwriter/"
+cp "$root/app/src/main/java/best/tgs/cardwriter/RecentUrls.java" "$out/src/best/tgs/cardwriter/"
+cp "$here/best/tgs/cardwriter/HistoryTest.java" "$out/src/best/tgs/cardwriter/"
 mkdir -p "$out/src/android/nfc/tech"
 cp "$here/stub/android/nfc/tech/NfcA.java" "$out/src/android/nfc/tech/"
 
@@ -52,7 +54,9 @@ cp "$here/stub/android/nfc/tech/NfcA.java" "$out/src/android/nfc/tech/"
     "$out/src/best/tgs/cardwriter/Tag215.java" \
     "$out/src/best/tgs/cardwriter/Harness.java" \
     "$out/src/best/tgs/cardwriter/PlanTest.java" \
-    "$out/src/best/tgs/cardwriter/LinkTest.java"
+    "$out/src/best/tgs/cardwriter/LinkTest.java" \
+    "$out/src/best/tgs/cardwriter/RecentUrls.java" \
+    "$out/src/best/tgs/cardwriter/HistoryTest.java"
 "$java" -cp "$out/classes" best.tgs.cardwriter.Harness > "$out/java.txt"
 
 NFCRAFT_ROOT="$nfcraft" PYTHONIOENCODING=utf-8 "$python" "$here/ref.py" > "$out/python.txt"
@@ -65,3 +69,4 @@ echo "PASS: the Android encoder matches nfcraft/ndef.py byte for byte."
 
 "$java" -cp "$out/classes" best.tgs.cardwriter.PlanTest
 "$java" -cp "$out/classes" best.tgs.cardwriter.LinkTest
+"$java" -cp "$out/classes" best.tgs.cardwriter.HistoryTest

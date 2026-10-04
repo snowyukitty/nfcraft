@@ -23,6 +23,23 @@ These are **next-agent tasks**, not a list of completed features. Follow current
 
 ## Important risks to review while implementing
 
+### Owner-prioritized mobile release work — 2026-09-29
+
+- MBL01 complete locally: ten recent destinations, deduplication, reuse,
+  confirmed clearing, one-time preference migration and restart regressions.
+- MBL02 complete locally: nfcraft Android identity, reviewed IconFlow source,
+  native adaptive/themed layers and opaque store icons.
+- MBL03 prepared: API 36 build, unsigned AAB, optional upload signing,
+  listing/privacy drafts and individual-account enrollment guide. Still needs
+  account verification, final public contacts/privacy URLs, owner-managed key,
+  real device media, physical NFC acceptance and Google closed testing.
+- MBL04 next iOS slice: acquire access to a compatible Mac and NFC iPhone,
+  prototype exact NTAG215/Core NFC commands read-only, then port encoder and
+  safety/readback semantics with shared vectors. No iOS build exists yet.
+
+See `STORE-RELEASE.md`. These are standalone mobile tasks; A02's paired station
+architecture remains separate. Do not deploy the local desktop API for phones.
+
 The current hardware loop holds the engine lock while issuing driver I/O; UI state updates may wait. Measure before restructuring. If I/O becomes interruptible/asynchronous, do not weaken single-writer semantics or pretend a timed-out call did not mutate a tag.
 
 The handoff importer copies a stopped schema-1 workspace. It is not a synchronization engine. Once a copied workspace becomes authoritative, do not keep using both copies for further provisioning/publication. Hardware reader exclusivity is not a cross-station identity/namespace protocol.

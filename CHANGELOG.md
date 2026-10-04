@@ -1,5 +1,25 @@
 # Changelog
 
+## Android 0.3.0 — 2026-09-29
+
+- Add ten device-local recent HTTPS destinations with explicit saving, reuse,
+  MRU ordering, exact-string deduplication and confirmed clearing. Import the
+  previous destination once; preserve current input when clearing history.
+- Rename the Android launcher to nfcraft, retaining application ID/preferences.
+  Replace the press icon with a reviewed pocket-card identity; include native
+  adaptive/themed layers and opaque store artwork.
+- Target Android API 36 with AGP 8.10.1. Add scrollable controls, local privacy
+  information and optional environment-based upload signing. Fresh installs
+  begin with an empty destination instead of a preselected external website.
+- Fix API 21 compatibility in pressed-state fill handling and system-bar themes.
+  Capture destination/switches at card discovery so later UI changes apply to
+  the next presentation; prevent pre-clear history callbacks restoring entries.
+- Add pure JVM history checks and Robolectric API 28/36 preference/dialog tests.
+  Prepare individual developer enrollment instructions and store listing,
+  privacy and physical-testing drafts. No store submission or iOS app yet.
+
+Desktop remains 0.2.2; journal/public schemas and issued URLs are unchanged.
+
 ## 2026-09-16 — the phone writer joins the repository, and stops giving up on a weak card
 
 Card Writer (`android/`) 0.2.0, versionCode 2:
