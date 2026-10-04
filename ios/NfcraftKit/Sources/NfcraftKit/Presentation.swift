@@ -135,6 +135,7 @@ public enum Presentation {
                 // The card answered GET_VERSION correctly before the write and
                 // differently after it. That is an identity change on a card
                 // that has been written to, not a card that was never touched.
+                run.pending = nil
                 return run.finish(.identityChanged, "Identity changed",
                                   "GET_VERSION changed after pages were written. Set this card aside.", card)
             }
@@ -149,6 +150,12 @@ public enum Presentation {
             return run.finish(.failed, "Failed",
                               "Internal check refused a \(gate.operation) before inspection. Set this card aside.",
                               card)
+        } catch let lost as Tag215.IdentityLost {
+            // The inspected card left and another answered. Nothing was sent
+            // to the other card; the inspected one is where the plan stopped,
+            // and its recovery record (bound to its own UID) stays valid.
+            await link.disconnect()
+            return run.lostContact(card, lost.description, refused: false)
         } catch let rejected as Tag215.Rejected {
             await link.disconnect()
             return run.lostContact(card, rejected.description, refused: true)

@@ -29,6 +29,11 @@ Deliberate differences from the Android writer, each pinned by a test:
   engine.
 - **The command layer gates itself.** `Tag215` refuses to read the user area
   before an exact GET_VERSION, and to write before an inspection that passed.
+- **A reconnect must find the same card.** A retry may re-establish the link,
+  and whatever tag is then in the field answers. Before anything else is sent,
+  GET_VERSION, UID, CC, locks and configuration must equal the first
+  inspection; otherwise the presentation stops (Android re-connects without
+  this check).
 - **One presentation at a time.** A second request on a busy `Station` is
   answered `busy` before anything is sent.
 - **Validation follows `ndef.py`, not Java, except where it is stricter.**

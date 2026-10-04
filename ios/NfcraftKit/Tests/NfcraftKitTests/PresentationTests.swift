@@ -206,6 +206,47 @@ final class PresentationTests: XCTestCase {
         XCTAssertEqual(outcome.verdict, .notConfirmed)
         XCTAssertEqual(outcome.stage, .committed)
         XCTAssertFalse(outcome.verdict.isVerifiedWrite)
+        XCTAssertNotNil(outcome.recovery, "a committed but unconfirmed card can still be finished")
+    }
+
+    func testAReconnectToAnotherCardStopsBeforeItIsWritten() async throws {
+        // Card A leaves after its first page; the reconnect finds card B,
+        // which holds the same user area under a different UID.
+        let a = SimulatedNTAG215()
+        a.leaveAfterWrites = 1
+        let b = SimulatedNTAG215()
+        b.memory[1] = 0x99
+        let field = Field([a, b])
+        let outcome = await Presentation.run(field, .init(destination: url), pause: noPause)
+        XCTAssertEqual(outcome.verdict, .writeInterrupted)
+        XCTAssertFalse(outcome.verdict.isVerifiedWrite)
+        XCTAssertEqual(b.writeCommands, 0, "nothing is written to a card that was never inspected")
+        XCTAssertFalse(b.log.contains { $0.hasPrefix("FAST_READ") }, "nor is its user area read")
+        XCTAssertEqual(outcome.recovery?.uid, [0x04, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66], "the record stays with card A")
+    }
+
+    func testReadbackAcrossTwoCardsCannotReportWritten() async throws {
+        // A takes the whole plan, then leaves before the readback; B answers
+        // the reconnect; then A comes back. Without an identity check on
+        // reconnect, B's area and A's identity could combine into "written".
+        let a = SimulatedNTAG215()
+        a.leaveAfterAcks = try Ndef.writePlan(url).count
+        let b = SimulatedNTAG215()
+        b.memory[1] = 0x99
+        // B already holds exactly what A should hold after the write.
+        let target = try Ndef.encodeArea(url)
+        var expected = a.area
+        expected.replaceSubrange(0..<target.count, with: target)
+        b.area = expected
+        let field = Field([a, b], returnToFirst: true)
+        let outcome = await Presentation.run(field, .init(destination: url), pause: noPause)
+        XCTAssertFalse(outcome.verdict.isVerifiedWrite)
+        XCTAssertEqual(outcome.verdict, .notConfirmed)
+        XCTAssertEqual(b.writeCommands, 0)
+        let userAreaReads = b.log.filter { entry in
+            entry.hasPrefix("FAST_READ") || (entry.hasPrefix("READ ") && ![0, 0x82].contains(Int(entry.dropFirst(5)) ?? -1))
+        }
+        XCTAssertEqual(userAreaReads, [], "only B's identity pages are read, never its user area")
     }
 
     func testAcknowledgedButLostWriteIsCaughtByReadback() async {
@@ -230,6 +271,7 @@ final class PresentationTests: XCTestCase {
         XCTAssertEqual(outcome.verdict, .identityChanged)
         XCTAssertEqual(outcome.stage, .committed)
         XCTAssertFalse(outcome.verdict.isVerifiedWrite)
+        XCTAssertNil(outcome.recovery, "a card set aside is not resumed automatically")
     }
 
     func testLostAnswerToTheCommitWriteIsStillAnInterruptedWrite() async throws {
@@ -343,6 +385,37 @@ final class PresentationTests: XCTestCase {
         XCTAssertEqual(outcome.verdict, .notNtag215)
         XCTAssertEqual(card.writeCommands, 0)
         XCTAssertNil(outcome.framing)
+    }
+}
+
+/// Several cards and one antenna: when the card in the field leaves, the next
+/// connect finds the next card (and, optionally, the first one again after).
+final class Field: Type2Link {
+    let cards: [SimulatedNTAG215]
+    let returnToFirst: Bool
+    var active = 0
+    init(_ cards: [SimulatedNTAG215], returnToFirst: Bool = false) {
+        self.cards = cards
+        self.returnToFirst = returnToFirst
+    }
+    var maxResponseBytes: Int? { nil }
+    func connect() async throws {
+        if cards[active].dead {
+            if active + 1 < cards.count {
+                active += 1
+            } else if returnToFirst {
+                active = 0
+                cards[0].dead = false
+            }
+        } else if returnToFirst && active > 0 {
+            active = 0
+            cards[0].dead = false
+        }
+        try await cards[active].connect()
+    }
+    func disconnect() async {}
+    func transceive(_ command: [UInt8]) async throws -> [UInt8] {
+        try await cards[active].transceive(command)
     }
 }
 

@@ -110,6 +110,13 @@ public final class Tag215 {
     /// Set only by `inspect()`: identity and protection passed the checks.
     /// Every write requires it.
     private var writable = false
+    /// The identity every reconnect must find again before anything else is
+    /// sent. A reconnect reaches whatever tag is in the field, which need not
+    /// be the one that was inspected.
+    private var baseline: Inspection?
+    /// Once a different card has answered, this presentation is over: every
+    /// later exchange throws `IdentityLost` without reaching the radio.
+    private var identityLost = false
 
     private init(link: Type2Link, retriesSoFar: Int, pause: @escaping (Int) async -> Void) {
         self.link = link
@@ -187,6 +194,9 @@ public final class Tag215 {
             cfg0: Array(tail[4..<8]),
             cfg1: Array(tail[8..<12]))
         writable = inspection.unsafe == nil
+        if baseline == nil {
+            baseline = inspection
+        }
         return inspection
     }
 
@@ -200,6 +210,8 @@ public final class Tag215 {
                 let area = try await fastReadArea(fastReadPages)
                 readPath = "FAST_READ \(fastReadPages)p"
                 return area
+            } catch let lost as IdentityLost {
+                throw lost
             } catch {
                 fastReadPages /= 2
             }
@@ -236,6 +248,7 @@ public final class Tag215 {
         guard Ndef.isSafePage(page, data) else {
             throw FenceViolation(page: page, length: data.count)
         }
+        if identityLost { throw IdentityLost() }
         guard writable else { throw NotInspected(operation: "write") }
         let command: [UInt8] = [0xA2, UInt8(page)] + data
         var last: Error?
@@ -243,7 +256,7 @@ public final class Tag215 {
             if attempt > 0 {
                 struggled(1)
                 await pause(Tag215.backoff(attempt))
-                if attempt > 1, !(await reconnect()) {
+                if attempt > 1, !(try await reconnect()) {
                     continue
                 }
                 // The answer that went missing may have been an ACK. Asking
@@ -307,6 +320,7 @@ public final class Tag215 {
 
     /// One unretried look at a page, used to settle what a lost answer meant.
     private func pageHolds(_ page: Int, _ data: [UInt8]) async throws -> Bool {
+        if identityLost { throw IdentityLost() }
         let echo = try await link.transceive([0x30, UInt8(page)])
         guard echo.count == 16 else {
             throw LinkError("READ of page \(Tag215.hexPage(page)) returned \(echo.count) bytes, not 16.")
@@ -323,12 +337,13 @@ public final class Tag215 {
     /// response of the wrong length is a corrupted answer, not a card with
     /// something different to say.
     private func exchange(_ command: [UInt8], expected: Int) async throws -> [UInt8] {
+        if identityLost { throw IdentityLost() }
         var last: Error?
         for attempt in 0..<Tag215.attempts {
             if attempt > 0 {
                 struggled(1)
                 await pause(Tag215.backoff(attempt))
-                if attempt > 1, !(await reconnect()) {
+                if attempt > 1, !(try await reconnect()) {
                     continue
                 }
             }
@@ -346,7 +361,13 @@ public final class Tag215 {
         throw last ?? LinkError("The card did not answer.")
     }
 
-    private func reconnect() async -> Bool {
+    /// Re-establishes the link and, once a card has been inspected, proves it
+    /// is still that card — same GET_VERSION, UID, capability container,
+    /// locks and configuration — before the caller sends anything else.
+    /// Returns false when the link could not be re-established or the check
+    /// did not complete; throws `IdentityLost` when a different card answered,
+    /// after which nothing more is read or written in this presentation.
+    private func reconnect() async throws -> Bool {
         await link.disconnect()
         do {
             try await link.connect()
@@ -354,7 +375,35 @@ public final class Tag215 {
             return false
         }
         reconnects += 1
+        guard let baseline else { return true }
+        let found: Inspection
+        do {
+            let version = try await link.transceive([0x60])
+            let head = try await link.transceive([0x30, 0x00])
+            let tail = try await link.transceive([0x30, 0x82])
+            guard version.count == 8, head.count == 16, tail.count == 16 else { return false }
+            found = Inspection(version: version,
+                               uid: Array(head[0..<3]) + Array(head[4..<8]),
+                               cc: Array(head[12..<16]),
+                               staticLocks: Array(head[10..<12]),
+                               dynamicLocks: Array(tail[0..<3]),
+                               cfg0: Array(tail[4..<8]),
+                               cfg1: Array(tail[8..<12]))
+        } catch {
+            return false
+        }
+        if found != baseline {
+            identityLost = true
+            versionVerified = false
+            writable = false
+            throw IdentityLost()
+        }
         return true
+    }
+
+    /// After a reconnect, the tag in the field was not the one inspected.
+    public struct IdentityLost: Error, Equatable, CustomStringConvertible {
+        public var description: String { "a different card answered after reconnecting" }
     }
 
     private func struggled(_ count: Int) {

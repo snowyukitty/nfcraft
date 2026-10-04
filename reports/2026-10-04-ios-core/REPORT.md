@@ -80,13 +80,21 @@ each with a regression test that fails when its fix is removed:
 | F6 medium: a GET_VERSION change after writing was reported as `notNtag215` | Reported as `identityChanged` once a page was sent |
 | F7 low: the terminator test changed a URL byte | Now changes the terminator itself |
 
+A focused re-review of the fixes confirmed F1 and F3–F7 and raised two more,
+both fixed with regression tests:
+
+| Finding | Fix |
+| --- | --- |
+| R1 medium: a GET_VERSION change after writing still returned a recovery record | Cleared; the card is set aside |
+| R2 high: a reconnect could reach a different card and inherit the first card's inspection — an A→B→A sequence could combine B's readback with A's identity (also true of the Android design) | Every reconnect re-checks the full identity against the first inspection; a mismatch ends the presentation, is never swallowed by the FAST_READ ladder, and nothing more is sent |
+
 ## Checks (actual)
 
 | Command | Result |
 | --- | --- |
 | `ios/tools/check.sh` at e0ea86c (Docker `swift:6.1-noble`, Swift 6.1.3, Linux x86_64) | PASS: 47 XCTest cases, 0 failures; parity PASS over 110 lines |
-| `ios/tools/check.sh` after the review fixes | PASS: 58 XCTest cases, 0 failures; parity PASS over 114 lines incl. 4 pinned stricter cases |
-| One mutation per review fix (7) | Each killed by its intended regression test |
+| `ios/tools/check.sh` after all review fixes | PASS: 60 XCTest cases, 0 failures; parity PASS over 114 lines incl. 4 pinned stricter cases |
+| One mutation per review fix (F2, F3 ×2, F5, F6, F7, F1, R1, R2) | Each killed by its intended regression test; R2's two safeguards are redundant, so removing either alone passes and removing both fails |
 | Same, with the port limit mutated to 99 999 | FAIL as intended on EDGE[2], EDGE[3]; source restored |
 | `.venv` `python -m unittest discover -s tests` | PASS, 118 tests |
 | `android/tools/parity.sh`, Gradle tests | NOT_RUN (Android unchanged) |

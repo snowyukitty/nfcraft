@@ -9,7 +9,9 @@
 - Resume a torn write only with a recovery record bound to the card, the
   previous area and the destination; gate reads/writes on inspection; run one
   presentation at a time; refuse writes when the probe result is ambiguous.
-- Add `ios/tools/check.sh`: 58 Swift tests and byte parity with
+- Re-check the full card identity after every reconnect before sending
+  anything else.
+- Add `ios/tools/check.sh`: 60 Swift tests and byte parity with
   `nfcraft/ndef.py`, including port and length edge cases.
 - Record that Android URL validation differs from `ndef.py` on port edge cases.
   No iOS app, build or device test exists yet.
