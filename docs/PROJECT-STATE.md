@@ -14,7 +14,12 @@ the last re-review found no path to a false verified write). Command CRC framing
 tag by a read-only GET_VERSION probe, because Apple's current reference says
 the app must append the CRC and that is unverified on hardware. **No iOS app
 target, Xcode build, iPhone or card has been involved.** Android validation was
-found to diverge from `ndef.py` on port edge cases (unchanged). See
+found to diverge from `ndef.py` on port edge cases (unchanged), and two review
+findings (staged-header resume, unchecked reconnect) also apply to the Android
+writer's design; porting those fixes is an open owner decision. The owner has
+deferred Apple membership payment and enrollment to a later session. This
+branch starts from `work/mobile-history-brand-release` and does not yet contain
+`origin/main`'s b65c6da; reconcile before merging. See
 [session report](../reports/2026-10-04-ios-core/REPORT.md).
 
 ## Mobile history, identity and store preparation — 2026-09-29

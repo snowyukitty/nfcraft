@@ -125,6 +125,13 @@ No journal, preference, manifest or URL format changes. Delete `ios/` and the
 `.gitignore` lines to roll back. The Docker build cache lives in the
 `nfcraftkit-build` volume (`docker volume rm nfcraftkit-build`).
 
+## Branch and decisions
+
+Pushed as branch `work/ios-core` together with its base
+`work/mobile-history-brand-release`; not merged. `origin/main` carries b65c6da,
+which neither branch contains. The owner deferred Apple membership payment and
+enrollment to a later session; nothing here depends on them yet.
+
 ## Next bounded task
 
 On a Mac with Xcode: create the iOS app target, add `NfcraftKit` as a local
