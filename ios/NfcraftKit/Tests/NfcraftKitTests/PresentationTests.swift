@@ -225,6 +225,41 @@ final class PresentationTests: XCTestCase {
         XCTAssertEqual(outcome.recovery?.uid, [0x04, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66], "the record stays with card A")
     }
 
+    func testAFirstInspectionInterruptedByAnotherCardStartsAgain() async {
+        // A answers GET_VERSION and READ 0x00, then leaves before READ 0x82.
+        // B answers the reconnect: a different UID and a read-only CC. Mixing
+        // A's head with B's tail would approve B with A's writable CC.
+        let a = SimulatedNTAG215()
+        a.leaveAtExchange = 3
+        let b = SimulatedNTAG215()
+        b.memory[1] = 0x99
+        b.memory[15] = 0x0F // CC E1103E0F: read-only
+        let field = Field([a, b])
+        let outcome = await Presentation.run(field, .init(destination: url), pause: noPause)
+        XCTAssertEqual(outcome.verdict, .refused, "B is inspected from scratch and refused")
+        XCTAssertEqual(b.writeCommands, 0)
+        XCTAssertFalse(b.log.contains { $0.hasPrefix("FAST_READ") })
+        XCTAssertTrue(outcome.receipt.first?.contains("99") ?? false, "the receipt names B, the card actually inspected")
+    }
+
+    func testAnUnfinishedIdentityCheckNeverAuthorizesAnything() async {
+        // A is inspected, then leaves during the first user-area read. B has
+        // A's exact head but never answers READ 0x82, so its identity check
+        // cannot complete. Nothing beyond identity reads may reach B, however
+        // the FAST_READ ladder walks down.
+        let a = SimulatedNTAG215()
+        a.leaveAtExchange = 4
+        let b = SimulatedNTAG215()
+        b.silentReadPages = [0x82]
+        b.area = [UInt8](repeating: 0x5A, count: Ndef.capacity)
+        let field = Field([a, b])
+        let outcome = await Presentation.run(field, .init(destination: url), pause: noPause)
+        XCTAssertFalse(outcome.verdict.isVerifiedWrite)
+        XCTAssertEqual(outcome.stage, .untouched)
+        XCTAssertEqual(b.writeCommands, 0)
+        XCTAssertEqual(b.log.filter { $0 != "VERSION" && $0 != "READ 0" }, [], "B only ever sees identity reads")
+    }
+
     func testReadbackAcrossTwoCardsCannotReportWritten() async throws {
         // A takes the whole plan, then leaves before the readback; B answers
         // the reconnect; then A comes back. Without an identity check on

@@ -30,10 +30,13 @@ Deliberate differences from the Android writer, each pinned by a test:
 - **The command layer gates itself.** `Tag215` refuses to read the user area
   before an exact GET_VERSION, and to write before an inspection that passed.
 - **A reconnect must find the same card.** A retry may re-establish the link,
-  and whatever tag is then in the field answers. Before anything else is sent,
-  GET_VERSION, UID, CC, locks and configuration must equal the first
-  inspection; otherwise the presentation stops (Android re-connects without
-  this check).
+  and whatever tag is then in the field answers. Each connection is a new
+  generation: only identity reads are sent on it until GET_VERSION, UID, CC,
+  locks and configuration have been proven equal to the first inspection on
+  that same connection. A difference ends the presentation at the first
+  differing byte; an unfinished check authorizes nothing. An inspection
+  interrupted by a reconnect restarts from GET_VERSION, so its three reads
+  always come from one tag. (Android reconnects without these checks.)
 - **One presentation at a time.** A second request on a busy `Station` is
   answered `busy` before anything is sent.
 - **Validation follows `ndef.py`, not Java, except where it is stricter.**

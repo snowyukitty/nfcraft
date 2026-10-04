@@ -29,6 +29,10 @@ final class SimulatedNTAG215: Type2Link {
     var leaveAfterWrites: Int?
     /// The card acknowledges this many WRITEs, then leaves the field.
     var leaveAfterAcks: Int?
+    /// The card leaves the field when this exchange arrives (1-based).
+    var leaveAtExchange: Int?
+    /// READ of these pages never gets an answer.
+    var silentReadPages: Set<Int> = []
     /// What GET_VERSION answers.
     var version = Ndef.version
     /// Answer GET_VERSION differently once a WRITE has landed.
@@ -84,6 +88,9 @@ final class SimulatedNTAG215: Type2Link {
     func transceive(_ framed: [UInt8]) async throws -> [UInt8] {
         exchanges += 1
         if exchangeDelayMilliseconds > 0 { await Tag215.sleep(exchangeDelayMilliseconds) }
+        if let leave = leaveAtExchange, exchanges >= leave {
+            dead = true
+        }
         if dead { throw LinkError("Simulated dead link.") }
         var command = framed
         if requiresAppCRC {
@@ -122,6 +129,9 @@ final class SimulatedNTAG215: Type2Link {
         case 0x30:
             XCTAssertEqual(command.count, 2)
             let page = Int(command[1])
+            if silentReadPages.contains(page) {
+                throw LinkError("Simulated: no answer to READ \(page).")
+            }
             log.append("READ \(page)")
             return (0..<16).map { memory[(page * 4 + $0) % memory.count] }
         case 0x3A:

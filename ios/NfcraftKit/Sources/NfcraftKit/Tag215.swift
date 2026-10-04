@@ -104,16 +104,17 @@ public final class Tag215 {
     public var onStruggling: (() -> Void)?
     private var warned = false
 
-    /// Set only by `inspect()`: exact GET_VERSION seen on this link. Every
-    /// user-area read requires it.
-    private var versionVerified = false
-    /// Set only by `inspect()`: identity and protection passed the checks.
-    /// Every write requires it.
-    private var writable = false
-    /// The identity every reconnect must find again before anything else is
-    /// sent. A reconnect reaches whatever tag is in the field, which need not
-    /// be the one that was inspected.
+    /// The identity proven by the first complete inspection: GET_VERSION,
+    /// UID, capability container, locks and configuration, all read on one
+    /// connection. Every user-area read and every write is checked against
+    /// it.
     private var baseline: Inspection?
+    /// Counts connections. A reconnect reaches whatever tag is in the field,
+    /// which need not be the one inspected, so it starts a new generation.
+    private var generation = 0
+    /// The generation in which the tag's identity was last proven to equal
+    /// the baseline. Nothing but identity reads is sent in any other.
+    private var provenGeneration = -1
     /// Once a different card has answered, this presentation is over: every
     /// later exchange throws `IdentityLost` without reaching the radio.
     private var identityLost = false
@@ -174,37 +175,53 @@ public final class Tag215 {
 
     /// High pages are only touched after exact GET_VERSION evidence, so an
     /// unknown chip is never probed at addresses that may mean something else.
+    ///
+    /// The three identity reads must all come from one connection. If a retry
+    /// reconnects part-way, whatever was read before belongs to a tag that may
+    /// have left, so the inspection starts again from GET_VERSION.
     public func inspect() async throws -> Inspection {
-        versionVerified = false
-        writable = false
-        let version = try await exchange([0x60], expected: 8)
-        if version != Ndef.version {
-            throw Refusal(headline: "Not an NTAG215",
-                          detail: "GET_VERSION does not match NTAG215, so no further pages were read.")
+        for _ in 0..<Tag215.attempts {
+            let start = generation
+            let version = try await exchange([0x60], expected: 8, identityRead: true)
+            if version != Ndef.version {
+                if generation != start { continue }
+                throw Refusal(headline: "Not an NTAG215",
+                              detail: "GET_VERSION does not match NTAG215, so no further pages were read.")
+            }
+            let head = try await exchange([0x30, 0x00], expected: 16, identityRead: true)
+            let tail = try await exchange([0x30, 0x82], expected: 16, identityRead: true)
+            if generation != start {
+                continue
+            }
+            let inspection = Tag215.inspection(version, head, tail)
+            if let baseline {
+                // A later inspection is a comparison; it proves this
+                // connection only when it matches.
+                provenGeneration = inspection == baseline ? generation : -1
+            } else {
+                baseline = inspection
+                provenGeneration = generation
+            }
+            return inspection
         }
-        versionVerified = true
-        let head = try await read(0x00)
-        let tail = try await read(0x82)
-        let inspection = Inspection(
-            version: version,
-            uid: Array(head[0..<3]) + Array(head[4..<8]),
-            cc: Array(head[12..<16]),
-            staticLocks: Array(head[10..<12]),
-            dynamicLocks: Array(tail[0..<3]),
-            cfg0: Array(tail[4..<8]),
-            cfg1: Array(tail[8..<12]))
-        writable = inspection.unsafe == nil
-        if baseline == nil {
-            baseline = inspection
-        }
-        return inspection
+        throw LinkError("The inspection was interrupted by reconnects every time.")
+    }
+
+    private static func inspection(_ version: [UInt8], _ head: [UInt8], _ tail: [UInt8]) -> Inspection {
+        Inspection(version: version,
+                   uid: Array(head[0..<3]) + Array(head[4..<8]),
+                   cc: Array(head[12..<16]),
+                   staticLocks: Array(head[10..<12]),
+                   dynamicLocks: Array(tail[0..<3]),
+                   cfg0: Array(tail[4..<8]),
+                   cfg1: Array(tail[8..<12]))
     }
 
     /// The whole CC-advertised NDEF area: pages 0x04..0x7F, 496 bytes. A chunk
     /// size this link will not carry walks down — 16, 8, 4 pages — before
     /// plain four-page READs take over.
     public func readArea() async throws -> [UInt8] {
-        guard versionVerified else { throw NotInspected(operation: "read") }
+        guard baseline != nil else { throw NotInspected(operation: "read") }
         while fastReadPages >= 4 {
             do {
                 let area = try await fastReadArea(fastReadPages)
@@ -230,7 +247,8 @@ public final class Tag215 {
         out.reserveCapacity(Ndef.capacity)
         for page in stride(from: Ndef.firstPage, through: Ndef.lastNdefPage, by: perCall) {
             let end = min(Ndef.lastNdefPage, page + perCall - 1)
-            out += try await exchange([0x3A, UInt8(page), UInt8(end)], expected: (end - page + 1) * 4)
+            out += try await exchange([0x3A, UInt8(page), UInt8(end)], expected: (end - page + 1) * 4,
+                                      identityRead: false)
         }
         return out
     }
@@ -249,14 +267,14 @@ public final class Tag215 {
             throw FenceViolation(page: page, length: data.count)
         }
         if identityLost { throw IdentityLost() }
-        guard writable else { throw NotInspected(operation: "write") }
+        guard let baseline, baseline.unsafe == nil else { throw NotInspected(operation: "write") }
         let command: [UInt8] = [0xA2, UInt8(page)] + data
         var last: Error?
         for attempt in 0..<Tag215.attempts {
             if attempt > 0 {
                 struggled(1)
                 await pause(Tag215.backoff(attempt))
-                if attempt > 1, !(try await reconnect()) {
+                if attempt > 1, !(await reconnect()) {
                     continue
                 }
                 // The answer that went missing may have been an ACK. Asking
@@ -265,12 +283,15 @@ public final class Tag215 {
                     if try await pageHolds(page, data) {
                         return
                     }
+                } catch let lost as IdentityLost {
+                    throw lost
                 } catch {
                     last = error
                     continue
                 }
             }
             do {
+                try await proveIdentity()
                 let response = try await link.transceive(command)
                 if let first = response.first {
                     let answer = first & 0x0F
@@ -292,6 +313,8 @@ public final class Tag215 {
                     + " (no acknowledgement, and the page read back differently).")
             } catch let rejected as Rejected {
                 throw rejected
+            } catch let lost as IdentityLost {
+                throw lost
             } catch {
                 last = error
             }
@@ -320,7 +343,7 @@ public final class Tag215 {
 
     /// One unretried look at a page, used to settle what a lost answer meant.
     private func pageHolds(_ page: Int, _ data: [UInt8]) async throws -> Bool {
-        if identityLost { throw IdentityLost() }
+        try await proveIdentity()
         let echo = try await link.transceive([0x30, UInt8(page)])
         guard echo.count == 16 else {
             throw LinkError("READ of page \(Tag215.hexPage(page)) returned \(echo.count) bytes, not 16.")
@@ -330,30 +353,36 @@ public final class Tag215 {
 
     /// READ returns four consecutive pages: 16 bytes.
     private func read(_ page: Int) async throws -> [UInt8] {
-        try await exchange([0x30, UInt8(page)], expected: 16)
+        try await exchange([0x30, UInt8(page)], expected: 16, identityRead: false)
     }
 
     /// One idempotent exchange, attempted until the link cooperates. A
     /// response of the wrong length is a corrupted answer, not a card with
-    /// something different to say.
-    private func exchange(_ command: [UInt8], expected: Int) async throws -> [UInt8] {
+    /// something different to say. Anything but an identity read first
+    /// proves that the tag on the current connection is the inspected one.
+    private func exchange(_ command: [UInt8], expected: Int, identityRead: Bool) async throws -> [UInt8] {
         if identityLost { throw IdentityLost() }
         var last: Error?
         for attempt in 0..<Tag215.attempts {
             if attempt > 0 {
                 struggled(1)
                 await pause(Tag215.backoff(attempt))
-                if attempt > 1, !(try await reconnect()) {
+                if attempt > 1, !(await reconnect()) {
                     continue
                 }
             }
             do {
+                if !identityRead {
+                    try await proveIdentity()
+                }
                 let r = try await link.transceive(command)
                 if r.count != expected {
                     last = LinkError("The card answered \(r.count) bytes where \(expected) were expected.")
                     continue
                 }
                 return r
+            } catch let lost as IdentityLost {
+                throw lost
             } catch {
                 last = error
             }
@@ -361,44 +390,49 @@ public final class Tag215 {
         throw last ?? LinkError("The card did not answer.")
     }
 
-    /// Re-establishes the link and, once a card has been inspected, proves it
-    /// is still that card — same GET_VERSION, UID, capability container,
-    /// locks and configuration — before the caller sends anything else.
-    /// Returns false when the link could not be re-established or the check
-    /// did not complete; throws `IdentityLost` when a different card answered,
-    /// after which nothing more is read or written in this presentation.
-    private func reconnect() async throws -> Bool {
+    /// Re-establishes the link. The new connection is a new generation:
+    /// nothing but identity reads is sent on it until `proveIdentity()`
+    /// succeeds.
+    private func reconnect() async -> Bool {
         await link.disconnect()
         do {
             try await link.connect()
         } catch {
             return false
         }
+        generation += 1
         reconnects += 1
-        guard let baseline else { return true }
-        let found: Inspection
-        do {
-            let version = try await link.transceive([0x60])
-            let head = try await link.transceive([0x30, 0x00])
-            let tail = try await link.transceive([0x30, 0x82])
-            guard version.count == 8, head.count == 16, tail.count == 16 else { return false }
-            found = Inspection(version: version,
-                               uid: Array(head[0..<3]) + Array(head[4..<8]),
-                               cc: Array(head[12..<16]),
-                               staticLocks: Array(head[10..<12]),
-                               dynamicLocks: Array(tail[0..<3]),
-                               cfg0: Array(tail[4..<8]),
-                               cfg1: Array(tail[8..<12]))
-        } catch {
-            return false
-        }
-        if found != baseline {
+        return true
+    }
+
+    /// Proves, on the current connection, that the tag is the inspected one.
+    /// Stops at the first byte that differs — a different GET_VERSION or UID
+    /// ends the presentation at once — and throws a retryable `LinkError` when
+    /// the check cannot complete, so an unfinished check never authorizes
+    /// anything.
+    private func proveIdentity() async throws {
+        if identityLost { throw IdentityLost() }
+        guard let baseline else { throw NotInspected(operation: "read") }
+        if provenGeneration == generation { return }
+        let version = try await link.transceive([0x60])
+        guard version.count == 8 else { throw LinkError("Identity check: GET_VERSION was cut short.") }
+        try require(version == baseline.version)
+        let head = try await link.transceive([0x30, 0x00])
+        guard head.count == 16 else { throw LinkError("Identity check: READ 0x00 was cut short.") }
+        let partial = Tag215.inspection(version, head, [UInt8](repeating: 0, count: 16))
+        try require(partial.uid == baseline.uid && partial.cc == baseline.cc
+                    && partial.staticLocks == baseline.staticLocks)
+        let tail = try await link.transceive([0x30, 0x82])
+        guard tail.count == 16 else { throw LinkError("Identity check: READ 0x82 was cut short.") }
+        try require(Tag215.inspection(version, head, tail) == baseline)
+        provenGeneration = generation
+    }
+
+    private func require(_ same: Bool) throws {
+        if !same {
             identityLost = true
-            versionVerified = false
-            writable = false
             throw IdentityLost()
         }
-        return true
     }
 
     /// After a reconnect, the tag in the field was not the one inspected.
