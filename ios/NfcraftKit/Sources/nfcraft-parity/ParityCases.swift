@@ -6,6 +6,7 @@ struct ParityCases {
     let urls: [String]
     let bad: [String]
     let edge: [String]
+    let stricter: [String]
 
     init() {
         guard CommandLine.arguments.count == 2 else {
@@ -17,12 +18,14 @@ struct ParityCases {
               let object = try? JSONSerialization.jsonObject(with: data) as? [String: Any],
               let urls = object["urls"] as? [String],
               let bad = object["bad"] as? [String],
-              let edge = object["edge"] as? [String] else {
+              let edge = object["edge"] as? [String],
+              let stricter = object["stricter"] as? [String] else {
             FileHandle.standardError.write(Data("cannot read parity cases\n".utf8))
             exit(2)
         }
         self.urls = urls
         self.bad = bad
         self.edge = edge
+        self.stricter = stricter
     }
 }

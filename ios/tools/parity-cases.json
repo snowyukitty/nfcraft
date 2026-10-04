@@ -1,5 +1,5 @@
 {
- "_comment": "Shared parity inputs for ios/tools/ref.py (Python reference) and the Swift nfcraft-parity executable. urls must all be valid. bad repeats android/tools/ref.py; edge adds boundary and parser-disagreement probes.",
+ "_comment": "Shared parity inputs for ios/tools/ref.py (Python reference) and the Swift nfcraft-parity executable. urls must all be valid. bad repeats android/tools/ref.py; edge adds boundary and parser-disagreement probes. stricter lists inputs the Swift port deliberately rejects although nfcraft/ndef.py accepts them (an empty fragment or empty credentials); check.sh requires Python to accept and Swift to reject each one, so a later change on either side is noticed.",
  "urls": [
   "https://tgs.best",
   "https://tgs.best/",
@@ -49,5 +49,11 @@
   "",
   "https://:443",
   "https://a.co:"
+ ],
+ "stricter": [
+  "https://tgs.best#",
+  "https://@tgs.best",
+  "https://:@tgs.best",
+  "https://tgs.best/?#"
  ]
 }

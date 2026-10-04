@@ -27,6 +27,9 @@ for (i, url) in cases.bad.enumerated() {
 for (i, url) in cases.edge.enumerated() {
     print("EDGE[\(i)] rejected " + render(Ndef.validate(url) != nil))
 }
+for (i, url) in cases.stricter.enumerated() {
+    print("STRICTER[\(i)] rejected " + render(Ndef.validate(url) != nil))
+}
 
 var blank = [UInt8](repeating: 0, count: Ndef.capacity)
 print("blank empty " + render(Ndef.isEmpty(blank)))

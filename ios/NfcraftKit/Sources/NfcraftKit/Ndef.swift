@@ -165,13 +165,24 @@ public enum Ndef {
         return area[3..<end].contains { $0 != 0 }
     }
 
-    /// True when the card holds the staged first page this tool writes before
-    /// the body — `03 00` followed by the target's own record header — so an
-    /// interrupted write by this app can be finished without the override.
-    public static func isOurStagedWrite(_ area: [UInt8], target: [UInt8]) -> Bool {
-        area.count >= 4 && target.count >= 4
-            && area[0] == 0x03 && area[1] == 0x00
-            && area[2] == target[2] && area[3] == target[3]
+    /// Port of `recovery_matches()` in `nfcraft/ndef.py`: true only when
+    /// every page of the planned region holds either its recorded original
+    /// bytes, its target bytes, or (page 0x04 only) the staged header, and
+    /// everything beyond the region is exactly the recorded original. Torn or
+    /// foreign pages fail. Unlike the Java port, the staged header alone is
+    /// never enough: it is the same `03 00 D1 01` for every destination.
+    public static func recoveryMatches(current: [UInt8], original: [UInt8], target: [UInt8]) -> Bool {
+        guard current.count == capacity, original.count == capacity,
+              target.count >= 4, target.count <= capacity else { return false }
+        let staged: [UInt8] = [0x03, 0x00, target[2], target[3]]
+        for i in stride(from: 0, to: target.count, by: 4) {
+            let page = Array(current[i..<(i + 4)])
+            if page != Array(original[i..<(i + 4)]) && page != Array(target[i..<(i + 4)])
+                && !(i == 0 && page == staged) {
+                return false
+            }
+        }
+        return current[target.count...] == original[target.count...]
     }
 
     /// Expose an empty message first; make the message length visible only

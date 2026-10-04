@@ -53,6 +53,7 @@ final class LinkTests: XCTestCase {
         let card = SimulatedNTAG215()
         card.swallowAcks = true
         let tag = try await Tag215.open(card, pause: noPause)
+        _ = try await tag.inspect()
         try await tag.writePage(0x05, [0x11, 0x22, 0x33, 0x44])
         XCTAssertEqual(card.page(0x05), [0x11, 0x22, 0x33, 0x44])
     }
@@ -63,6 +64,7 @@ final class LinkTests: XCTestCase {
         card.swallowAcks = true
         card.ignoreWrites = true
         let tag = try await Tag215.open(card, pause: noPause)
+        _ = try await tag.inspect()
         await assertThrows { try await tag.writePage(0x06, [1, 2, 3, 4]) }
     }
 
@@ -71,6 +73,7 @@ final class LinkTests: XCTestCase {
         card.nakWrites = 0x01
         card.nakBudget = 2
         let tag = try await Tag215.open(card, pause: noPause)
+        _ = try await tag.inspect()
         try await tag.writePage(0x07, [0xAA, 0, 0, 0])
         XCTAssertEqual(card.page(0x07), [0xAA, 0, 0, 0])
         XCTAssertTrue(tag.struggled)
@@ -81,6 +84,7 @@ final class LinkTests: XCTestCase {
         card.nakWrites = 0x00
         card.nakBudget = .max
         let tag = try await Tag215.open(card, pause: noPause)
+        _ = try await tag.inspect()
         await assertThrows { try await tag.writePage(0x08, [1, 2, 3, 4]) }
         XCTAssertEqual(card.writeCommands, 1, "the card was asked exactly once")
     }
@@ -88,6 +92,7 @@ final class LinkTests: XCTestCase {
     func testDeadLinkGivesUpAndSaysSo() async throws {
         let card = SimulatedNTAG215()
         let tag = try await Tag215.open(card, pause: noPause)
+        _ = try await tag.inspect()
         card.dead = true
         await assertThrows { _ = try await tag.readArea() }
         XCTAssertTrue(tag.struggled)
@@ -97,6 +102,7 @@ final class LinkTests: XCTestCase {
         let card = SimulatedNTAG215()
         card.refuseFastRead = true
         let tag = try await Tag215.open(card, pause: noPause)
+        _ = try await tag.inspect()
         let area = try await tag.readArea()
         XCTAssertEqual(area.count, Ndef.capacity)
         XCTAssertEqual(tag.readPath, "READ 4p")
@@ -107,6 +113,7 @@ final class LinkTests: XCTestCase {
         card.maxResponseBytes = 40 // carries 8 pages, not 16
         card.answersWithCRC = false
         let tag = try await Tag215.open(LimitHiding(card), pause: noPause)
+        _ = try await tag.inspect()
         let area = try await tag.readArea()
         XCTAssertEqual(area, card.area)
         XCTAssertEqual(tag.readPath, "FAST_READ 8p")
@@ -133,6 +140,30 @@ final class LinkTests: XCTestCase {
         await assertThrows { try await tag.writePage(0x04, [0, 0]) }
         XCTAssertEqual(card.writeCommands, 0)
         XCTAssertEqual(card.exchanges, 0)
+    }
+
+    func testNothingIsReadOrWrittenBeforeAnInspectionAllowsIt() async throws {
+        let card = SimulatedNTAG215()
+        let tag = try await Tag215.open(card, pause: noPause)
+        await assertThrows { _ = try await tag.readArea() }
+        await assertThrows { try await tag.writePage(0x05, [1, 2, 3, 4]) }
+        XCTAssertEqual(card.exchanges, 0, "an uninspected card is sent nothing")
+
+        let other = SimulatedNTAG215()
+        other.version = [0x00, 0x04, 0x04, 0x02, 0x01, 0x00, 0x0F, 0x03] // NTAG213
+        let foreign = try await Tag215.open(other, pause: noPause)
+        await assertThrows { _ = try await foreign.inspect() }
+        await assertThrows { _ = try await foreign.readArea() }
+        await assertThrows { try await foreign.writePage(0x05, [1, 2, 3, 4]) }
+        XCTAssertEqual(other.log, ["VERSION"], "a wrong GET_VERSION is the last thing sent")
+
+        let locked = SimulatedNTAG215()
+        locked.memory[10] = 0x08
+        let refused = try await Tag215.open(locked, pause: noPause)
+        let inspection = try await refused.inspect()
+        XCTAssertNotNil(inspection.unsafe)
+        await assertThrows { try await refused.writePage(0x05, [1, 2, 3, 4]) }
+        XCTAssertEqual(locked.writeCommands, 0, "an unsafe card is never written")
     }
 
     func testUnsafeCardsAreNamed() async throws {
@@ -196,6 +227,7 @@ final class LinkTests: XCTestCase {
         card.truncateEvery = 2 // a truncated framed answer no longer checks
         let tag = try await Tag215.open(FramedLink(card, framing: Framing(appendsCRC: false, responseCarriesCRC: true)),
                                         pause: noPause)
+        _ = try await tag.inspect()
         let area = try await tag.readArea()
         XCTAssertEqual(area, card.area)
         XCTAssertTrue(tag.struggled)

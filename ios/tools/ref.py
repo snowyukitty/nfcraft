@@ -55,6 +55,8 @@ for i, url in enumerate(cases["bad"]):
     print("BAD[%d] rejected %s" % (i, rejected(url)))
 for i, url in enumerate(cases["edge"]):
     print("EDGE[%d] rejected %s" % (i, rejected(url)))
+for i, url in enumerate(cases["stricter"]):
+    print("STRICTER[%d] rejected %s" % (i, rejected(url)))
 
 blank = bytearray(NDEF_CAPACITY)
 print("blank empty " + flag(is_empty(bytes(blank))))

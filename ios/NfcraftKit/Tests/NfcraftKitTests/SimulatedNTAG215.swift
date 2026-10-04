@@ -29,6 +29,12 @@ final class SimulatedNTAG215: Type2Link {
     var leaveAfterWrites: Int?
     /// The card acknowledges this many WRITEs, then leaves the field.
     var leaveAfterAcks: Int?
+    /// What GET_VERSION answers.
+    var version = Ndef.version
+    /// Answer GET_VERSION differently once a WRITE has landed.
+    var changeVersionOnWrite = false
+    /// Suspend every exchange this long, so overlapping presentations overlap.
+    var exchangeDelayMilliseconds = 0
     /// Change CFG0 the moment the first WRITE lands, to fake an identity change.
     var mutateConfigOnWrite = false
     var maxResponseBytes: Int?
@@ -77,6 +83,7 @@ final class SimulatedNTAG215: Type2Link {
 
     func transceive(_ framed: [UInt8]) async throws -> [UInt8] {
         exchanges += 1
+        if exchangeDelayMilliseconds > 0 { await Tag215.sleep(exchangeDelayMilliseconds) }
         if dead { throw LinkError("Simulated dead link.") }
         var command = framed
         if requiresAppCRC {
@@ -111,7 +118,7 @@ final class SimulatedNTAG215: Type2Link {
         case 0x60:
             XCTAssertEqual(command.count, 1, "GET_VERSION carries no argument")
             log.append("VERSION")
-            return Ndef.version
+            return version
         case 0x30:
             XCTAssertEqual(command.count, 2)
             let page = Int(command[1])
@@ -142,6 +149,9 @@ final class SimulatedNTAG215: Type2Link {
             if !ignoreWrites {
                 memory.replaceSubrange((page * 4)..<(page * 4 + 4), with: command[2..<6])
                 writtenPages.append(page)
+            }
+            if changeVersionOnWrite {
+                version = [0x00, 0x04, 0x04, 0x02, 0x01, 0x00, 0x13, 0x03] // NTAG216
             }
             if mutateConfigOnWrite {
                 memory[0x83 * 4] = 0x40

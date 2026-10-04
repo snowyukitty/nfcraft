@@ -45,7 +45,7 @@ final class NdefTests: XCTestCase {
         wrongPrefix[6] = 0x03 // http:// rather than https://
         XCTAssertNil(Ndef.decodeArea(wrongPrefix))
         var noTerminator = area
-        noTerminator[good.count - 3] = 0x00
+        noTerminator[Int(area[1]) + 2] = 0x00 // the FE right after the record; the URL stays intact
         XCTAssertNil(Ndef.decodeArea(noTerminator))
         var nonASCII = area
         nonASCII[8] = 0xC3
@@ -54,6 +54,29 @@ final class NdefTests: XCTestCase {
         badLength[1] = 0xFF
         XCTAssertNil(Ndef.decodeArea(badLength))
         XCTAssertNil(Ndef.decodeArea([0x03, 0x05]))
+    }
+
+    func testRecoveryMatchesOnlyThisOperationsPages() throws {
+        let target = try Ndef.encodeArea("https://tgs.best/next")
+        var original = [UInt8](repeating: 0, count: Ndef.capacity)
+        let old = try Ndef.encodeArea("https://tgs.best/")
+        original.replaceSubrange(0..<old.count, with: old)
+        original[300] = 0x77
+        let staged: [UInt8] = [0x03, 0x00, target[2], target[3]]
+
+        var torn = original
+        torn.replaceSubrange(0..<4, with: staged)
+        torn.replaceSubrange(4..<12, with: target[4..<12])
+        XCTAssertTrue(Ndef.recoveryMatches(current: torn, original: original, target: target))
+        XCTAssertTrue(Ndef.recoveryMatches(current: original, original: original, target: target))
+
+        var foreignBody = torn
+        foreignBody[13] = 0xEE
+        XCTAssertFalse(Ndef.recoveryMatches(current: foreignBody, original: original, target: target))
+        var changedTail = torn
+        changedTail[300] = 0x00
+        XCTAssertFalse(Ndef.recoveryMatches(current: changedTail, original: original, target: target))
+        XCTAssertFalse(Ndef.recoveryMatches(current: Array(torn.dropLast()), original: original, target: target))
     }
 
     func testFenceAcceptsOnlyNdefPages() {

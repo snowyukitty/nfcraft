@@ -56,7 +56,16 @@ run_swift run -c debug nfcraft-parity "$cases" > "$out/swift.txt"
 
 NFCRAFT_ROOT="$repo" PYTHONIOENCODING=utf-8 "$python" "$here/ref.py" "$here/parity-cases.json" > "$out/python.txt"
 
-if ! diff -u "$out/python.txt" "$out/swift.txt"; then
+# Deliberate divergences: Python must accept and Swift must reject each one.
+grep '^STRICTER' "$out/python.txt" > "$out/python-stricter.txt" || true
+grep '^STRICTER' "$out/swift.txt" > "$out/swift-stricter.txt" || true
+if [ ! -s "$out/python-stricter.txt" ] || grep -qv ' rejected false$' "$out/python-stricter.txt"     || grep -qv ' rejected true$' "$out/swift-stricter.txt"     || [ "$(wc -l < "$out/python-stricter.txt")" != "$(wc -l < "$out/swift-stricter.txt")" ]; then
+    paste "$out/python-stricter.txt" "$out/swift-stricter.txt" >&2
+    echo "FAIL: the recorded stricter-than-Python cases changed on one side. Update parity-cases.json deliberately." >&2
+    exit 1
+fi
+
+if ! diff -u <(grep -v '^STRICTER' "$out/python.txt") <(grep -v '^STRICTER' "$out/swift.txt"); then
     echo "FAIL: the Swift encoder diverged from nfcraft/ndef.py. Do not write cards until this is resolved." >&2
     exit 1
 fi

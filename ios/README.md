@@ -12,11 +12,30 @@ Mac.
 | `Ndef.swift` | Port of `nfcraft/ndef.py` (via `android/.../Ndef.java`): validation, area encoder, strict decoder, staged/pruned write plan, write fence |
 | `Tag215.swift` | Port of `Tag215.java`: GET_VERSION identity, protected-configuration checks, FAST_READ ladder, retried exchanges, ACK/NAK handling with read-back of swallowed acknowledgements |
 | `Framing.swift` | CRC_A and a **read-only GET_VERSION probe** that establishes how this platform frames raw commands (see below) |
-| `Presentation.swift` | The per-tap decision logic of `MainActivity.handle()` / `lostContact()`, lifted out of the UI and returning an `Outcome` |
+| `Presentation.swift` | The per-tap decision logic of `MainActivity.handle()` / `lostContact()`, lifted out of the UI and returning an `Outcome`; `Station` runs one presentation at a time |
 | `RecentURLs.swift` | Port of `RecentUrls.java`: ten valid, distinct, most-recent-first destinations |
 
 It imports nothing from Core NFC or UIKit. A screen renders an `Outcome`; it
 never decides whether a card was written.
+
+Deliberate differences from the Android writer, each pinned by a test:
+
+- **Resuming a torn write needs a recovery record.** The staged header
+  `03 00 D1 01` is identical for every destination, so on its own it proves
+  nothing. An interrupted write returns `Outcome.recovery` (UID, the area
+  before the first write, and the destination); the app keeps it on the device
+  and passes it back. A card resumes without the override only when every page
+  is attributable to that record, as `recovery_matches()` checks in the Python
+  engine.
+- **The command layer gates itself.** `Tag215` refuses to read the user area
+  before an exact GET_VERSION, and to write before an inspection that passed.
+- **One presentation at a time.** A second request on a busy `Station` is
+  answered `busy` before anything is sent.
+- **Validation follows `ndef.py`, not Java, except where it is stricter.**
+  Port range and empty port match Python. An empty fragment or empty
+  credentials (`https://tgs.best#`, `https://@tgs.best`) are rejected here
+  although Python accepts them; `parity-cases.json` lists these as `stricter`
+  and the check fails if either side changes.
 
 ## Check it (Windows, Linux or macOS)
 
@@ -46,8 +65,14 @@ CRC). Bare first is deliberate: a tag never answers a frame without a valid
 CRC, so a bare answer proves the platform added it, whereas a CRC-first answer
 can come from a tag that ignores two stray trailing bytes.
 No answer under any framing means "not an NTAG215", and nothing is read or
-written beyond that probe. The chosen framing is returned in the `Outcome` for
-reuse within the session. Every page write still requires the full readback and
+written beyond that probe.
+
+Only a bare answer authorizes writing. If only the CRC-carrying frame is
+answered, that is still ambiguous — a tag that ignores trailing bytes on a
+platform that adds its own CRC looks the same — so the presentation inspects
+normally but answers `framingUnconfirmed` instead of writing. Writing then
+needs `.fixed(framing)`, set by the adapter from the recorded device spike.
+A `Station` reuses a bare probe result for later taps. Every page write still requires the full readback and
 unchanged identity before the result can be `written`/`finished`.
 
 ## Core NFC adapter — the next step, on a Mac
@@ -63,6 +88,10 @@ can compile. Its contract is `Type2Link`:
 | `disconnect()` | no-op; the session owns the link |
 | `maxResponseBytes` | `nil` (not exposed; the FAST_READ ladder discovers it) |
 
+Create one `Station` per reader session and call `present(_:)` from a `Task`.
+Persist `Outcome.recovery` per UID on the device (never in logs or analytics)
+and pass it back in the next `Request`.
+
 Points to verify in the installed SDK while writing it (from the 2026-10-04
 DocC read; see `apple-app-store-research` source notes):
 
@@ -75,7 +104,7 @@ DocC read; see `apple-app-store-research` source notes):
   accept `.ultralight` and `.unknown` and let GET_VERSION decide.
 - More than one tag in the field: show a message and `restartPolling()`; never
   pick one.
-- Run `Presentation.run` in a `Task`, not on the session's delegate queue.
+- Call `Station.present` in a `Task`, not on the session's delegate queue.
   Use `alertMessage` for "hold still", `invalidate(errorMessage:)` for any
   non-verified verdict, `invalidate()` only after `isVerifiedWrite`.
 - A session timeout exists (`readerSessionInvalidationErrorSessionTimeout`);
@@ -92,7 +121,9 @@ authorization for the named disposable card.**
 
 1. Build and install a development build; confirm `readingAvailable`.
 2. Inspect only: framing probe result, `mifareFamily`, inspection result,
-   read path (`FAST_READ 16p`/`8p`/`4p`/`READ 4p`).
+   read path (`FAST_READ 16p`/`8p`/`4p`/`READ 4p`). If only the CRC frame is
+   answered, establish the framing from this evidence and fix it in the
+   adapter before step 4.
 3. Inspect a card that already carries an nfcraft URL written by Android or
    PC/SC: the decoded URL must match.
 4. Write one disposable card; record verdict, framing, effort and read path.

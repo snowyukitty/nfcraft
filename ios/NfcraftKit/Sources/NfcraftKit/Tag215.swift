@@ -104,6 +104,13 @@ public final class Tag215 {
     public var onStruggling: (() -> Void)?
     private var warned = false
 
+    /// Set only by `inspect()`: exact GET_VERSION seen on this link. Every
+    /// user-area read requires it.
+    private var versionVerified = false
+    /// Set only by `inspect()`: identity and protection passed the checks.
+    /// Every write requires it.
+    private var writable = false
+
     private init(link: Type2Link, retriesSoFar: Int, pause: @escaping (Int) async -> Void) {
         self.link = link
         self.retries = retriesSoFar
@@ -161,14 +168,17 @@ public final class Tag215 {
     /// High pages are only touched after exact GET_VERSION evidence, so an
     /// unknown chip is never probed at addresses that may mean something else.
     public func inspect() async throws -> Inspection {
+        versionVerified = false
+        writable = false
         let version = try await exchange([0x60], expected: 8)
         if version != Ndef.version {
             throw Refusal(headline: "Not an NTAG215",
                           detail: "GET_VERSION does not match NTAG215, so no further pages were read.")
         }
+        versionVerified = true
         let head = try await read(0x00)
         let tail = try await read(0x82)
-        return Inspection(
+        let inspection = Inspection(
             version: version,
             uid: Array(head[0..<3]) + Array(head[4..<8]),
             cc: Array(head[12..<16]),
@@ -176,12 +186,15 @@ public final class Tag215 {
             dynamicLocks: Array(tail[0..<3]),
             cfg0: Array(tail[4..<8]),
             cfg1: Array(tail[8..<12]))
+        writable = inspection.unsafe == nil
+        return inspection
     }
 
     /// The whole CC-advertised NDEF area: pages 0x04..0x7F, 496 bytes. A chunk
     /// size this link will not carry walks down — 16, 8, 4 pages — before
     /// plain four-page READs take over.
     public func readArea() async throws -> [UInt8] {
+        guard versionVerified else { throw NotInspected(operation: "read") }
         while fastReadPages >= 4 {
             do {
                 let area = try await fastReadArea(fastReadPages)
@@ -223,6 +236,7 @@ public final class Tag215 {
         guard Ndef.isSafePage(page, data) else {
             throw FenceViolation(page: page, length: data.count)
         }
+        guard writable else { throw NotInspected(operation: "write") }
         let command: [UInt8] = [0xA2, UInt8(page)] + data
         var last: Error?
         for attempt in 0..<Tag215.attempts {
@@ -282,6 +296,13 @@ public final class Tag215 {
     public struct FenceViolation: Error, Equatable {
         public let page: Int
         public let length: Int
+    }
+
+    /// A user-area read before an exact GET_VERSION, or a write before an
+    /// inspection that passed, was asked for. Only a bug can get here;
+    /// nothing is sent to the card.
+    public struct NotInspected: Error, Equatable {
+        public let operation: String
     }
 
     /// One unretried look at a page, used to settle what a lost answer meant.

@@ -112,17 +112,91 @@ final class PresentationTests: XCTestCase {
         XCTAssertNil(Ndef.decodeArea(card.area), "no length is advertised while the body is incomplete")
         XCTAssertEqual(outcome.rememberDestination, url, "a write was attempted with a valid destination")
 
+        let record = try! XCTUnwrap(outcome.recovery, "an interrupted write leaves a recovery record")
+
         // The card comes back. Without the override, the app recognises its
-        // own interrupted write and finishes it.
+        // own recorded interrupted write and finishes it.
         card.dead = false
         card.leaveAfterWrites = nil
         let before = card.writeCommands
-        outcome = await present(card, .init(destination: url))
+        outcome = await present(card, .init(destination: url, recovery: record))
         XCTAssertEqual(outcome.verdict, .finished)
         XCTAssertEqual(Ndef.decodeArea(card.area), url)
         XCTAssertLessThan(card.writeCommands - before, try! Ndef.writePlan(url).count,
                           "pages that already took are not sent again")
         XCTAssertTrue(outcome.receipt.contains("before (an interrupted write by this app)"))
+        XCTAssertNil(outcome.recovery, "a verified card needs no recovery record")
+    }
+
+    func testATornCardWithoutItsRecordNeedsTheOverride() async {
+        let card = SimulatedNTAG215()
+        card.leaveAfterWrites = 2
+        _ = await present(card, .init(destination: url))
+        card.dead = false
+        card.leaveAfterWrites = nil
+        let writes = card.writeCommands
+        let outcome = await present(card, .init(destination: url))
+        XCTAssertEqual(outcome.verdict, .unfamiliarContent)
+        XCTAssertEqual(card.writeCommands, writes)
+    }
+
+    func testAStagedHeaderOverForeignDataIsNotOurs() async {
+        // 03 00 D1 01 is the staged header for every destination. With a
+        // foreign body behind it, it must not unlock a write - not even with
+        // a record, because the pages are not attributable to that record.
+        let card = SimulatedNTAG215()
+        card.memory.replaceSubrange(16..<28, with: [0x03, 0x00, 0xD1, 0x01, 0xDE, 0xAD, 0xBE, 0xEF, 0x01, 0x02, 0x03, 0x04])
+        var outcome = await present(card, .init(destination: url))
+        XCTAssertEqual(outcome.verdict, .unfamiliarContent)
+        let factory = SimulatedNTAG215().area
+        let uid: [UInt8] = [0x04, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66]
+        outcome = await present(card, .init(destination: url,
+                                            recovery: .init(uid: uid, original: factory, target: url)))
+        XCTAssertEqual(outcome.verdict, .unfamiliarContent)
+        XCTAssertEqual(card.writeCommands, 0)
+    }
+
+    func testARecordForAnotherCardOrDestinationDoesNotApply() async throws {
+        let card = SimulatedNTAG215()
+        card.leaveAfterWrites = 2
+        let first = await present(card, .init(destination: url))
+        let record = try XCTUnwrap(first.recovery)
+        card.dead = false
+        card.leaveAfterWrites = nil
+        let other = Presentation.RecoveryRecord(uid: [0x04, 0, 0, 0, 0, 0, 1], original: record.original, target: url)
+        var outcome = await present(card, .init(destination: url, recovery: other))
+        XCTAssertEqual(outcome.verdict, .unfamiliarContent)
+        outcome = await present(card, .init(destination: "https://tgs.best/else", recovery: record))
+        XCTAssertEqual(outcome.verdict, .unfamiliarContent)
+    }
+
+    func testARecordSurvivesATapThatWritesNothing() async {
+        let card = SimulatedNTAG215()
+        card.leaveAfterWrites = 2
+        let record = await present(card, .init(destination: url)).recovery
+        XCTAssertNotNil(record)
+        // Still out of the field: nothing is sent, and the record is kept.
+        let moved = await present(card, .init(destination: url, recovery: record))
+        XCTAssertEqual(moved.verdict, .cardMoved)
+        XCTAssertEqual(moved.recovery, record)
+    }
+
+    func testATwiceTornCardKeepsItsFirstOriginal() async throws {
+        let card = SimulatedNTAG215()
+        card.memory[16 + 300] = 0x42
+        card.leaveAfterWrites = 2
+        let firstOutcome = await present(card, .init(destination: url))
+        let first = try XCTUnwrap(firstOutcome.recovery)
+        card.dead = false
+        card.leaveAfterWrites = card.writtenPages.count + 1
+        let secondOutcome = await present(card, .init(destination: url, recovery: first))
+        let second = try XCTUnwrap(secondOutcome.recovery)
+        XCTAssertEqual(second.original, first.original, "the record keeps the area from before the first write")
+        card.dead = false
+        card.leaveAfterWrites = nil
+        let outcome = await present(card, .init(destination: url, recovery: second))
+        XCTAssertEqual(outcome.verdict, .finished)
+        XCTAssertEqual(card.memory[16 + 300], 0x42)
     }
 
     func testLossAfterCommitIsNotConfirmedRatherThanWritten() async throws {
@@ -147,6 +221,15 @@ final class PresentationTests: XCTestCase {
         card.mutateConfigOnWrite = true
         let outcome = await present(card, .init(destination: url))
         XCTAssertEqual(outcome.verdict, .identityChanged)
+    }
+
+    func testAVersionChangeAfterWritingIsAnIdentityChangeNotAnUntouchedCard() async {
+        let card = SimulatedNTAG215()
+        card.changeVersionOnWrite = true
+        let outcome = await present(card, .init(destination: url))
+        XCTAssertEqual(outcome.verdict, .identityChanged)
+        XCTAssertEqual(outcome.stage, .committed)
+        XCTAssertFalse(outcome.verdict.isVerifiedWrite)
     }
 
     func testLostAnswerToTheCommitWriteIsStillAnInterruptedWrite() async throws {
@@ -181,15 +264,26 @@ final class PresentationTests: XCTestCase {
 
     // MARK: Command framing (iOS)
 
-    func testProbedFramingWritesUnderEveryPlatformBehaviour() async {
+    func testProbedFramingWritesOnlyWhenTheAnswerIsUnambiguous() async {
         for (appCRC, responseCRC) in [(true, false), (true, true), (false, false), (false, true)] {
+            let label = "appCRC \(appCRC) responseCRC \(responseCRC)"
+            let expected = Framing(appendsCRC: appCRC, responseCarriesCRC: responseCRC)
             let card = SimulatedNTAG215()
             card.requiresAppCRC = appCRC
             card.answersWithCRC = responseCRC
-            let outcome = await present(card, .init(destination: url), framing: .probe)
-            XCTAssertEqual(outcome.verdict, .written, "appCRC \(appCRC) responseCRC \(responseCRC)")
-            XCTAssertEqual(outcome.framing, Framing(appendsCRC: appCRC, responseCarriesCRC: responseCRC))
-            XCTAssertEqual(Ndef.decodeArea(card.area), url)
+            var outcome = await present(card, .init(destination: url), framing: .probe)
+            XCTAssertEqual(outcome.framing, expected, label)
+            if appCRC {
+                // Only the CRC-carrying frame was answered: a lenient tag on a
+                // platform that adds its own CRC would look the same.
+                XCTAssertEqual(outcome.verdict, .framingUnconfirmed, label)
+                XCTAssertEqual(card.writeCommands, 0, label)
+                let inspected = await present(card, .init(destination: url, inspectOnly: true), framing: .probe)
+                XCTAssertEqual(inspected.verdict, .inspected, "inspection still works: " + label)
+                outcome = await present(card, .init(destination: url), framing: .fixed(expected))
+            }
+            XCTAssertEqual(outcome.verdict, .written, label)
+            XCTAssertEqual(Ndef.decodeArea(card.area), url, label)
         }
     }
 
@@ -217,6 +311,29 @@ final class PresentationTests: XCTestCase {
         XCTAssertFalse(outcome.verdict.isVerifiedWrite)
         XCTAssertEqual(outcome.stage, .untouched)
         XCTAssertEqual(card.writeCommands, 0)
+    }
+
+    func testAStationRunsOnePresentationAtATime() async {
+        let card = SimulatedNTAG215()
+        card.exchangeDelayMilliseconds = 2
+        let station = Station(card, framing: .fixed(.platformHandlesCRC))
+        async let a = station.present(.init(destination: url), pause: noPause)
+        async let b = station.present(.init(destination: "https://tgs.best/b"), pause: noPause)
+        let outcomes = await [a, b]
+        XCTAssertEqual(outcomes.filter { $0.verdict == .busy }.count, 1, "the overlapping request is refused")
+        XCTAssertEqual(outcomes.filter { $0.verdict == .written }.count, 1)
+        let after = await station.present(.init(destination: url, inspectOnly: true), pause: noPause)
+        XCTAssertEqual(after.verdict, .inspected, "the station is free again afterwards")
+    }
+
+    func testAStationKeepsOnlyAnUnambiguousProbe() async {
+        let plain = SimulatedNTAG215()
+        let station = Station(plain, framing: .probe)
+        _ = await station.present(.init(destination: url, inspectOnly: true), pause: noPause)
+        let before = plain.log.count
+        _ = await station.present(.init(destination: url, inspectOnly: true), pause: noPause)
+        XCTAssertEqual(plain.log[before], "VERSION")
+        XCTAssertNotEqual(plain.log[before + 1], "VERSION", "no second probe once the bare frame answered")
     }
 
     func testProbeThatFindsNoNTAG215WritesNothing() async {

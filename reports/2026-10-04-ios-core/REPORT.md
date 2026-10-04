@@ -60,11 +60,33 @@ New `ios/` tree; nothing else in the app changed apart from `.gitignore`.
    is lost is reported as an interrupted write, not "committed"; a test now
    states that explicitly.
 
+## Independent review and fixes
+
+A separately invoked Codex session (ATD route `codex:mphi`, model
+`gpt-6.1-sol`, effort high; owner label "codex:mphi 6.1 sol high") reviewed
+e0ea86c as explicit files and returned REQUEST_CHANGES with seven findings.
+The git-diff packet was refused by ATD's privacy guard because of the
+deliberately fake credential URLs in the test fixtures; those two files were
+omitted rather than overriding the guard. All seven were reproduced and fixed,
+each with a regression test that fails when its fix is removed:
+
+| Finding | Fix |
+| --- | --- |
+| F1 high: a CRC-frame answer is ambiguous, so the probe could still choose app CRC | Probe tries every bare attempt first; a CRC-only answer allows inspection but returns `framingUnconfirmed` instead of writing |
+| F2 high: the staged header alone let foreign data be overwritten without the override (inherited from Java) | Resume requires a `RecoveryRecord` for this UID and destination whose pages pass a `recovery_matches()` port |
+| F3 high: `Tag215.readArea`/`writePage` could run before GET_VERSION or inspection | Internal gates; nothing is sent otherwise |
+| F4 medium: Swift rejects an empty fragment/credentials that Python accepts | Kept stricter, recorded as `stricter` cases checked on both sides |
+| F5 medium: overlapping presentations could interleave plans | `Station` admits one presentation at a time |
+| F6 medium: a GET_VERSION change after writing was reported as `notNtag215` | Reported as `identityChanged` once a page was sent |
+| F7 low: the terminator test changed a URL byte | Now changes the terminator itself |
+
 ## Checks (actual)
 
 | Command | Result |
 | --- | --- |
-| `ios/tools/check.sh` (Docker `swift:6.1-noble`, Swift 6.1.3, Linux x86_64) | PASS: 47 XCTest cases, 0 failures; parity PASS over 110 lines |
+| `ios/tools/check.sh` at e0ea86c (Docker `swift:6.1-noble`, Swift 6.1.3, Linux x86_64) | PASS: 47 XCTest cases, 0 failures; parity PASS over 110 lines |
+| `ios/tools/check.sh` after the review fixes | PASS: 58 XCTest cases, 0 failures; parity PASS over 114 lines incl. 4 pinned stricter cases |
+| One mutation per review fix (7) | Each killed by its intended regression test |
 | Same, with the port limit mutated to 99 999 | FAIL as intended on EDGE[2], EDGE[3]; source restored |
 | `.venv` `python -m unittest discover -s tests` | PASS, 118 tests |
 | `android/tools/parity.sh`, Gradle tests | NOT_RUN (Android unchanged) |
