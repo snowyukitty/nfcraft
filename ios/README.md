@@ -36,7 +36,8 @@ Deliberate differences from the Android writer, each pinned by a test:
   that same connection. A difference ends the presentation at the first
   differing byte; an unfinished check authorizes nothing. An inspection
   interrupted by a reconnect restarts from GET_VERSION, so its three reads
-  always come from one tag. (Android reconnects without these checks.)
+  always come from one tag and no page is read from a tag that has not
+  answered GET_VERSION. (Android reconnects without these checks.)
 - **One presentation at a time.** A second request on a busy `Station` is
   answered `busy` before anything is sent.
 - **Validation follows `ndef.py`, not Java, except where it is stricter.**

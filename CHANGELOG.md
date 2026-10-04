@@ -12,7 +12,7 @@
 - Treat every reconnect as a new connection: send nothing but identity reads
   until the inspected card is proven present again, and restart an
   inspection a reconnect interrupted.
-- Add `ios/tools/check.sh`: 62 Swift tests and byte parity with
+- Add `ios/tools/check.sh`: 63 Swift tests and byte parity with
   `nfcraft/ndef.py`, including port and length edge cases.
 - Record that Android URL validation differs from `ndef.py` on port edge cases.
   No iOS app, build or device test exists yet.

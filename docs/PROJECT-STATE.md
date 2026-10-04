@@ -7,9 +7,10 @@ Updated: 2026-10-04 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: *
 `ios/NfcraftKit` is a Swift package holding the iPhone writer's encoder,
 NTAG215 command layer, per-tap decision logic and history, ported from the
 Android writer and pinned byte for byte to `nfcraft/ndef.py`. It imports no
-Core NFC, so `ios/tools/check.sh` runs it on Windows through Docker: 62 Swift
+Core NFC, so `ios/tools/check.sh` runs it on Windows through Docker: 63 Swift
 tests and a 114-line parity diff pass after an independent Codex review and
-two focused re-reviews (eleven findings, all fixed with regression tests). Command CRC framing is established per
+three focused re-reviews (twelve findings, all fixed with regression tests;
+the last re-review found no path to a false verified write). Command CRC framing is established per
 tag by a read-only GET_VERSION probe, because Apple's current reference says
 the app must append the CRC and that is unverified on hardware. **No iOS app
 target, Xcode build, iPhone or card has been involved.** Android validation was

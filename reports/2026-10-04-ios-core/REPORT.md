@@ -96,12 +96,20 @@ that the R2 fix itself was incomplete:
 | R3 high: a reconnect during the *first* inspection could combine card A's head (writable CC) with card B's tail | An inspection interrupted by a reconnect restarts from GET_VERSION |
 | R4 high: an identity re-check that could not finish left the old authorization in place, so the FAST_READ ladder could read and write card B | Connection generations: nothing but identity reads is sent on a connection until its identity is proven; an unfinished check proves nothing |
 
+A third focused re-review confirmed R3 and R4 and found **no remaining path to
+a false `written` or `finished`** under the explicit-reconnect link model. Its
+one medium finding — after a reconnect inside an inspection, READ 0x82 could
+reach the new tag before its GET_VERSION — is fixed: page reads during an
+inspection are bound to the connection that answered GET_VERSION, and a
+reconnect restarts the inspection (test fails on the previous commit). That
+fix was not re-reviewed.
+
 ## Checks (actual)
 
 | Command | Result |
 | --- | --- |
 | `ios/tools/check.sh` at e0ea86c (Docker `swift:6.1-noble`, Swift 6.1.3, Linux x86_64) | PASS: 47 XCTest cases, 0 failures; parity PASS over 110 lines |
-| `ios/tools/check.sh` after all review fixes | PASS: 62 XCTest cases, 0 failures; parity PASS over 114 lines incl. 4 pinned stricter cases |
+| `ios/tools/check.sh` after all review fixes | PASS: 63 XCTest cases, 0 failures; parity PASS over 114 lines incl. 4 pinned stricter cases |
 | One mutation per review fix (F2, F3 ×2, F5, F6, F7, F1, R1, R2) | Each killed by its intended regression test; R2's two safeguards are redundant, so removing either alone passes and removing both fails. The R3/R4 tests fail against the previous `Tag215.swift` and when the restart or the per-connection proof is removed |
 | Same, with the port limit mutated to 99 999 | FAIL as intended on EDGE[2], EDGE[3]; source restored |
 | `.venv` `python -m unittest discover -s tests` | PASS, 118 tests |

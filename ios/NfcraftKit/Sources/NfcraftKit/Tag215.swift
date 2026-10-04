@@ -181,30 +181,44 @@ public final class Tag215 {
     /// have left, so the inspection starts again from GET_VERSION.
     public func inspect() async throws -> Inspection {
         for _ in 0..<Tag215.attempts {
-            let start = generation
-            let version = try await exchange([0x60], expected: 8, identityRead: true)
-            if version != Ndef.version {
-                if generation != start { continue }
-                throw Refusal(headline: "Not an NTAG215",
-                              detail: "GET_VERSION does not match NTAG215, so no further pages were read.")
-            }
-            let head = try await exchange([0x30, 0x00], expected: 16, identityRead: true)
-            let tail = try await exchange([0x30, 0x82], expected: 16, identityRead: true)
-            if generation != start {
+            do {
+                return try await inspectOnce()
+            } catch is ConnectionChanged {
                 continue
             }
-            let inspection = Tag215.inspection(version, head, tail)
-            if let baseline {
-                // A later inspection is a comparison; it proves this
-                // connection only when it matches.
-                provenGeneration = inspection == baseline ? generation : -1
-            } else {
-                baseline = inspection
-                provenGeneration = generation
-            }
-            return inspection
         }
         throw LinkError("The inspection was interrupted by reconnects every time.")
+    }
+
+    /// Thrown by an identity read other than GET_VERSION when its retry
+    /// reconnected: the tag in the field may be new and must answer
+    /// GET_VERSION before any page of it is read.
+    private struct ConnectionChanged: Error {}
+
+    private func inspectOnce() async throws -> Inspection {
+        let version = try await exchange([0x60], expected: 8, identityRead: true)
+        // The connection that answered GET_VERSION is the only one the
+        // page reads below may use.
+        let start = generation
+        if version != Ndef.version {
+            throw Refusal(headline: "Not an NTAG215",
+                          detail: "GET_VERSION does not match NTAG215, so no further pages were read.")
+        }
+        let head = try await exchange([0x30, 0x00], expected: 16, identityRead: true, sameConnection: true)
+        let tail = try await exchange([0x30, 0x82], expected: 16, identityRead: true, sameConnection: true)
+        if generation != start {
+            throw ConnectionChanged()
+        }
+        let inspection = Tag215.inspection(version, head, tail)
+        if let baseline {
+            // A later inspection is a comparison; it proves this
+            // connection only when it matches.
+            provenGeneration = inspection == baseline ? generation : -1
+        } else {
+            baseline = inspection
+            provenGeneration = generation
+        }
+        return inspection
     }
 
     private static func inspection(_ version: [UInt8], _ head: [UInt8], _ tail: [UInt8]) -> Inspection {
@@ -360,7 +374,8 @@ public final class Tag215 {
     /// response of the wrong length is a corrupted answer, not a card with
     /// something different to say. Anything but an identity read first
     /// proves that the tag on the current connection is the inspected one.
-    private func exchange(_ command: [UInt8], expected: Int, identityRead: Bool) async throws -> [UInt8] {
+    private func exchange(_ command: [UInt8], expected: Int, identityRead: Bool,
+                          sameConnection: Bool = false) async throws -> [UInt8] {
         if identityLost { throw IdentityLost() }
         var last: Error?
         for attempt in 0..<Tag215.attempts {
@@ -369,6 +384,9 @@ public final class Tag215 {
                 await pause(Tag215.backoff(attempt))
                 if attempt > 1, !(await reconnect()) {
                     continue
+                }
+                if attempt > 1 && sameConnection {
+                    throw ConnectionChanged()
                 }
             }
             do {

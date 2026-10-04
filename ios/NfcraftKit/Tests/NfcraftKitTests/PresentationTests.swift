@@ -242,6 +242,19 @@ final class PresentationTests: XCTestCase {
         XCTAssertTrue(outcome.receipt.first?.contains("99") ?? false, "the receipt names B, the card actually inspected")
     }
 
+    func testAReconnectDuringInspectionAsksTheNewTagForItsVersionFirst() async {
+        // A leaves before READ 0x82; the reconnect finds B, an NTAG213. B
+        // must hear GET_VERSION before any page read, and be refused on it.
+        let a = SimulatedNTAG215()
+        a.leaveAtExchange = 3
+        let b = SimulatedNTAG215()
+        b.version = [0x00, 0x04, 0x04, 0x02, 0x01, 0x00, 0x0F, 0x03]
+        let field = Field([a, b])
+        let outcome = await Presentation.run(field, .init(destination: url), pause: noPause)
+        XCTAssertEqual(outcome.verdict, .notNtag215)
+        XCTAssertEqual(b.log, ["VERSION"], "nothing but GET_VERSION reaches a tag that has not answered it")
+    }
+
     func testAnUnfinishedIdentityCheckNeverAuthorizesAnything() async {
         // A is inspected, then leaves during the first user-area read. B has
         // A's exact head but never answers READ 0x82, so its identity check
