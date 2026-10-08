@@ -117,7 +117,7 @@ public class RecentUrlsActivityTest {
         controller.pause().stop().destroy();
     }
 
-    private void capture(android.view.View view, String name) throws Exception {
+    static void capture(android.view.View view, String name) throws Exception {
         int width = 1080, height = 2400;
         view.measure(android.view.View.MeasureSpec.makeMeasureSpec(width, android.view.View.MeasureSpec.EXACTLY),
                 android.view.View.MeasureSpec.makeMeasureSpec(height, android.view.View.MeasureSpec.AT_MOST));

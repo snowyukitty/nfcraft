@@ -3,6 +3,7 @@ package best.tgs.cardwriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Deliberately narrow NFC Forum Type 2, single HTTPS URI encoder.
@@ -90,7 +91,7 @@ final class Ndef {
                 }
             }
         }
-        host = host.toLowerCase();
+        host = host.toLowerCase(Locale.ROOT);
         if (host.isEmpty() || host.length() > 253) {
             return "Use a valid ASCII DNS hostname.";
         }

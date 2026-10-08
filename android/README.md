@@ -1,9 +1,39 @@
 # nfcraft — native Android writer (formerly Card Writer)
 
-Current Android version: **0.3.0**. Display name changed; application ID
+Current Android version: **0.4.0**. Display name changed; application ID
 `best.tgs.cardwriter` and existing settings remain compatible. See
 [`docs/STORE-RELEASE.md`](../docs/STORE-RELEASE.md) for store preparation and
 individual developer account enrollment. No store release or iOS app exists yet.
+
+The owner has verified the Google Personal account and chosen free downloads.
+The current binary has no billing or advertising. See the
+[Play Console preparation sheet](store/play-console-guide.md) and
+[voluntary-support design](../docs/MONETIZATION.md).
+
+Browser Share → nfcraft proposes a single HTTPS link; confirmation saves it
+and enables Inspect only. Dialogs pause new scans, and unfamiliar-content
+overwrite requires confirmation and resets on background/restart. Quick guide
+and NFC settings help users get started. Small screens/large fonts stack mode
+controls. Legacy destination/history data are preserved.
+
+After rebuilding with Gradle, run:
+
+```powershell
+# From the repository root
+.venv/Scripts/python.exe android/tools/check_release.py --output .local/mobile-artifacts.json
+.venv/Scripts/python.exe -m unittest discover -s android/tools -p test_check_release.py
+```
+
+The checker verifies built metadata, permissions, archive integrity, store image
+dimensions and existing local test/lint reports. It cannot attest physical QA
+or source/build freshness; always rebuild after changes. For an actual signed
+bundle add `--require-signed --upload-certificate-sha256 <expected-fingerprint>`.
+It refuses unsigned archives even though jarsigner can exit zero for them.
+The fingerprint is public certificate metadata, never a password or private key.
+
+Rebuild the editorial feature graphic with
+`.venv/Scripts/python.exe android/tools/build_store_assets.py` (Pillow 12.3.0 used).
+This reuses the existing reviewed IconFlow icon and bundled OFL fonts.
 
 Writes one HTTPS URL to one NTAG215 card, verifies it by reading the whole
 advertised area back, and does it with no PC, no cable, no network and no

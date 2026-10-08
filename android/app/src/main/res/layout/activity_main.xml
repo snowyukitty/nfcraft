@@ -21,16 +21,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:paddingLeft="18dp"
+        android:paddingStart="18dp"
         android:paddingTop="15dp"
-        android:paddingRight="25dp"
+        android:paddingEnd="25dp"
         android:paddingBottom="22dp">
 
         <TextView
             android:id="@+id/destinationLabel"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DESTINATION"
+            android:text="@string/destination_label"
             android:textSize="11sp" />
 
         <EditText
@@ -40,14 +40,14 @@
             android:layout_marginTop="4dp"
             android:background="@null"
             android:padding="0dp"
+            android:minHeight="48dp"
             android:inputType="textUri"
             android:singleLine="true"
             android:imeOptions="actionDone"
             android:textSize="20sp"
-            android:hint="https://example.com"
+            android:hint="@string/destination_accessibility"
             android:importantForAutofill="no"
-            android:autofillHints=""
-            android:contentDescription="HTTPS destination" />
+            android:autofillHints="" />
 
         <TextView
             android:id="@+id/urlProblem"
@@ -92,9 +92,9 @@
         android:layout_marginTop="14dp"
         android:orientation="vertical"
         android:gravity="center"
-        android:paddingLeft="22dp"
+        android:paddingStart="22dp"
         android:paddingTop="20dp"
-        android:paddingRight="29dp"
+        android:paddingEnd="29dp"
         android:paddingBottom="27dp">
 
         <TextView
@@ -104,7 +104,8 @@
             android:gravity="center"
             android:textSize="44sp"
             android:lineSpacingExtra="-4dp"
-            android:text="Starting" />
+            android:accessibilityLiveRegion="polite"
+            android:text="@string/starting" />
 
         <TextView
             android:id="@+id/detail"
@@ -115,14 +116,24 @@
             android:textSize="15sp"
             android:lineSpacingExtra="4dp" />
 
+        <Button
+            android:id="@+id/nfcSettings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:minHeight="48dp"
+            android:textAllCaps="false"
+            android:text="@string/nfc_settings"
+            android:visibility="gone" />
+
         <TextView
             android:id="@+id/counter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="22dp"
-            android:paddingLeft="14dp"
+            android:paddingStart="14dp"
             android:paddingTop="7dp"
-            android:paddingRight="18dp"
+            android:paddingEnd="18dp"
             android:paddingBottom="11dp"
             android:textSize="11sp" />
 
@@ -133,15 +144,16 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
-        android:paddingLeft="18dp"
+        android:paddingStart="18dp"
         android:paddingTop="14dp"
-        android:paddingRight="25dp"
+        android:paddingEnd="25dp"
         android:paddingBottom="21dp"
         android:textSize="12sp"
         android:minLines="3"
         android:lineSpacingExtra="4dp" />
 
     <LinearLayout
+        android:id="@+id/modeControls"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
@@ -150,25 +162,28 @@
 
         <LinearLayout
             android:id="@+id/inspectOnly"
+            android:focusable="true"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingLeft="14dp"
+            android:paddingStart="14dp"
             android:paddingTop="12dp"
-            android:paddingRight="21dp"
+            android:paddingEnd="21dp"
             android:paddingBottom="19dp">
 
             <TextView
                 android:id="@+id/inspectOnlyTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="INSPECT ONLY"
-                android:lines="2"
-                android:textSize="10sp" />
+                android:text="@string/inspect_label"
+                android:importantForAccessibility="no"
+                android:minLines="2"
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/inspectOnlyState"
+                android:importantForAccessibility="no"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -177,30 +192,34 @@
         </LinearLayout>
 
         <View
+            android:id="@+id/modeSpacer"
             android:layout_width="12dp"
             android:layout_height="1dp" />
 
         <LinearLayout
             android:id="@+id/allowUnknown"
+            android:focusable="true"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:orientation="vertical"
-            android:paddingLeft="14dp"
+            android:paddingStart="14dp"
             android:paddingTop="12dp"
-            android:paddingRight="21dp"
+            android:paddingEnd="21dp"
             android:paddingBottom="19dp">
 
             <TextView
                 android:id="@+id/allowUnknownTitle"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="OVERWRITE UNKNOWN"
-                android:lines="2"
-                android:textSize="10sp" />
+                android:text="@string/overwrite_label"
+                android:importantForAccessibility="no"
+                android:minLines="2"
+                android:textSize="11sp" />
 
             <TextView
                 android:id="@+id/allowUnknownState"
+                android:importantForAccessibility="no"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="3dp"
@@ -216,12 +235,22 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="14dp"
         android:gravity="center"
-        android:textSize="10sp"
+        android:textSize="11sp"
         android:lineSpacingExtra="3dp"
-        android:text="NEVER LOCKS · WRITES PAGES 04–7F ONLY" />
+        android:text="@string/safety_footnote" />
+
+    <Button
+        android:id="@+id/help"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:minHeight="48dp"
+        android:textAllCaps="false"
+        android:text="@string/help_title" />
 
     <Button
         android:id="@+id/privacy"
+        android:layout_marginTop="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"

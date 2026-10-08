@@ -3,18 +3,23 @@ package best.tgs.cardwriter;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ActivityNotFoundException;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.media.AudioManager;
 import android.media.ToneGenerator;
 import android.nfc.NfcAdapter;
 import android.nfc.Tag;
 import android.nfc.tech.NfcA;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.VibrationEffect;
 import android.os.Vibrator;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -24,6 +29,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,7 +38,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * One screen that rewrites one card at a time.
@@ -82,7 +87,9 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
     private static final int STAGE_COMMITTED = 2;
 
     private final Handler ui = new Handler(Looper.getMainLooper());
-    private final AtomicBoolean busy = new AtomicBoolean(false);
+    private final ScanGate scanGate = new ScanGate();
+    private boolean destroyed;
+    private String pendingSharedUrl;
 
     private EditText url;
     private TextView urlProblem;
@@ -160,12 +167,13 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 
         dress();
+        adaptControls();
 
         String saved = prefs.getString(KEY_URL, DEFAULT_URL);
         url.setText(saved.isEmpty() ? DEFAULT_URL : saved);
         setToggle(inspectOnly, inspectOnlyState, prefs.getBoolean(KEY_INSPECT, false), Nb.SKY);
-        setToggle(allowUnknown, allowUnknownState, prefs.getBoolean(KEY_ALLOW, false),
-                Nb.TERRACOTTA);
+        prefs.edit().remove(KEY_ALLOW).apply();
+        setToggle(allowUnknown, allowUnknownState, false, Nb.TERRACOTTA);
         snapshot();
 
         url.addTextChangedListener(new TextWatcher() {
@@ -190,9 +198,20 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
             return true;
         });
         recentButton.setOnClickListener(v -> showRecentUrls());
-        findViewById(R.id.privacy).setOnClickListener(v -> new AlertDialog.Builder(this)
+        findViewById(R.id.privacy).setOnClickListener(v -> showModal(new AlertDialog.Builder(this)
                 .setTitle(R.string.privacy_title).setMessage(R.string.privacy_body)
-                .setPositiveButton(android.R.string.ok, null).show());
+                .setPositiveButton(android.R.string.ok, null)));
+        findViewById(R.id.help).setOnClickListener(v -> showModal(new AlertDialog.Builder(this)
+                .setTitle(R.string.help_title).setMessage(R.string.help_body)
+                .setNeutralButton(R.string.email_support, (d, which) -> emailSupport())
+                .setPositiveButton(android.R.string.ok, null)));
+        findViewById(R.id.nfcSettings).setOnClickListener(v -> {
+            try {
+                startActivity(new Intent(Settings.ACTION_NFC_SETTINGS));
+            } catch (ActivityNotFoundException e) {
+                Toast.makeText(this, R.string.settings_unavailable, Toast.LENGTH_LONG).show();
+            }
+        });
 
         inspectOnly.setOnClickListener(v -> {
             boolean next = !inspectOnlyNow;
@@ -202,13 +221,134 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         });
         allowUnknown.setOnClickListener(v -> {
             boolean next = !allowUnknownNow;
-            prefs.edit().putBoolean(KEY_ALLOW, next).apply();
-            setToggle(allowUnknown, allowUnknownState, next, Nb.TERRACOTTA);
-            snapshot();
+            if (!next) {
+                setToggle(allowUnknown, allowUnknownState, false, Nb.TERRACOTTA);
+            } else {
+                showModal(new AlertDialog.Builder(this)
+                        .setTitle(R.string.overwrite_title).setMessage(R.string.overwrite_body)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(R.string.enable_overwrite, (dialog, which) ->
+                                setToggle(allowUnknown, allowUnknownState, true, Nb.TERRACOTTA)));
+            }
         });
 
         showUrlProblem(targetUrl);
         paint(Nb.PAPER, "Starting", "", null);
+        // An external share is a proposal, never an instruction to write or open a URL.
+        if (savedInstanceState != null && savedInstanceState.containsKey("shared_url")) {
+            pendingSharedUrl = savedInstanceState.getString("shared_url");
+            confirmSharedUrl();
+        } else if (savedInstanceState == null) {
+            acceptShare(getIntent());
+        }
+    }
+
+    @Override public void onConfigurationChanged(Configuration configuration) {
+        super.onConfigurationChanged(configuration);
+        adaptControls();
+    }
+
+    private void adaptControls() {
+        Configuration configuration = getResources().getConfiguration();
+        boolean stacked = configuration.fontScale > 1.3f || configuration.screenWidthDp < 360;
+        LinearLayout controls = findViewById(R.id.modeControls);
+        controls.setOrientation(stacked ? LinearLayout.VERTICAL : LinearLayout.HORIZONTAL);
+        findViewById(R.id.modeSpacer).setVisibility(stacked ? View.GONE : View.VISIBLE);
+        for (View control : new View[]{inspectOnly, allowUnknown}) {
+            LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) control.getLayoutParams();
+            params.width = stacked ? LinearLayout.LayoutParams.MATCH_PARENT : 0;
+            params.weight = stacked ? 0 : 1;
+            params.bottomMargin = stacked && control == inspectOnly ? Nb.dp(this, 12) : 0;
+            control.setLayoutParams(params);
+        }
+    }
+
+    @Override protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        acceptShare(intent);
+    }
+
+    @Override protected void onSaveInstanceState(Bundle state) {
+        super.onSaveInstanceState(state);
+        if (pendingSharedUrl != null) state.putString("shared_url", pendingSharedUrl);
+    }
+
+    private void acceptShare(Intent intent) {
+        if (intent == null || !Intent.ACTION_SEND.equals(intent.getAction())
+                || !"text/plain".equals(intent.getType())) return;
+        CharSequence shared;
+        try {
+            shared = intent.getCharSequenceExtra(Intent.EXTRA_TEXT);
+        } catch (RuntimeException e) {
+            shared = null;
+        }
+        // Never search a paragraph for a link: the whole shared value must be one URL.
+        String value = shared == null || shared.length() > 2048 ? "" : shared.toString().trim();
+        if (Ndef.validate(value) != null) {
+            showModal(new AlertDialog.Builder(this).setTitle(R.string.share_invalid_title)
+                    .setMessage(R.string.share_invalid_body)
+                    .setPositiveButton(android.R.string.ok, null));
+            return;
+        }
+        if (pendingSharedUrl != null) {
+            Toast.makeText(this, R.string.share_already_open, Toast.LENGTH_LONG).show();
+            return;
+        }
+        pendingSharedUrl = value;
+        confirmSharedUrl();
+    }
+
+    private void emailSupport() {
+        // Open the user's mail composer; never attach card evidence, URLs or identifiers.
+        Intent mail = new Intent(Intent.ACTION_SENDTO,
+                Uri.parse("mailto:" + getString(R.string.support_email)));
+        mail.putExtra(Intent.EXTRA_SUBJECT, "nfcraft feedback");
+        try {
+            startActivity(mail);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(this, getString(R.string.email_unavailable,
+                    getString(R.string.support_email)), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void confirmSharedUrl() {
+        final String value = pendingSharedUrl;
+        AlertDialog dialog = showModal(new AlertDialog.Builder(this)
+                .setTitle(R.string.share_title)
+                .setMessage(getString(R.string.share_body, value))
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.use_link, (d, which) -> {
+                    url.setText(value);
+                    url.setSelection(value.length());
+                    rememberDestination(value);
+                    // Imported destinations begin in read-only mode, even on a warm launch.
+                    prefs.edit().putBoolean(KEY_INSPECT, true).apply();
+                    setToggle(inspectOnly, inspectOnlyState, true, Nb.SKY);
+                    setToggle(allowUnknown, allowUnknownState, false, Nb.TERRACOTTA);
+                }));
+        if (dialog == null) pendingSharedUrl = null;
+        else dialog.setOnDismissListener(d -> {
+            pendingSharedUrl = null;
+            scanGate.endModal();
+            refreshReader();
+        });
+    }
+
+    /** Close admission before displaying a dialog, not after a Binder callback starts. */
+    private AlertDialog showModal(AlertDialog.Builder builder) {
+        if (!scanGate.beginModal()) {
+            Toast.makeText(this, R.string.wait_for_card, Toast.LENGTH_LONG).show();
+            return null;
+        }
+        refreshReader();
+        AlertDialog dialog = builder.create();
+        dialog.setOnDismissListener(d -> {
+            scanGate.endModal();
+            refreshReader();
+        });
+        dialog.show();
+        return dialog;
     }
 
     private void loadRecentUrls() {
@@ -275,7 +415,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                 rememberDestination(selected);
             });
             dialog.setNeutralButton(R.string.clear_history, (d, which) ->
-                    new AlertDialog.Builder(this)
+                    showModal(new AlertDialog.Builder(this)
                             .setTitle(R.string.clear_history)
                             .setMessage(R.string.clear_history_message)
                             .setNegativeButton(android.R.string.cancel, null)
@@ -284,9 +424,9 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                                 recentUrls.clear();
                                 persistRecentUrls();
                                 updateRecentButton();
-                            }).show());
+                            })));
         }
-        dialog.show();
+        showModal(dialog);
     }
 
     /** Apply the paper surface, the ink outlines and the two typefaces. */
@@ -305,7 +445,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
 
         Nb.pressable(inspectOnly, Nb.PAPER, 18);
         Nb.pressable(allowUnknown, Nb.PAPER, 18);
-        for (int id : new int[]{R.id.saveUrl, R.id.recentUrls, R.id.privacy}) {
+        for (int id : new int[]{R.id.saveUrl, R.id.recentUrls, R.id.privacy, R.id.help, R.id.nfcSettings}) {
             TextView button = findViewById(id);
             button.setBackgroundTintList(null);
             Nb.pressable(button, id == R.id.saveUrl ? Nb.YELLOW : Nb.BEIGE, 10);
@@ -317,14 +457,16 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         Nb.label(findViewById(R.id.destinationLabel));
         Nb.label(inspectOnlyTitle);
         Nb.label(allowUnknownTitle);
+        inspectOnlyTitle.setLetterSpacing(0.08f);
+        allowUnknownTitle.setLetterSpacing(0.08f);
 
         TextView footnote = findViewById(R.id.footnote);
         Nb.label(footnote);
-        footnote.setTextColor(Nb.withAlpha(Nb.INK, 0.45f));
+        footnote.setTextColor(Nb.withAlpha(Nb.INK, 0.72f));
 
         url.setTypeface(Nb.display(this, false));
         url.setTextColor(Nb.INK);
-        url.setHintTextColor(Nb.withAlpha(Nb.INK, 0.3f));
+        url.setHintTextColor(Nb.withAlpha(Nb.INK, 0.65f));
 
         urlProblem.setTypeface(Nb.mono(this, false));
         urlProblem.setTextColor(0xFFA8371A);
@@ -352,6 +494,17 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         Nb.refill(chip, on ? onFill : Nb.PAPER);
         chip.invalidate();
         state.setText(on ? "ON" : "OFF");
+        chip.setContentDescription(getString(chip == inspectOnly ? R.string.inspect_label
+                : R.string.overwrite_label) + ", " + (on ? "on" : "off"));
+        chip.setAccessibilityDelegate(new View.AccessibilityDelegate() {
+            @Override public void onInitializeAccessibilityNodeInfo(View view,
+                    android.view.accessibility.AccessibilityNodeInfo info) {
+                super.onInitializeAccessibilityNodeInfo(view, info);
+                info.setClassName("android.widget.Switch");
+                info.setCheckable(true);
+                info.setChecked(on);
+            }
+        });
         // A saturated fill eats the softened label, so the title goes to full
         // ink whenever the chip is lit.
         TextView title = chip == inspectOnly ? inspectOnlyTitle : allowUnknownTitle;
@@ -372,7 +525,19 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
     protected void onResume() {
         super.onResume();
         snapshot();
+        scanGate.resume();
+        refreshReader();
+    }
+
+    private void refreshReader() {
+        if (destroyed) return;
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
+        findViewById(R.id.nfcSettings).setVisibility(adapter != null && !adapter.isEnabled()
+                ? View.VISIBLE : View.GONE);
+        if (!scanGate.ready()) {
+            if (adapter != null) adapter.disableReaderMode(this);
+            return;
+        }
         if (adapter == null) {
             paint(Nb.TERRACOTTA, "No NFC", "This device has no NFC hardware.", null);
             return;
@@ -388,11 +553,18 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                         | NfcAdapter.FLAG_READER_SKIP_NDEF_CHECK
                         | NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS,
                 extras);
-        paint(Nb.PAPER, "Ready", "Hold a card against the back of the phone.", null);
+        String previous = headline.getText().toString();
+        if (previous.equals("Starting") || previous.equals("No NFC")
+                || previous.equals("NFC is off") || previous.equals("Ready")) {
+            paint(Nb.PAPER, "Ready", "Hold a card against the back of the phone.", null);
+        }
     }
 
     @Override
     protected void onPause() {
+        scanGate.pause();
+        // Overwriting unfamiliar content is session-only, never restored after leaving.
+        setToggle(allowUnknown, allowUnknownState, false, Nb.TERRACOTTA);
         super.onPause();
         NfcAdapter adapter = NfcAdapter.getDefaultAdapter(this);
         if (adapter != null) {
@@ -402,6 +574,8 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
 
     @Override
     protected void onDestroy() {
+        destroyed = true;
+        scanGate.pause();
         super.onDestroy();
         if (tones != null) {
             tones.release();
@@ -415,7 +589,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         // Reader mode can rediscover a tag while the previous pass is still
         // closing. Only one NFC technology may be connected at a time, so this
         // has to be a compare-and-set, not a check followed by a set.
-        if (!busy.compareAndSet(false, true)) {
+        if (!scanGate.beginScan()) {
             return;
         }
         writeStage = STAGE_UNTOUCHED;
@@ -461,7 +635,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
             }
             post(outcome);
         } finally {
-            busy.set(false);
+            scanGate.finishScan();
         }
     }
 
@@ -636,6 +810,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
 
     private void post(final Outcome outcome) {
         ui.post(() -> {
+            if (destroyed) return;
             paint(outcome.fill, outcome.headline, outcome.detail, outcome.evidence);
             signal(outcome.sound);
         });

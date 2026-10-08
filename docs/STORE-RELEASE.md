@@ -1,12 +1,16 @@
 # Mobile store preparation
 
-Updated 2026-09-29. Owner decisions: **nfcraft**, individual developer accounts.
-Neither developer account, Mac nor iPhone is ready. No enrollment, payment,
-upload, store record, signing key or public hosting was performed this session.
+Updated 2026-10-08. Owner decisions: **nfcraft**, individual developer accounts,
+**free downloads** with voluntary income options. Public support email is approved as **dokoii@proton.me**. The owner reports Google Play
+verification complete and Create app available; app creation is not confirmed.
+Apple enrollment/Mac/iPhone remain unresolved. No upload, store mutation,
+signing-key creation or public hosting was performed by the agent.
+Use [the current Console sheet](../android/store/play-console-guide.md) for the
+next screens and [the revenue design](MONETIZATION.md) for payment activation.
 
 ## Current release candidate
 
-Android 0.3.0 / versionCode 3 retains `best.tgs.cardwriter` and the `card-writer`
+Android 0.4.0 / versionCode 4 retains `best.tgs.cardwriter` and the `card-writer`
 preference store so an update with the same signing identity preserves data.
 Recent destinations are local choices, not successful-write evidence. The
 desktop nfcraft version remains 0.2.2 and its journal is unchanged.
@@ -14,14 +18,17 @@ desktop nfcraft version remains 0.2.2 and its journal is unchanged.
 | Deliverable | Status |
 | --- | --- |
 | Ten recent HTTPS destinations; reuse, deduplication, clear | Implemented and tested |
+| Confirmed browser sharing, modal scan isolation, guide and session-only overwrite | Implemented; local tests pass, physical QA outstanding |
 | Android launcher label nfcraft and reviewed pocket-card identity | Prepared |
 | Target/compile API 36; AGP 8.10.1; wrapper 8.11.1 | Built locally |
 | Debug APK | Local sideload/test artifact, not a store release |
 | Release AAB | Unsigned preparation artifact; not upload-ready |
 | Upload signing integration | Environment variables supported; owner key not created |
 | Store description, privacy draft, reviewer/test checklist | Local drafts in `android/store/` |
-| Public privacy/support URLs and identity/contact fields | Owner input and hosting needed |
-| Android physical acceptance, real store screenshots, feature graphic | NOT_RUN / outstanding |
+| Public support email | dokoii@proton.me approved; app opens an unsent composer |
+| Public privacy/support URLs and developer identity | Owner input and hosting needed |
+| Feature graphic | Prepared: 1024 x 500 opaque RGB, visually reviewed |
+| Android physical acceptance and real store screenshots | NOT_RUN / outstanding |
 | iOS application, entitlement, archive, signing, TestFlight | Not implemented |
 
 ## Google Play: individual account first
@@ -39,9 +46,9 @@ desktop nfcraft version remains 0.2.2 and its journal is unchanged.
 4. Complete the requested physical Android device verification through the
    Play Console mobile app. See
    [device verification](https://support.google.com/googleplay/android-developer/answer/14316361).
-5. After verification, create the app as `nfcraft`. Decide primary language,
-   distribution countries, target audience and free/paid status before saving
-   those choices. The existing English UI is the prepared locale; translated
+5. Verification is now owner-confirmed. Create the app as `nfcraft`, **App**,
+   **Free**, English (United States). Distribution countries and target audience
+   still require owner selection. The existing English UI is the prepared locale; translated
    listings must not imply that the app itself has translated screens.
 
 Then finish public support/privacy pages, app-content declarations, release
@@ -134,7 +141,7 @@ until that is verified, then make any identity change an explicit migration.
   release track together before upload/public release. Current authorization is
   preparation and guidance, not payment or publication.
 
-Next owner action: start the Google registration link and select Personal;
-complete private identity/payment steps yourself, then report only the current
-screen or verification status. Do not send identity documents or credentials
-into the repository or chat.
+Next owner action: Create app using the Console sheet, provide the public developer name and available NFC test phone, then complete the private
+signing/account steps. Share status only, never identity documents, bank details,
+passwords or private keys in the repository or chat. Merchant country is needed
+to resolve payment support before implementing the optional revenue product.

@@ -1,7 +1,7 @@
 # nfcraft mobile store copy — local draft
 
-English matches the current app UI. Developer identity, support address,
-privacy/support URLs, countries, audience and price are unresolved. Do not
+English matches the current app UI. Public support: dokoii@proton.me. Developer
+identity, privacy/support URLs, countries and audience are unresolved. Download is free. Do not
 upload this draft until those fields and physical acceptance are complete.
 
 ## Google Play
@@ -22,7 +22,10 @@ recent destinations on your phone, select one to use again, or clear the list.
 - Inspect a card without writing to it.
 - Verify the written data by reading it back.
 - Reuse recent links without typing them again.
-- Work without an account, ads or an Internet connection in the app.
+- Share a link from your browser, review it, and start in Inspect only mode.
+- Follow the built-in guide and explicitly confirm unfamiliar-content overwrite.
+- Work without an account, ads or an Internet connection for NFC operations.
+- Get help from the local guide or contact dokoii@proton.me.
 
 Requires an NFC-capable Android phone and compatible, writable NTAG215 tags.
 Other tag models and protected cards are not supported. Keep the card in place
@@ -44,13 +47,17 @@ and App Privacy answers must be produced from the tested iOS build.
 
 ## Release notes draft
 
-Keep your last 10 destinations, select a saved link, and clear history on your
-phone. New nfcraft identity and Android 16 support.
+Share a destination from your browser and confirm it before use. Dialogs pause
+new NFC scans. Unknown-content overwrite now requires confirmation and resets
+when you leave the app. Includes a quick guide, more accessible controls, and
+a fix for uppercase hosts in Turkish device locales.
 
 ## Asset inventory
 
 - `google-play-icon.png`: opaque 512 x 512 PNG.
 - `app-store-icon.png`: opaque 1024 x 1024 PNG; future iOS source asset.
 - `../master.svg`: editable identity; `../master-review.json`: reviewed contract.
-- Feature graphic and real device screenshots: outstanding. Robolectric images
+- `feature-graphic.png`: 1024 x 500 opaque RGB editorial graphic; reproducible
+  through `../tools/build_store_assets.py`.
+- Real device screenshots: outstanding. Robolectric images
   in build reports are engineering evidence, not store screenshots.

@@ -1,5 +1,26 @@
 # Changelog
 
+## Android 0.4.0 — 2026-10-08
+
+- Add browser share import with strict HTTPS validation, confirmation, and
+  read-only mode after acceptance. Reject ambiguous/malformed shares without
+  changing the current destination; restore pending confirmation on recreation.
+- Pause new NFC scans behind dialogs and outside the foreground. Serialize
+  operations across Activity recreation; let admitted writes close normally.
+  Unknown-content overwrite requires confirmation and resets on background or
+  restart, including previously persisted permission.
+- Add Quick guide, a support composer for the approved public email, an NFC
+  settings shortcut, switch accessibility semantics,
+  readable dialog accents and automatic stacked controls for small/large-text
+  layouts. Fix ASCII hostname validation under Turkish device locales.
+- Explicitly exclude Android 12+ app backup/device transfer. Keep package ID,
+  destination/history, minSdk 21 and offline permission scope unchanged.
+- Prepare a feature graphic, Console worksheet, voluntary-support product
+  design and repeatable artifact/signature checks. Free download is confirmed;
+  Google account verification is owner-reported. Payments are not implemented.
+- Physical NFC/update QA, release signing, public privacy/support pages,
+  screenshots and Play testing/submission remain separate gates.
+
 ## Android 0.3.0 — 2026-09-29
 
 - Add ten device-local recent HTTPS destinations with explicit saving, reuse,

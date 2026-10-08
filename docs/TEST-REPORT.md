@@ -1,5 +1,20 @@
 # nfcraft — verification evidence
 
+## Android 0.4.0 — 2026-10-08
+
+**PASS:** 118 Python / 16 Worker tests and isolated demo/CLI/MCP smoke; Java/Python
+encoder parity, 1,087 plan states, 10 link behaviors and recent-history checks;
+23 Android unit/Robolectric tests including share consent/recreation, hostile
+input, modal/foreground admission, cross-Activity serialization, session-only
+overwrite, accessibility/large-text layout and Turkish-locale validation.
+APK/AAB build; lint **0 errors, 17 warnings**. Store graphic and synthetic UI
+were visually reviewed; no simulated write screenshot is offered as real QA.
+Artifact checks pass; unsigned bundle is correctly refused by signed mode.
+**NOT_RUN:** physical Android/NFC, same-key phone update, recipient QA, store
+screenshots, Play transactions and uploads. **BLOCKED:** upload signing, public
+privacy/support details and store testing prerequisites. See the
+[report](../reports/2026-10-08-play-quality/REPORT.md).
+
 ## Android 0.3.0 — 2026-09-29
 
 **PASS:** 118 Python / 16 Worker tests, daemon/CLI/MCP demo smoke, Java/Python

@@ -1,6 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">nfcraft</string>
+    <string name="destination_label">DESTINATION</string>
+    <string name="support_email" translatable="false">dokoii@proton.me</string>
+    <string name="email_support">Email support</string>
+    <string name="email_unavailable">No email app is available. Contact %1$s from your preferred email service.</string>
+    <string name="destination_accessibility">HTTPS destination</string>
+    <string name="starting">Starting</string>
+    <string name="inspect_label">Inspect only</string>
+    <string name="overwrite_label">Overwrite unknown</string>
+    <string name="safety_footnote">NEVER LOCKS · WRITES PAGES 04–7F ONLY</string>
+    <string name="help_title">Quick guide</string>
+    <string name="help_body">1. Choose your destination\nPaste a public HTTPS link, or share one from your browser to nfcraft. Save link keeps it in your 10 recent destinations. Saving a link does not write a card.\n\n2. Check your card\nUse an unlocked, factory-default NTAG215. Inspect only reads without writing. Other tag types, payment cards, and access badges are not supported.\n\n3. Write and verify\nTurn Inspect only OFF when ready to write. Hold the card still against your phone’s NFC antenna until Written, Finished, or Already done appears. Keep the phone unlocked and nfcraft open.\n\n4. Try another phone\nRemove the card, leave nfcraft, and scan it with a different phone to check the destination. A successful write is not proof that the website works.\n\nIf contact is lost\nKeep the same destination and card. Follow the result on screen; an interrupted write may have changed the card. Do not enable overwrite just to dismiss an error.\n\nPrivacy and control\nAnyone scanning the card can read its link. Do not write secret links. nfcraft never locks a card; it can still be rewritten. Opening a dialog pauses new scans. Unknown-content overwrite turns off when you leave the app.</string>
+    <string name="nfc_settings">Open NFC settings</string>
+    <string name="settings_unavailable">Open your phone’s Settings and enable NFC, then return to nfcraft.</string>
+    <string name="wait_for_card">Wait for the current card operation to finish, then try again.</string>
+    <string name="overwrite_title">Replace unfamiliar card content?</string>
+    <string name="overwrite_body">Only enable this for a card you own and intend to rewrite. Existing content in the write region may be lost. Protection checks and full readback stay enabled. This permission turns off when you leave nfcraft.</string>
+    <string name="enable_overwrite">Enable for this session</string>
+    <string name="share_title">Use this destination?</string>
+    <string name="share_body">%1$s\n\nThis will replace the destination and save it in your recent links. Inspect only will be ON. Nothing is written or opened automatically.</string>
+    <string name="use_link">Use link</string>
+    <string name="share_invalid_title">Share one HTTPS link</string>
+    <string name="share_invalid_body">Share a single public HTTPS URL, up to 200 ASCII bytes, without a fragment or login credentials. Extra text and multiple links are not imported. Your current destination is unchanged.</string>
+    <string name="share_already_open">Finish the current shared-link confirmation first.</string>
     <string name="save_destination">Save link</string>
     <string name="destination_saved">Link saved on this phone</string>
     <string name="recent_count">Recent (%1$d/10)</string>
@@ -9,5 +32,5 @@
     <string name="clear_history">Clear history</string>
     <string name="clear_history_message">Remove all saved recent links from this phone? The current destination stays in the input field. No card is changed.</string>
     <string name="privacy_title">Privacy</string>
-    <string name="privacy_body">Your destination, up to 10 recent links, and switches are stored only on this phone. Clear recent links from Recent → Clear history. To remove the current destination, delete it from the input field. Android app storage settings can remove all app settings.\n\nThe app has no Internet permission, account, advertising, or analytics. NFC card identifiers and readback appear on screen during use; the app does not upload them. App backup is disabled.\n\nA link written to a card is readable by anyone who scans it. The destination website has its own privacy practices. Clearing app history does not erase a card.</string>
+    <string name="privacy_body">Your destination, up to 10 recent links, and switches are stored only on this phone. Clear recent links from Recent → Clear history. To remove the current destination, delete it from the input field. Android app storage settings can remove all app settings.\n\nThe app has no Internet permission, account, advertising, or analytics. NFC card identifiers and readback appear on screen during use; the app does not upload them. Cloud backup and Android 12+ device transfer are excluded for app data.\n\nA link written to a card is readable by anyone who scans it. The destination website has its own privacy practices. Clearing app history does not erase a card.</string>
 </resources>

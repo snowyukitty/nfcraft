@@ -5,7 +5,7 @@
         <item name="android:statusBarColor">#FFF4DE</item>
         <item name="android:navigationBarColor">#262019</item>
         <item name="android:windowLightStatusBar">true</item>
-        <item name="android:colorAccent">#EB5B32</item>
+        <item name="android:colorAccent">#214B40</item>
         <item name="android:textColorHighlight">#FFD64A</item>
     </style>
 </resources>

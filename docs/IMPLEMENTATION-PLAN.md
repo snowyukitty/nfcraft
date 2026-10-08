@@ -23,6 +23,21 @@ These are **next-agent tasks**, not a list of completed features. Follow current
 
 ## Important risks to review while implementing
 
+### Owner-prioritized Play quality milestone — 2026-10-08
+
+- MBL04 complete locally: consent-based browser sharing, modal/foreground scan
+  gate, cross-Activity operation exclusion and session-only unknown overwrite.
+- MBL05 complete locally: guide, settings shortcut, switch semantics, small and
+  large-text layouts, Turkish-hostname fix and Android 12+ extraction rules.
+- MBL03 preparation advances: feature graphic, Console worksheet, free-download
+  decision and owner-reported Google verification; artifact/signature checks
+  added. Real phone QA, upload key, public support/privacy, screenshots and
+  internal/closed testing remain gates, not engineering simulation results.
+- MBL06 designed, not implemented: optional one-time Workshop finishes product.
+  Resolve merchant country, minSdk compatibility, verification/restore design,
+  product/price and Play transaction QA before activation. Future label tools
+  and physical craft services remain demand-validation proposals.
+
 ### Owner-prioritized mobile release work — 2026-09-29
 
 - MBL01 complete locally: ten recent destinations, deduplication, reuse,

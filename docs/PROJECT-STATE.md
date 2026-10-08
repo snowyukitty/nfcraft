@@ -1,6 +1,39 @@
 # nfcraft — current project state
 
-Updated: 2026-09-29 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.3.0**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+Updated: 2026-10-08 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.4.0**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+
+## Google Play preparation and Android quality — 2026-10-08
+
+Owner decisions: free download, with voluntary income options desired. The
+Google Personal account is verified (owner report), Create app is available;
+creation/upload are not confirmed. Public support email is approved as dokoii@proton.me. Public developer identity,
+merchant country, markets/audience and a connected NFC test phone remain
+unresolved. The Google login address stays separate from public contact data.
+
+Android 0.4.0 adds confirmed browser sharing, read-only mode after import,
+modal/foreground scan admission and one operation across Activity recreation.
+Unknown-content overwrite now requires confirmation and is never persisted.
+There is a local guide, an unsent support-email composer, settings shortcut,
+more accessible responsive controls,
+locale-independent URL validation and explicit backup/device-transfer exclusions.
+Package ID, stored destinations/history and the deterministic write plan stay
+compatible. No third-party runtime SDK, Internet permission or payment feature
+has been added.
+
+Local checks: 118 Python / 16 Worker tests, 23 Android tests, encoder parity,
+1,087 plan states and 10 link behaviors pass. Lint has 0 errors / 17 warnings.
+Synthetic UI and the 1024 x 500 feature graphic were visually reviewed.
+No Android device was attached to adb. The APK is debug-signed; AAB is unsigned.
+Physical NFC/update acceptance, signed upload, privacy hosting, real screenshots
+and Play testing/production access remain outstanding.
+
+[Console worksheet](../android/store/play-console-guide.md),
+[income proposal](MONETIZATION.md), and
+[session evidence](../reports/2026-10-08-play-quality/REPORT.md) are the current
+handoff. The recommended first income product is an optional one-time cosmetic
+pack through Play Billing, followed by validated label tools/physical services;
+these are designed, not implemented or activated. Apple remains a separate
+unimplemented iOS project prerequisite within this repository.
 
 ## Mobile history, identity and store preparation — 2026-09-29
 
@@ -18,8 +51,9 @@ assets. Robolectric tests cover API 28/36 activity and preference behavior;
 native graphics are inspected as simulated UI evidence. Physical QA remains
 outstanding. Android 0.3.0 APK is debug-signed; its preparation AAB is unsigned.
 
-The owner chose **individual** Apple/Google developer accounts; neither account,
-Mac nor iPhone is ready. [Store preparation and enrollment guide](STORE-RELEASE.md)
+At this September checkpoint the owner chose **individual** Apple/Google
+accounts; neither account, Mac nor iPhone was ready. October's Google verification
+supersedes that account status. [Store preparation and enrollment guide](STORE-RELEASE.md)
 and `android/store/` contain local drafts and exact remaining gates. No account
 was created, fee paid, key generated or app uploaded. There is no iOS app yet.
 See [session report](../reports/2026-09-29-mobile-history-brand-release/REPORT.md).
@@ -95,7 +129,7 @@ No `.git` existed in the handoff. A local `work/local-bootstrap` branch was init
 | Search, filters, card details, live recipient preview | Implemented in 0.2.0; browser acceptance passed |
 | Public export review | Implemented with stale-content refusal and shared-profile warning; not deployment/receipt tracking |
 | Multiple profiles, advanced labels, multilingual UI | Backlog, not shipped |
-| Android writing app | Native standalone nfcraft 0.3.0 in `android/`; local history/build tests pass; physical release acceptance outstanding |
+| Android writing app | Native standalone nfcraft 0.4.0 in `android/`; local share/history/safety/build tests pass; physical release acceptance outstanding |
 | iPhone writing app | Not implemented; Core NFC prototype and Mac/iPhone validation required |
 | Signed installer, auto-update, physical write protection | Not implemented |
 
