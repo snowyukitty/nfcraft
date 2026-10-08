@@ -23,7 +23,7 @@ independent of the test website. Alternative: `me.dokoii.nfcraft` if the owner
 prefers a publisher prefix. Neither is selected, registered or verified as
 available in Play Console. No ownership of a corresponding domain is implied.
 
-The current 0.4.1 build deliberately remains a compatible **legacy test build**
+The current 0.4.2 build deliberately remains a compatible **legacy test build**
 under `best.tgs.cardwriter` while independent quality work proceeds. Its ID is
 not a renewed recommendation for the public release. Do not publish this build.
 
@@ -42,8 +42,10 @@ owner chooses the public identity.
 2. Preserve the old test installation and its destination/recent list. A new
    application ID creates a separate Android sandbox, even with the same
    signing key; keeping the preferences filename does not migrate data.
-3. For the small existing ten-link store, provide an explicit, reviewable
-   transfer path before the owner changes installations. Never use uninstall,
+3. Version 0.4.2 provides Recent → Transfer links: manually copy recent URLs,
+   then paste, preview and confirm a lossless merge in the new installation.
+   Synthetic tests pass; physical cross-installation acceptance is pending.
+   Never use uninstall,
    backup flags, direct private-storage scraping or a shared UID as a shortcut.
    Test the transfer with synthetic links before using owner data.
 4. Rename `applicationId`, namespace/Java packages, JVM harness imports/paths,

@@ -21,6 +21,12 @@ destination in the input field; delete that text separately if needed. Android
 app storage controls can clear all local app settings. Clearing app data does
 not erase or change an NFC card.
 
+Recent → Transfer links lets you view and manually copy saved URLs as plain
+text, or paste links into a validated, confirmed import. Nothing is copied or
+sent automatically. If you copy, the system clipboard and your keyboard or
+clipboard service may retain the content. Copies outside nfcraft are not
+removed by Clear history. Export excludes unsaved input and card identifiers.
+
 You can share a single HTTPS link from another app to nfcraft. The link is
 validated and displayed for confirmation; it only replaces your destination
 and enters recent links when you choose Use link. nfcraft does not fetch or

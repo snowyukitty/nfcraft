@@ -1,5 +1,11 @@
 # nfcraft｜從這裡開始
 
+> Current checkpoint (2026-10-09): desktop 0.2.2 / Android 0.4.2.
+> The archive instructions below are historical. For the existing checkout,
+> start with [current state](docs/PROJECT-STATE.md) and the
+> [latest checkpoint](reports/2026-10-09-transfer-checkpoint/REPORT.md).
+> Play identity selection, physical phone QA and signed upload are still pending.
+
 **版本：0.1.1 · 本地 agent 交接版 · 2026-09-05**
 
 這個資料夾包含完整 app 原始碼、操作工具、設計文件、測試及交接 prompt，不需要再下載前一版 NFC Card Ops。它不是已簽名的 Windows 安裝檔，也不是已完成實體 NFC 驗收或雲端部署的成品。

@@ -1,6 +1,6 @@
 # Mobile acceptance and reviewer preparation
 
-No physical NFC acceptance was run for 0.4.0. Use disposable test links and
+No physical NFC acceptance was run for 0.4.2. Use disposable test links and
 owner-approved expendable NTAG215 cards. Never include real UIDs in store media.
 
 ## Android UI and update acceptance
@@ -29,6 +29,25 @@ owner-approved expendable NTAG215 cards. Never include real UIDs in store media.
     hardware shows an honest unsupported state. Check gesture/three-button bars.
 11. Confirm local history does not transfer through an Android 12+ device-copy
     rehearsal on disposable data. OEM behavior remains physical QA, not a promise.
+
+## Link transfer acceptance (before an application ID change)
+
+1. Save three disposable links with different paths/query strings. Recent →
+   Transfer links → Export links: long-press, select all and copy. Confirm exact
+   values/order; unsaved current input and card identifiers are absent.
+2. In a separate test installation, paste into Import links. Preview and cancel:
+   no changes. Repeat and confirm: current destination stays unchanged,
+   Inspect only is ON and overwrite is OFF. Restart and verify retention.
+3. Merge overlapping lists: keep existing order and append new distinct links.
+   Exceed ten combined links: reject without evicting any saved entry.
+4. Try invalid HTTP, credentials, fragments, embedded controls and oversized
+   text. Reject the complete import, with a useful error; no partial save.
+5. Rotate/background during entry and confirmation: never import without a
+   new confirmation. Check keyboard, scrolling and 200% font on the actual phone.
+6. Dialogs pause new NFC admission. Clear history does not clear a copied list
+   outside the app. Clean up disposable clipboard copies after this rehearsal.
+7. Preserve the old installation until the new list is verified. This feature
+   is not automatic Android backup and does not transfer app identity/signing.
 
 ## NFC acceptance
 

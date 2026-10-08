@@ -2,7 +2,7 @@
 
 **2026-10-09 update:** do not create or upload the public app under the legacy
 test ID yet. The owner wants a product-centered identity and further quality
-work before release. Current local build is Android 0.4.1 / code 5 under the
+work before release. Current local build is Android 0.4.2 / code 6 under the
 old test ID; public identity selection and migration are pending. Read
 [ANDROID-IDENTITY.md](ANDROID-IDENTITY.md) before following the older steps below.
 

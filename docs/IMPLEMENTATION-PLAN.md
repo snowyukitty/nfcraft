@@ -21,6 +21,15 @@ These are **next-agent tasks**, not a list of completed features. Follow current
 | A02 | P2 | Android capability ADR: NDEF-only Web NFC vs native NfcA; authenticated pairing, short-lived jobs, independent verification, cancellation. Do not reuse operator token or unsafe LAN exposure. |
 | M01 | P3 | Multi-station/fleet work only after durable per-station namespaces, conflicts/leases, card dedupe policy, deployment ownership and recovery semantics are specified/tested. |
 
+## Portable links checkpoint — 2026-10-09
+
+- Complete locally: explicit recent-link export/import with validation, preview,
+  lossless merge, privacy disclosure and regression tests. No automatic backup.
+- Pending: owner-selected application ID, coherent namespace/tooling rename,
+  physical cross-installation transfer rehearsal and release signing.
+- Use `android/store/TESTING.md` for real-device acceptance. The completed
+  transfer implementation is not passed physical migration QA.
+
 ## Important risks to review while implementing
 
 ### Identity and polish milestone — 2026-10-09

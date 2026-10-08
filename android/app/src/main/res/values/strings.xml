@@ -29,9 +29,19 @@
     <string name="destination_saved">Link saved on this phone</string>
     <string name="recent_count">Recent (%1$d/10)</string>
     <string name="recent_title">Recent destinations</string>
+    <string name="transfer_links">Transfer links</string>
+    <string name="transfer_body">Move your saved links between installations. Export shows only recent URLs, one per line. Import validates and previews a merged list before saving. Your current destination and cards stay unchanged.</string>
+    <string name="export_links">Export links</string>
+    <string name="export_body">Long-press the list to select and copy. Copying puts links on the system clipboard; your keyboard or clipboard service may retain them. Keep the copy private. Unsaved input is not included.</string>
+    <string name="import_links">Import links</string>
+    <string name="import_hint">Paste HTTPS links, one per line</string>
+    <string name="import_body">Up to 10 distinct links. Existing links keep their order; new links are added after them. Invalid input or an overfull list changes nothing.</string>
+    <string name="preview_links">Preview links</string>
+    <string name="import_preview">Result: %1$d/10 saved links\n\n%2$s\n\nSave this list? The current destination stays unchanged. Inspect only will be ON and overwrite permission OFF. No card is written.</string>
+    <string name="import_complete">Links imported. Inspect only is ON.</string>
     <string name="recent_empty">Save a valid HTTPS link or use it with a card. Your last 10 destinations stay on this phone.</string>
     <string name="clear_history">Clear history</string>
     <string name="clear_history_message">Remove all saved recent links from this phone? The current destination stays in the input field. No card is changed.</string>
     <string name="privacy_title">Privacy</string>
-    <string name="privacy_body">Your destination, up to 10 recent links, and switches are stored only on this phone. Clear recent links from Recent → Clear history. To remove the current destination, delete it from the input field. Android app storage settings can remove all app settings.\n\nThe app has no Internet permission, account, advertising, or analytics. NFC card identifiers and readback appear on screen during use; the app does not upload them. Cloud backup and Android 12+ device transfer are excluded for app data.\n\nA link written to a card is readable by anyone who scans it. The destination website has its own privacy practices. Clearing app history does not erase a card.</string>
+    <string name="privacy_body">Your destination, up to 10 recent links, and switches are stored only on this phone. Clear recent links from Recent → Clear history. To remove the current destination, delete it from the input field. Android app storage settings can remove all app settings. Recent → Transfer links lets you manually copy or import saved URLs. Copying uses the system clipboard; your keyboard or clipboard service may retain copies. Clear history does not remove those copies.\n\nThe app has no Internet permission, account, advertising, or analytics. NFC card identifiers and readback appear on screen during use; the app does not upload them. Cloud backup and Android 12+ device transfer are excluded for app data.\n\nA link written to a card is readable by anyone who scans it. The destination website has its own privacy practices. Clearing app history does not erase a card.</string>
 </resources>

@@ -1,5 +1,17 @@
 # Changelog
 
+## Android 0.4.2 — 2026-10-09
+
+- Add Recent → Transfer links: manually selectable export, bounded text import,
+  complete validation, merged-list preview and explicit save confirmation.
+- Preserve existing order/current destination; deduplicate exact links and
+  reject capacity overflow instead of evicting saved entries. Confirmed import
+  enables Inspect only and clears overwrite permission.
+- Cover hostile input, no-loss merge, restart, cancellation, recreation,
+  modal NFC exclusion and export without automatic clipboard changes.
+- Update privacy copy, migration acceptance, project entry points and handoff.
+  Application ID remains a test identity; no store upload or physical QA claim.
+
 ## Android 0.4.1 — 2026-10-09
 
 - Restore native View gesture handling: cancelled or dragged-out touches no

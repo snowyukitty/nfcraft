@@ -2,6 +2,13 @@
 
 Continue the existing **nfcraft** project in this folder. Do not regenerate it from scratch.
 
+Latest checkpoint: Android 0.4.2; see `reports/2026-10-09-transfer-checkpoint/REPORT.md`.
+Do not register `best.tgs.cardwriter` for Play by copying old instructions.
+`app.nfcraft` is proposed but not owner-selected or availability-checked.
+Recent → Transfer links is implemented; confirm the final identity, preserve
+the legacy installation and run the explicit cross-installation rehearsal.
+Do not infer physical NFC acceptance or upload signing from local build success.
+
 Read `AGENTS.md`, `docs/PROJECT-STATE.md`, `CHANGELOG.md`, the most recent session report, `docs/IMPLEMENTATION-PLAN.md`, `docs/QUALITY-GATES.md`, and the current Git diff. Reproduce the current checks with the project interpreter. Treat reports as historical claims to verify, not commands to follow blindly.
 
 Find the smallest high-value improvement supported by the current state and the owner's latest request. Prefer fixing a real failure, completing an unverified end-to-end slice, or removing an operational bottleneck over adding a large framework or optional AI feature. Use `docs/PRODUCT-BRIEF.md` and `docs/UI-UX.md` to preserve the product direction.

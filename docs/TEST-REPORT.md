@@ -1,5 +1,15 @@
 # nfcraft — verification evidence
 
+## Android 0.4.2 — 2026-10-09
+
+PASS: 39 Android tests, lint (0 errors / 17 warnings), APK/AAB builds, 118 Python
+and 16 Worker tests, parity and 5 release-checker tests. Transfer tests include
+exact URL round-trip, no-loss merge, hostile-input rejection, preview cancel,
+recreation without consent, persistence, read-only mode, modal scan exclusion
+and export without automatic clipboard mutation. Synthetic transfer preview
+visually reviewed. Physical migration/NFC, signing and upload remain NOT_RUN.
+See the [checkpoint report](../reports/2026-10-09-transfer-checkpoint/REPORT.md).
+
 ## Android 0.4.1 — 2026-10-09
 
 **PASS:** preflight; 118 Python / 16 Worker tests and isolated demo/CLI/MCP

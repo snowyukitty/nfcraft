@@ -3,7 +3,7 @@
 **2026-10-09 hold:** the owner rejected tying public identity to the test website.
 Pause Create app until the new application ID is chosen and availability is
 checked. `app.nfcraft` is the recommended candidate, not an approved reservation.
-Current 0.4.1 binaries still use the legacy test ID for data compatibility;
+Current 0.4.2 binaries still use the legacy test ID for data compatibility;
 see [identity and migration](../../docs/ANDROID-IDENTITY.md). This supersedes
 the earlier instruction to create the public record under `best.tgs.cardwriter`.
 

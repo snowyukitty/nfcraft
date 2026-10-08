@@ -1,6 +1,19 @@
 # nfcraft — current project state
 
-Updated: 2026-10-09 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.4.1**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+Updated: 2026-10-09 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.4.2**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+
+## Portable links checkpoint — 2026-10-09
+
+Recent → Transfer links now supports manual plain-text export and confirmed
+import. All entries validate before preview; merge preserves existing order,
+deduplicates exact destinations and refuses capacity overflow without eviction.
+Import leaves current input unchanged, enables Inspect only and clears overwrite
+permission. No automatic clipboard read/write, network, new permission or SDK.
+Privacy copy and the physical transfer checklist are updated.
+
+Application ID remains the legacy test ID. No owner identity choice, Console
+availability, real side-by-side migration or physical NFC result is established.
+See the [checkpoint report](../reports/2026-10-09-transfer-checkpoint/REPORT.md).
 
 ## Prelaunch identity and interaction refinement — 2026-10-09
 

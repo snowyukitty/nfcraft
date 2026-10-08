@@ -8,6 +8,14 @@ Open the guide locally, or choose **Guide / 使用說明** inside the app. The *
 
 **A small, local-first workshop for your NTAG215 business cards.**
 
+**Prelaunch checkpoint (2026-10-09):** Android 0.4.2 adds explicit recent-link
+transfer with preview, validation and lossless merging, following the visual
+and gesture refinements in 0.4.1. The legacy test application ID is on hold for
+store creation; a product-centered ID still needs selection. This is not a
+store-ready or physically qualified release. Start with the
+[current state](docs/PROJECT-STATE.md), [identity decision](docs/ANDROID-IDENTITY.md)
+and [phone acceptance checklist](android/store/TESTING.md).
+
 Two programs share one encoder. The desktop workshop drives a USB PC/SC reader and keeps the journal; [Card Writer](android/README.md) puts one card's destination on a phone with no PC at all. What they write is byte-for-byte identical, and a check proves it on every commit.
 
 Prepare a batch with an AI agent. Approve it in the app. Present one card at a time. Keep every assignment and uncertain outcome in a durable journal.

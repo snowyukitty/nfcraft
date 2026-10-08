@@ -404,6 +404,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         List<String> entries = recentUrls.entries();
         AlertDialog.Builder dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.recent_title)
+                .setPositiveButton(R.string.transfer_links, (d, which) -> showLinkTransfer())
                 .setNegativeButton(android.R.string.cancel, null);
         if (entries.isEmpty()) {
             dialog.setMessage(R.string.recent_empty);
@@ -427,6 +428,69 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                             })));
         }
         showModal(dialog);
+    }
+
+    private void showLinkTransfer() {
+        showModal(new AlertDialog.Builder(this).setTitle(R.string.transfer_links)
+                .setMessage(R.string.transfer_body)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setNeutralButton(R.string.export_links, (d, which) -> {
+                    TextView text = new TextView(this);
+                    text.setTag("link-transfer-output");
+                    text.setText(recentUrls.entries().isEmpty() ? getString(R.string.recent_empty)
+                            : LinkTransfer.export(recentUrls.entries()));
+                    text.setTextSize(16);
+                    text.setTextIsSelectable(true);
+                    text.setPadding(24, 16, 24, 16);
+                    android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+                    scroll.addView(text);
+                    showModal(new AlertDialog.Builder(this).setTitle(R.string.export_links)
+                            .setMessage(R.string.export_body).setView(scroll)
+                            .setPositiveButton(android.R.string.ok, null));
+                })
+                .setPositiveButton(R.string.import_links, (d, which) -> showLinkImport()));
+    }
+
+    private void showLinkImport() {
+        EditText input = new EditText(this);
+        input.setTag("link-transfer-input");
+        input.setHint(R.string.import_hint);
+        input.setContentDescription(getString(R.string.import_hint));
+        input.setInputType(android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        input.setMaxLines(6);
+        // Keep one extra character so oversized pastes are rejected, never silently accepted.
+        input.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(LinkTransfer.MAX_TEXT + 1)});
+        AlertDialog dialog = showModal(new AlertDialog.Builder(this).setTitle(R.string.import_links)
+                .setMessage(R.string.import_body).setView(input)
+                .setNegativeButton(android.R.string.cancel, null)
+                .setPositiveButton(R.string.preview_links, null));
+        if (dialog == null) return;
+        dialog.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            final List<String> merged;
+            try {
+                merged = LinkTransfer.merge(recentUrls.entries(), input.getText().toString());
+            } catch (IllegalArgumentException e) {
+                input.setError(e.getMessage());
+                return;
+            }
+            AlertDialog preview = showModal(new AlertDialog.Builder(this)
+                    .setTitle(R.string.preview_links)
+                    .setMessage(getString(R.string.import_preview, merged.size(), LinkTransfer.export(merged)))
+                    .setNegativeButton(android.R.string.cancel, null)
+                    .setPositiveButton(R.string.import_links, (d, which) -> {
+                        historyRevision++;
+                        recentUrls = new RecentUrls(merged);
+                        persistRecentUrls();
+                        updateRecentButton();
+                        prefs.edit().putBoolean(KEY_INSPECT, true).apply();
+                        setToggle(inspectOnly, inspectOnlyState, true, Nb.SKY);
+                        setToggle(allowUnknown, allowUnknownState, false, Nb.TERRACOTTA);
+                        Toast.makeText(this, R.string.import_complete, Toast.LENGTH_SHORT).show();
+                    }));
+            if (preview != null) dialog.dismiss();
+        });
     }
 
     /** Apply the paper surface, the ink outlines and the two typefaces. */

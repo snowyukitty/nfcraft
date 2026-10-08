@@ -1,6 +1,6 @@
 # nfcraft — native Android writer (formerly Card Writer)
 
-Current Android version: **0.4.1**, a legacy-ID test build. Display name changed; application ID
+Current Android version: **0.4.2**, a legacy-ID test build. Display name changed; application ID
 `best.tgs.cardwriter` and existing settings remain compatible. See
 [`docs/STORE-RELEASE.md`](../docs/STORE-RELEASE.md) for store preparation and
 individual developer account enrollment. No store release or iOS app exists yet.
@@ -11,6 +11,13 @@ pending selection/availability and an explicit data transfer. See
 [Android identity](../docs/ANDROID-IDENTITY.md). This build refines the forest/paper
 visual hierarchy and restores native tap/cancel semantics. Empty technical
 receipts are hidden until a card produces evidence, below the mode controls.
+
+Version 0.4.2 adds **Recent → Transfer links**. Export displays saved URLs for
+manual selection/copy; import validates the complete text and previews a merged
+list. Existing links keep their order, duplicates are ignored and overflow is
+refused without eviction. Confirming import leaves the current destination
+unchanged and enables Inspect only. Clipboard copies outside the app are not
+removed by Clear history. Physical cross-installation acceptance is pending.
 
 The owner has verified the Google Personal account and chosen free downloads.
 The current binary has no billing or advertising. See the
