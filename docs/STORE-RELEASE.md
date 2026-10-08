@@ -1,5 +1,11 @@
 # Mobile store preparation
 
+**2026-10-09 update:** do not create or upload the public app under the legacy
+test ID yet. The owner wants a product-centered identity and further quality
+work before release. Current local build is Android 0.4.1 / code 5 under the
+old test ID; public identity selection and migration are pending. Read
+[ANDROID-IDENTITY.md](ANDROID-IDENTITY.md) before following the older steps below.
+
 Updated 2026-10-08. Owner decisions: **nfcraft**, individual developer accounts,
 **free downloads** with voluntary income options. Public support email is approved as **dokoii@proton.me**. The owner reports Google Play
 verification complete and Create app available; app creation is not confirmed.

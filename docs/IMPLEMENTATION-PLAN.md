@@ -23,6 +23,19 @@ These are **next-agent tasks**, not a list of completed features. Follow current
 
 ## Important risks to review while implementing
 
+### Identity and polish milestone — 2026-10-09
+
+- Complete locally: native tap/cancel/drag-out fix, lighter visual styling,
+  brand header, conditional receipt visibility, and screen/font regression tests.
+- Pending owner decision: product-centered Android ID; candidate `app.nfcraft`.
+  Pause Play creation using the old test-site ID. See `ANDROID-IDENTITY.md`.
+- Next bounded implementation after selection: coherent ID/namespace/tooling
+  rename with an explicit ten-link transfer path, synthetic transfer tests,
+  preserved legacy artifact and side-by-side phone acceptance.
+- Still open: physical NFC matrix, release signing, real store screenshots,
+  public privacy hosting and Play testing access. Do not equate local tests
+  with hardware or publication approval.
+
 ### Owner-prioritized Play quality milestone — 2026-10-08
 
 - MBL04 complete locally: consent-based browser sharing, modal/foreground scan

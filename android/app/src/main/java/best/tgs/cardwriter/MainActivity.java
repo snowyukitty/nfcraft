@@ -433,25 +433,29 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
     private void dress() {
         View root = findViewById(android.R.id.content);
         Nb.skin(root, Nb.paper(this));
+        TextView brand = findViewById(R.id.brandTitle);
+        brand.setTypeface(Nb.display(this, true));
+        brand.setTextColor(Nb.FOREST);
+        TextView caption = findViewById(R.id.brandCaption);
+        caption.setTypeface(Nb.display(this, false));
+        caption.setTextColor(Nb.withAlpha(Nb.INK, 0.8f));
 
         Nb.skin(destinationCard, Nb.card(this, Nb.PAPER));
         Nb.skin(stage, Nb.card(this, Nb.PAPER));
         Nb.skin(evidence, Nb.card(this, Nb.BEIGE));
 
-        // A sticker, not a label: small radius, shallow drop, and off the grid
-        // by a couple of degrees so the count reads as something stuck on.
-        Nb.skin(counter, Nb.card(this, Nb.YELLOW, 13, 4));
-        counter.setRotation(-2.2f);
+        // Keep the session count quiet; card outcomes carry the stronger colors.
+        Nb.skin(counter, Nb.card(this, Nb.BEIGE, 10, 2));
 
         Nb.pressable(inspectOnly, Nb.PAPER, 18);
         Nb.pressable(allowUnknown, Nb.PAPER, 18);
         for (int id : new int[]{R.id.saveUrl, R.id.recentUrls, R.id.privacy, R.id.help, R.id.nfcSettings}) {
             TextView button = findViewById(id);
             button.setBackgroundTintList(null);
-            Nb.pressable(button, id == R.id.saveUrl ? Nb.YELLOW : Nb.BEIGE, 10);
+            Nb.pressable(button, id == R.id.saveUrl ? Nb.FOREST : Nb.PAPER, 10);
             button.setTypeface(Nb.mono(this, true));
             button.setTextSize(12);
-            button.setTextColor(Nb.INK);
+            button.setTextColor(id == R.id.saveUrl ? Nb.CREAM : Nb.INK);
         }
 
         Nb.label(findViewById(R.id.destinationLabel));
@@ -478,7 +482,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         detail.setTextColor(Nb.withAlpha(Nb.INK, 0.8f));
 
         counter.setTypeface(Nb.mono(this, true));
-        counter.setLetterSpacing(0.12f);
+        counter.setLetterSpacing(0.04f);
         counter.setTextColor(Nb.INK);
 
         evidence.setTypeface(Nb.mono(this, false));
@@ -539,11 +543,11 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
             return;
         }
         if (adapter == null) {
-            paint(Nb.TERRACOTTA, "No NFC", "This device has no NFC hardware.", null);
+            paint(Nb.BEIGE, "No NFC", "This device has no NFC hardware.", null);
             return;
         }
         if (!adapter.isEnabled()) {
-            paint(Nb.TERRACOTTA, "NFC is off", "Turn NFC on in Settings, then return here.", null);
+            paint(Nb.BEIGE, "NFC is off", "Turn NFC on in Settings, then return here.", null);
             return;
         }
         Bundle extras = new Bundle();
@@ -822,10 +826,13 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         headline.setText(title);
         detail.setText(message == null ? "" : message);
         detail.setVisibility(message == null || message.isEmpty() ? View.GONE : View.VISIBLE);
-        // The receipt keeps its place when there is nothing on it, so the
-        // page never reflows under the operator between one card and the next.
+        // Show operational detail only when a card actually produced evidence.
+        // It sits below the mode controls, so their position remains stable.
+        evidence.setVisibility(facts == null || facts.isEmpty() || facts.equals(RESTING_RECEIPT)
+                ? View.GONE : View.VISIBLE);
         evidence.setText(facts == null || facts.isEmpty() ? RESTING_RECEIPT : facts);
         counter.setText(written == 1 ? "1 CARD WRITTEN" : written + " CARDS WRITTEN");
+        counter.setVisibility(written > 0 ? View.VISIBLE : View.GONE);
     }
 
     private void signal(int sound) {

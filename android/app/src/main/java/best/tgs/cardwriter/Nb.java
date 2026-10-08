@@ -32,6 +32,7 @@ final class Nb {
     static final int CREAM = 0xFFFFF4DE;
     static final int PAPER = 0xFFFFFDF7;
     static final int BEIGE = 0xFFEFE2C3;
+    static final int FOREST = 0xFF214B40;
 
     static final int YELLOW = 0xFFFFD64A;
     static final int PINK = 0xFFF6B6CA;
@@ -39,10 +40,10 @@ final class Nb {
     static final int TERRACOTTA = 0xFFEB5B32;
     static final int SAGE = 0xFFBED7A6;
 
-    static final int RADIUS_DP = 22;
-    static final int BORDER_DP = 3;
-    static final int DROP_DP = 7;
-    static final int PRESS_DP = 3;
+    static final int RADIUS_DP = 18;
+    static final int BORDER_DP = 2;
+    static final int DROP_DP = 4;
+    static final int PRESS_DP = 2;
 
     private static Typeface display;
     private static Typeface displayBold;
@@ -137,14 +138,13 @@ final class Nb {
                     v.setTranslationX(0);
                     v.setTranslationY(0);
                     skin(v, card(context, currentFill(v, fill), radiusDp, DROP_DP));
-                    if (event.getActionMasked() == MotionEvent.ACTION_UP) {
-                        v.performClick();
-                    }
                     break;
                 default:
                     break;
             }
-            return true;
+            // Android owns tap/slop/cancel/disabled semantics, including keyboard and
+            // accessibility clicks. This listener supplies decoration only.
+            return false;
         });
     }
 

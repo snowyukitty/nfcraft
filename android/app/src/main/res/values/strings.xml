@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">nfcraft</string>
+    <string name="workshop_caption">Your NFC workshop</string>
     <string name="destination_label">DESTINATION</string>
     <string name="support_email" translatable="false">dokoii@proton.me</string>
     <string name="email_support">Email support</string>

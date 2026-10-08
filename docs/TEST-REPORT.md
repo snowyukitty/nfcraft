@@ -1,5 +1,19 @@
 # nfcraft — verification evidence
 
+## Android 0.4.1 — 2026-10-09
+
+**PASS:** preflight; 118 Python / 16 Worker tests and isolated demo/CLI/MCP
+smoke; encoder parity, 1,087 plan states, 10 link behaviors and history checks;
+29 Android tests, including native gesture dispatch and 24 screen/font/API
+layout scenarios. APK/AAB builds and artifact checks pass. Lint: 0 errors,
+17 warnings. Destination and large-text engineering renders visually reviewed.
+The initial gesture harness failed because native clicks are queued; draining
+the main looper fixed the harness before the full passing run.
+**NOT_RUN:** physical NFC, new-ID data transfer, same-key phone update,
+store screenshots and uploads. AAB remains unsigned. Identity choice and
+Console availability are unresolved. See the
+[report](../reports/2026-10-09-identity-polish/REPORT.md).
+
 ## Android 0.4.0 — 2026-10-08
 
 **PASS:** 118 Python / 16 Worker tests and isolated demo/CLI/MCP smoke; Java/Python

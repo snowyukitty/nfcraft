@@ -1,6 +1,24 @@
 # nfcraft — current project state
 
-Updated: 2026-10-08 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.4.0**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+Updated: 2026-10-09 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.4.1**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+
+## Prelaunch identity and interaction refinement — 2026-10-09
+
+**Hold Play app creation.** The owner questioned the legacy test-site identity
+`best.tgs.cardwriter`. `app.nfcraft` is a proposed replacement, not selected or
+verified available. The current build retains the old ID for local testing;
+it is not the proposed public identity. See [identity decision](ANDROID-IDENTITY.md).
+Changing ID creates separate app storage; an explicit link-transfer path and
+side-by-side phone verification are still pending. No data migration occurred.
+
+Android 0.4.1 restores native tap/cancel/drag-out behavior, refines the brand
+header and forest-green primary action, reduces visual weight, and hides empty
+receipt/session details. Local verification passes: 29 Android tests, including
+24 screen/font/API layout scenarios, 118 Python tests, 16 Worker tests, parity,
+lint (0 errors / 17 warnings), APK/AAB builds and artifact checks. Engineering
+renders were reviewed; physical NFC and store approval are not established.
+No new payment, runtime SDK, permission or NFC write behavior was introduced.
+See [session evidence](../reports/2026-10-09-identity-polish/REPORT.md).
 
 ## Google Play preparation and Android quality — 2026-10-08
 

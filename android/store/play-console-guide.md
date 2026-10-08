@@ -1,5 +1,12 @@
 # Play Console preparation sheet — Android 0.4.0
 
+**2026-10-09 hold:** the owner rejected tying public identity to the test website.
+Pause Create app until the new application ID is chosen and availability is
+checked. `app.nfcraft` is the recommended candidate, not an approved reservation.
+Current 0.4.1 binaries still use the legacy test ID for data compatibility;
+see [identity and migration](../../docs/ANDROID-IDENTITY.md). This supersedes
+the earlier instruction to create the public record under `best.tgs.cardwriter`.
+
 Updated 2026-10-08. Owner reports the Personal developer account is verified and
 Create app is available. App record creation itself is not yet confirmed. Free
 download is explicitly selected. The owner approved dokoii@proton.me as the public support address; the Google login email remains separate.

@@ -1,5 +1,17 @@
 # Changelog
 
+## Android 0.4.1 — 2026-10-09
+
+- Restore native View gesture handling: cancelled or dragged-out touches no
+  longer click controls; retain decorative press feedback.
+- Refine the nfcraft header, forest-green primary action, borders, spacing and
+  neutral unavailable-NFC state; hide empty receipt/session details.
+- Add gesture regression tests and a 24-case screen/font/API layout matrix.
+- Pause store creation pending a product-centered application ID decision.
+  Keep the old ID only for this test build; document explicit transfer needs.
+- Local tests/builds pass. Physical NFC, identity migration, release signing
+  and Play submission remain incomplete.
+
 ## Android 0.4.0 — 2026-10-08
 
 - Add browser share import with strict HTTPS validation, confirmation, and
