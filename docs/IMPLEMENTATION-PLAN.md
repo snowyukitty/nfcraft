@@ -23,6 +23,10 @@ These are **next-agent tasks**, not a list of completed features. Follow current
 
 ## Portable links checkpoint — 2026-10-09
 
+- Phone follow-up: clean install of 0.4.2 passed after an owner-authorized
+  uninstall for a signing mismatch. Do not attempt migration from the removed
+  owner installation. Build disposable old-version fixtures for that gate.
+
 - Complete locally: explicit recent-link export/import with validation, preview,
   lossless merge, privacy disclosure and regression tests. No automatic backup.
 - Pending: owner-selected application ID, coherent namespace/tooling rename,

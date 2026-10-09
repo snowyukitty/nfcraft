@@ -2,11 +2,14 @@
 
 Continue the existing **nfcraft** project in this folder. Do not regenerate it from scratch.
 
-Latest checkpoint: Android 0.4.2; see `reports/2026-10-09-transfer-checkpoint/REPORT.md`.
+Latest checkpoint: Android 0.4.2 installed on the test phone; see
+`reports/2026-10-09-phone-install/REPORT.md` and the preceding transfer report.
 Do not register `best.tgs.cardwriter` for Play by copying old instructions.
 `app.nfcraft` is proposed but not owner-selected or availability-checked.
-Recent → Transfer links is implemented; confirm the final identity, preserve
-the legacy installation and run the explicit cross-installation rehearsal.
+Recent → Transfer links is implemented. The owner approved removing 0.2.0 and
+its local data after a signing mismatch; a clean 0.4.2 install succeeded.
+Preserve this new installation. Use disposable old-version fixtures for future
+cross-installation rehearsals; the previous owner installation is gone.
 Do not infer physical NFC acceptance or upload signing from local build success.
 
 Read `AGENTS.md`, `docs/PROJECT-STATE.md`, `CHANGELOG.md`, the most recent session report, `docs/IMPLEMENTATION-PLAN.md`, `docs/QUALITY-GATES.md`, and the current Git diff. Reproduce the current checks with the project interpreter. Treat reports as historical claims to verify, not commands to follow blindly.

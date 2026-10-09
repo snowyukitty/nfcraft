@@ -2,6 +2,19 @@
 
 Updated: 2026-10-09 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.4.2**. Treat this file as the index for the next agent, not as evidence in place of test logs.
 
+## Phone installation checkpoint — 2026-10-09
+
+Android 0.4.2 / code 6 is installed on the connected test phone. An initial
+in-place update from 0.2.0 was refused because signing certificates differed.
+The owner then explicitly authorized removal of the old app and its data.
+Uninstall and fresh install both succeeded; package-manager inspection confirmed
+the new version. This is **clean-install evidence**, not preserved-data update,
+UI acceptance, physical NFC qualification or store signing approval.
+The previous phone installation/data is no longer available for migration tests.
+Preserve the new installation for subsequent updates; use disposable fixtures
+for old-version migration rehearsals. See the
+[installation report](../reports/2026-10-09-phone-install/REPORT.md).
+
 ## Portable links checkpoint — 2026-10-09
 
 Recent → Transfer links now supports manual plain-text export and confirmed

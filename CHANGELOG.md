@@ -2,6 +2,11 @@
 
 ## Android 0.4.2 — 2026-10-09
 
+- Installation evidence: owner-authorized clean install on the test phone
+  succeeded after an in-place update was refused for a signing mismatch.
+  Package manager confirms 0.4.2 / code 6. Old local app data was removed;
+  data-preserving updates and physical NFC remain unverified.
+
 - Add Recent → Transfer links: manually selectable export, bounded text import,
   complete validation, merged-list preview and explicit save confirmation.
 - Preserve existing order/current destination; deduplicate exact links and

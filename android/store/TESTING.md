@@ -3,6 +3,12 @@
 No physical NFC acceptance was run for 0.4.2. Use disposable test links and
 owner-approved expendable NTAG215 cards. Never include real UIDs in store media.
 
+Installation evidence (2026-10-09): clean 0.4.2 installation and package-version
+inspection passed on the test phone. An attempted in-place 0.2.0 update failed
+for a signing mismatch; the owner explicitly authorized uninstall/data removal
+before the successful fresh install. This does not pass item 1 below or NFC QA.
+Use disposable fixtures for legacy-update tests; preserve the new installation.
+
 ## Android UI and update acceptance
 
 1. Update a same-key 0.2.0 install without uninstalling. Confirm its destination

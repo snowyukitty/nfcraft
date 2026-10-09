@@ -1,5 +1,16 @@
 # nfcraft — verification evidence
 
+## Physical phone installation — 2026-10-09
+
+**FAIL (expected signing enforcement):** `adb install -r` from installed 0.2.0
+to the available 0.4.2 APK returned `INSTALL_FAILED_UPDATE_INCOMPATIBLE`.
+**PASS:** after separate explicit owner approval, uninstall and fresh install
+returned Success. Package manager confirms versionName 0.4.2 / versionCode 6;
+the result was rechecked during the final checkpoint.
+**NOT_RUN:** app launch/UI interaction, real NFC, preserved-data update and
+physical link-transfer acceptance. No prior local data was restored. See the
+[sanitized report](../reports/2026-10-09-phone-install/REPORT.md).
+
 ## Android 0.4.2 — 2026-10-09
 
 PASS: 39 Android tests, lint (0 errors / 17 warnings), APK/AAB builds, 118 Python
