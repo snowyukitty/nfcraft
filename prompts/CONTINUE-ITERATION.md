@@ -5,7 +5,9 @@ Continue the existing **nfcraft** project in this folder. Do not regenerate it f
 Latest checkpoint (2026-11-01): Android 0.5.1 / code 8 with an IconFlow
 Halloween sleeve and exact NTAG213/215/216 profiles. See
 `reports/2026-11-01-session-checkpoint/REPORT.md` and the latest Git status/log.
-The owner requested committing/pushing the reviewed checkpoint to GitHub.
+The reviewed checkpoint is pushed to `work/android-multi-tag`; code revision
+`7818c66` passed all five jobs in hosted run `41270588873`. The final follow-up
+contains only checkpoint documentation. Verify the branch head before continuing.
 The prior successful clean install and exact installed-APK hash are recorded in
 `reports/2026-10-31-halloween-install/REPORT.md`. Old 0.2.0/settings were removed
 with explicit permission; preserve the new installation. Do not uninstall again.
@@ -15,8 +17,8 @@ verification. Start with Inspect only; never bypass keyguard or automate enablin
 writes. Then owner-test one expendable card per model, including rewrite,
 interruption and recipient-phone read. Desktop remains NTAG215-only. Android
 physical qualification, final public ID, signing, store and cloud gates are open.
-Final local suites/builds and the reviewed icon ship gate pass. Check the report
-for hosted workflow evidence; do not infer it from a branch push alone.
+Final local suites/builds and the reviewed icon ship gate pass. The report links
+the actual hosted results; no physical-device qualification is implied.
 
 Historical checkpoint: Android 0.4.2 installed on the test phone; see
 `reports/2026-10-09-phone-install/REPORT.md` and the preceding transfer report.

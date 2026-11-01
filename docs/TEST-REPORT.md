@@ -7,6 +7,10 @@ smoke; 44 Android tests, lint 0 errors / 5 warnings, APK/AAB; five artifact-chec
 tests; encoder parity, 1,087 plans, ten link behaviours, history and 621 model
 assertions; IconFlow check and source-bound ship with the reviewed plan.
 APK hash remains the exact previously installed 0.5.1 build.
+PASS: hosted [run 41270588873](https://github.com/snowyukitty/nfcraft/actions/runs/41270588873)
+on code revision `7818c66`: all five jobs, including Windows/Linux Python
+3.11/3.13 and Android encoder/model checks. The final follow-up changes only
+checkpoint documentation; no hosted physical-device or Gradle-build claim.
 BLOCKED: current phone UI/NFC verification; ADB reports no devices attached.
 NOT_RUN: physical tag/recipient-phone qualification, signed release/store/cloud.
 See [checkpoint report](../reports/2026-11-01-session-checkpoint/REPORT.md) for

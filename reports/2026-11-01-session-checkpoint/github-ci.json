@@ -1,0 +1,34 @@
+{
+  "status": "completed",
+  "conclusion": "success",
+  "headSha": "7818c6646afbd3c2656d0272a3a908ae629139a3",
+  "url": "https://github.com/snowyukitty/nfcraft/actions/runs/41270588873",
+  "jobs": [
+    {
+      "name": "android-encoder",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "verify (ubuntu-latest, 3.11)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "verify (ubuntu-latest, 3.13)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "verify (windows-latest, 3.13)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "name": "verify (windows-latest, 3.11)",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "scope": "Hardware-free hosted workflow; not physical NFC, Android foreground QA or store approval."
+}

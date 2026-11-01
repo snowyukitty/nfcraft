@@ -17,6 +17,8 @@ writer stays NTAG215-only. The legacy Android ID is still on hold for store
 creation; the release AAB is unsigned. Start with the
 [current state](docs/PROJECT-STATE.md), [identity decision](docs/ANDROID-IDENTITY.md)
 and [checkpoint report](reports/2026-11-01-session-checkpoint/REPORT.md).
+The [hosted hardware-free checks](https://github.com/snowyukitty/nfcraft/actions/runs/41270588873)
+passed all five jobs on code revision `7818c66`; phone/tag qualification remains separate.
 
 [Android icon preview](reports/2026-10-31-halloween-install/icon-preview.png) ·
 [Supported tags and safety contract](docs/ANDROID-TAGS.md) ·

@@ -81,12 +81,29 @@ part of this operation.
 
 The existing workflow runs on main pushes, pull requests and explicit dispatch;
 checkpoint-branch push alone does not start CI. No main merge, release, tag or
-workflow relaxation is planned. Publication and hosted-check outcomes will be
-recorded below after execution, with the code revision retained for comparison.
+workflow relaxation was performed.
 
-- Implementation commit / branch push: PENDING execution.
-- Hosted workflow: PENDING one explicit dispatch after the branch is available.
-- Final documentation push / remote-head verification: PENDING.
+- **PASS — implementation push:** commit
+  `7818c6646afbd3c2656d0272a3a908ae629139a3` was pushed to
+  `origin/work/android-multi-tag`. `git ls-remote --heads` matched the local
+  commit exactly. The commit contains 103 changed paths after rename detection.
+- **PASS — hosted checks:** one explicit `gh workflow run ci.yml --ref
+  work/android-multi-tag` ran the unchanged existing workflow on that exact code
+  revision. [Run 41270588873](https://github.com/snowyukitty/nfcraft/actions/runs/41270588873)
+  completed successfully: all four Windows/Linux Python 3.11/3.13 jobs and the
+  Android encoder/model job passed. Sanitized results are in
+  [github-ci.json](github-ci.json). These are hardware-free hosted checks, not
+  physical Android/reader qualification.
+- **PASS — publication review:** 105 explicit candidate paths were inspected
+  before staging (103 after rename detection); scans found no credential,
+  private host path, device identifier or forbidden binary package. Eighty
+  local Markdown links resolved before publication. GitHub is public; this
+  push is authorized by the owner's explicit request, not inferred from visibility.
+
+The final handoff is a documentation-only follow-up recording these results.
+Its remote head is checked after push and reported in the session handoff;
+it adds no runtime change beyond the tested code revision above. Main remains
+unchanged and no pull request or release is created.
 
 ## Start, stop and next bounded task
 

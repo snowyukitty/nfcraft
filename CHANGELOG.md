@@ -8,8 +8,9 @@
   continuation handoff for NTAG213/215/216 and the Halloween icon.
 - Record the disconnected-phone prerequisite and preserve the previous clean
   installation evidence without claiming foreground UI or physical NFC QA.
-- Prepare the owner-requested reviewed GitHub branch checkpoint; see the
-  session report for push and hosted-workflow results.
+- Push the owner-requested reviewed GitHub branch checkpoint; hosted workflow
+  on code revision `7818c66` passes all five jobs. Main and release state stay
+  unchanged; the session report records exact evidence and continuation.
 
 ## Android 0.5.1 — 2026-10-31
 

@@ -18,8 +18,10 @@ are still pending. Preserve the installed 0.5.1 data; reconnect/unlock and start
 with Inspect only. Public Android ID, release signing, store upload and cloud
 publication remain separate gates.
 
-The owner requested a GitHub checkpoint. Work is prepared on
-`work/android-multi-tag`; see the
+The owner-requested GitHub checkpoint is on `work/android-multi-tag`.
+Code revision `7818c66` was pushed and its existing hosted workflow passed all
+five jobs (Windows/Linux Python 3.11/3.13 plus Android encoder/model checks).
+See the [successful run](https://github.com/snowyukitty/nfcraft/actions/runs/41270588873) and
 [final checkpoint report](../reports/2026-11-01-session-checkpoint/REPORT.md) for
 publication status, exact commands, remaining work and continuation. Root entry
 points and store drafts now describe the current tag support and limitations.

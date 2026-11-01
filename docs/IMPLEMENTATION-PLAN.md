@@ -28,8 +28,9 @@ These are **next-agent tasks**, not a list of completed features. Follow current
 - Phone is disconnected; preserve the successful clean-install evidence and
   existing app data. Reconnect/unlock, verify foreground UI and Inspect only,
   then owner-operated physical model and recipient-phone tests close MBL07.
-- The owner requested a GitHub checkpoint on `work/android-multi-tag`; exact
-  push and hosted-check outcomes belong in the session report, not a release badge.
+- GitHub checkpoint pushed on `work/android-multi-tag`; all five jobs in
+  hosted run `41270588873` pass on code revision `7818c66`. Main/release state
+  is unchanged. The final session report is the handoff for physical acceptance.
 
 ## Owner-requested Halloween installation — 2026-10-31
 
