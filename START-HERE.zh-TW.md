@@ -1,10 +1,10 @@
 # nfcraft｜從這裡開始
 
-> Current checkpoint (2026-10-09): desktop 0.2.2 / Android 0.4.2.
-> The archive instructions below are historical. For the existing checkout,
-> start with [current state](docs/PROJECT-STATE.md) and the
-> [latest checkpoint](reports/2026-10-09-transfer-checkpoint/REPORT.md).
-> Play identity selection, physical phone QA and signed upload are still pending.
+> 最新 checkpoint（2026-11-01）：桌面版 0.2.2／Android **0.5.1**。
+> Android 已加入 NTAG213／215／216 安全複寫與萬聖節卡套圖示，並已依授權移除舊版、完成手機安裝及 APK 校驗。
+> 手機目前未連線；前景畫面、實卡感應與另一支手機讀取仍待驗證。請保留新安裝的資料，後續使用相同簽章更新。
+> 先看[目前狀態](docs/PROJECT-STATE.md)與[本次交接紀錄](reports/2026-11-01-session-checkpoint/REPORT.md)。
+> 下方解壓縮說明是歷史交接內容；Play 身分選擇、簽署與上架仍未完成。
 
 **版本：0.1.1 · 本地 agent 交接版 · 2026-09-05**
 

@@ -1,3 +1,23 @@
+# Android 0.5.1 installation follow-up
+
+Owner-authorized uninstall of differently signed 0.2.0 and clean installation
+of 0.5.1 / code 8 passed on 2026-10-31; installed APK hash matches the tested
+build. Previous settings were removed. Phone keyguard prevents foreground UI
+acceptance until the owner unlocks it. Do not bypass keyguard. Verify Inspect
+only and launcher icon first; physical model testing below is still NOT_RUN.
+
+# Android 0.5.0 follow-up
+
+Use [the supported profile contract](../../docs/ANDROID-TAGS.md) for model
+vectors/fences and capacity. Local tests cover NTAG213/215/216; physical NFC
+acceptance remains NOT_RUN. Rehearse blank, rewrite, oversize refusal,
+protected-card refusal, interrupted write and a different recipient phone for
+each model. NTAG213 factory Lock Control TLV must survive rewriting.
+
+The initial 2026-10-31 in-place update was refused for mismatching signatures.
+The later explicitly authorized clean 0.5.1 installation above resolves this
+installation gate, with data loss acknowledged; it is not an in-place migration.
+
 # Mobile acceptance and reviewer preparation
 
 No physical NFC acceptance was run for 0.4.2. Use disposable test links and

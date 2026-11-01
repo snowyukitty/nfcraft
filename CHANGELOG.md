@@ -1,5 +1,41 @@
 # Changelog
 
+## Session checkpoint — 2026-11-01
+
+- Reverify Android 0.5.1, desktop/Worker checks, encoder/model safety and the
+  IconFlow source-bound ship gate; no runtime change after the installed build.
+- Refresh root entry points, store drafts, identity/release notes and the
+  continuation handoff for NTAG213/215/216 and the Halloween icon.
+- Record the disconnected-phone prerequisite and preserve the previous clean
+  installation evidence without claiming foreground UI or physical NFC QA.
+- Prepare the owner-requested reviewed GitHub branch checkpoint; see the
+  session report for push and hosted-workflow results.
+
+## Android 0.5.1 — 2026-10-31
+
+- Add the owner-requested IconFlow Halloween card-sleeve identity, preserving
+  forest/paper branding with pumpkin-orange negative-space lantern features.
+- Ship generated Android adaptive/themed/legacy layers and store artwork from
+  reviewed sources; replace hand-maintained vector duplication with exact
+  generated-resource copies. Preserve the superseded source and design record.
+- Owner-authorized uninstall of differently signed 0.2.0 and clean install of
+  0.5.1 / code 8 succeeded. Installed APK hash matches the tested build.
+- 44 Android tests pass; lint 0 errors / 5 warnings. Physical NFC remains
+  unqualified; phone foreground UI verification waits for owner unlock.
+
+## Android 0.5.0 — 2026-10-31
+
+- Support exact NTAG213/215/216 profiles with model-specific capacity and
+  NDEF page fences; keep the desktop NTAG215 contract unchanged.
+- Preserve NTAG213 factory Lock Control TLV and existing NDEF placement;
+  refuse links too large for the inspected card before mutation.
+- Validate UID block-check bytes, require safe inspection before NDEF access,
+  and reject malformed ACK framing. Keep retries and complete readback.
+- Add profile/command-simulator and layout-rewrite regressions.
+- Attached phone has a differently signed 0.2.0; in-place installation was
+  refused. Preserve its data pending explicit removal approval.
+
+
 ## Android 0.4.2 — 2026-10-09
 
 - Installation evidence: owner-authorized clean install on the test phone

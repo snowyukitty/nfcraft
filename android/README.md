@@ -1,6 +1,12 @@
 # nfcraft — native Android writer (formerly Card Writer)
 
-Current Android version: **0.4.2**, a legacy-ID test build. Display name changed; application ID
+Android 0.5.0 supports **NTAG213, NTAG215 and NTAG216** with exact model
+inspection, model-specific capacity/fences and full readback. See
+[the profile contract](../docs/ANDROID-TAGS.md). Physical qualification remains
+separate from the local test results; the desktop writer stays NTAG215-only.
+
+
+Current Android version: **0.5.1**, a legacy-ID test build. Display name changed; application ID
 `best.tgs.cardwriter` and existing settings remain compatible. See
 [`docs/STORE-RELEASE.md`](../docs/STORE-RELEASE.md) for store preparation and
 individual developer account enrollment. No store release or iOS app exists yet.
@@ -49,7 +55,7 @@ Rebuild the editorial feature graphic with
 `.venv/Scripts/python.exe android/tools/build_store_assets.py` (Pillow 12.3.0 used).
 This reuses the existing reviewed IconFlow icon and bundled OFL fonts.
 
-Writes one HTTPS URL to one NTAG215 card, verifies it by reading the whole
+Writes one HTTPS URL to one supported NTAG213/215/216 card, verifies it by reading the whole
 advertised area back, and does it with no PC, no cable, no network and no
 hosted page.
 
@@ -73,13 +79,13 @@ no reconciliation. One card, one tap, one verified result.
 
 ## What it does per tap
 
-1. `GET_VERSION` must return the exact NTAG215 bytes, or nothing else is read.
-2. Reads pages 0–3 and 0x82–0x85 for UID, capability container, static and
+1. `GET_VERSION` must return an exact supported NTAG213/215/216 vector, or nothing else is read.
+2. Reads pages 0–3 and the selected model's lock/configuration pages for UID, capability container, static and
    dynamic lock bytes, CFG0 and CFG1.
-3. Refuses a card whose CC is not `E1103E00`, whose lock bits are set, whose
+3. Refuses a card whose CC does not match its exact model, whose lock bits are set, whose
    `AUTH0` is not the factory `0xFF`, or which has mirroring, counters, access
    limits or config locking enabled.
-4. Reads the whole CC-advertised area, pages 0x04–0x7F, 496 bytes.
+4. Reads the whole model-specific CC-advertised area (144 / 496 / 872 bytes).
 5. Decides what the card holds: our canonical URL record, blank, an interrupted
    write by this app, or content it does not recognise. Unrecognised content is
    refused unless you switch overwriting on. An empty TLV hiding data inside the
@@ -97,7 +103,7 @@ A write that completes is not the evidence. Step 7 and step 8 are.
 ## What it can never do
 
 There is no command in this app that changes lock bits, the capability
-container, `PWD`, `PACK`, `AUTH0`, mirroring or any page outside 0x04–0x7F.
+container, `PWD`, `PACK`, `AUTH0`, mirroring or any page outside the inspected model's advertised NDEF area.
 Those are absent, not disabled. `makeReadOnly` has no equivalent here: the app
 cannot lock a card even if asked.
 
@@ -191,7 +197,7 @@ existing app to bypass a signature mismatch and lose its settings.
 tools/parity.sh
 ```
 
-Four suites, none of which needs a phone. `Ndef.java` and `Tag215.java` have no
+Five suites, none of which needs a phone. `Ndef.java`, `TagProfile.java` and `Tag21x.java` have no
 Android imports beyond `NfcA`, which is stubbed for the desktop JVM, so all of
 this runs on an ordinary JDK.
 
@@ -200,6 +206,7 @@ this runs on an ordinary JDK.
 | Encoder parity | Area bytes, the page-by-page write plan, the strict decode round trip, emptiness and the occupied-region guard, diffed against `nfcraft/ndef.py` for the same inputs |
 | `PlanTest` | Every torn and partial state ends at the intended area once the pruned plan is applied, and no length is ever advertised while the body is in flight |
 | `LinkTest` | What the command layer does to a link that drops exchanges, truncates answers, swallows acknowledgements, answers NAK or dies outright |
+| `ProfileTest` | Exact model selection, factory NTAG213 Lock Control TLV, capacity, read/write fences, protected-card refusal, complete readback, torn-plan recovery and malformed ACK refusal |
 | `HistoryTest` | Ten-entry cap, exact URL deduplication, MRU reuse, validation, restore and clear |
 
 `gradlew testDebugUnitTest` also exercises the real Activity, preferences,
@@ -207,7 +214,7 @@ dialogs and one-time legacy import on API 28/36 through Robolectric. Native
 graphics under `app/build/reports/visual` are simulated render evidence, not
 physical phone screenshots or NFC acceptance.
 
-A card written by this phone therefore carries the same bytes as one written by
+An NTAG215 card written by this phone therefore carries the same bytes as one written by
 the PC/SC path, and still decodes under the Python tooling. Re-run after any
 change to either encoder.
 
@@ -293,17 +300,22 @@ The launcher mark was designed with IconFlow and lives in `master.svg`, with the
 scored receipt in `master-review.json`, the shipped raster set in `icons/`, and
 the design record in `casebook/`.
 
-Essence **keep**: a cream thumb-cut sleeve holds a tilted brass card on forest
-green. This replaces the press metaphor with the mobile job of keeping reusable
-destinations handy. NFC wave fans, pen-over-card clip art and bare initials were
+Essence **keep**: the Halloween edition turns the card sleeve into a
+pumpkin-orange lantern, with an emerging cream card replacing the stem on the
+existing forest field. Two broad chiseled eyes and the bat-wing thumb cut
+carry the seasonal change. Generic pumpkin emoji, NFC waves and initials were
 rejected. Scores: legibility 4, distinctiveness 4, balance 4, color 5,
-scalability 4, craft 4. Static and interactive review and the ship gate passed.
+scalability 4, craft 5. IconFlow check and ship passed using source-bound
+headless contact, neighbourhood and exact-target evidence; no interactive Lab
+or independent review is claimed.
 
-`tools/build-icons.ps1` rebuilds the IconFlow outputs and legacy launcher PNGs.
-The semantic foreground is authored as a native VectorDrawable with the exact
-master paths at 90% scale in a 108dp canvas. Keep that linked geometry in sync
-when redesigning. Android 13+ also receives a monochrome layer. `store/` has
-opaque 512px/1024px icons. These files do not imply an iOS app or store approval.
+`tools/build-icons.ps1` ships the reviewed `web,android` target set and copies
+the exact generated adaptive, themed and legacy Android resources, including
+the existing API-33 overrides. The alpha-only source is `monochrome.svg`;
+the superseded pocket source/receipt/configuration are in
+`history/2026-09-29-pocket-card/`. Do not redraw or hand-edit generated layers.
+`store/` has opaque 512px/1024px icons and a rebuilt feature graphic. These
+files do not imply an iOS app or store approval.
 
 The icon is yours: no attribution required, commercial use unrestricted,
 nothing viral attached.

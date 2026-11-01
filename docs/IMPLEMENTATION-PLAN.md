@@ -21,6 +21,40 @@ These are **next-agent tasks**, not a list of completed features. Follow current
 | A02 | P2 | Android capability ADR: NDEF-only Web NFC vs native NfcA; authenticated pairing, short-lived jobs, independent verification, cancellation. Do not reuse operator token or unsafe LAN exposure. |
 | M01 | P3 | Multi-station/fleet work only after durable per-station namespaces, conflicts/leases, card dedupe policy, deployment ownership and recovery semantics are specified/tested. |
 
+## Session handoff — 2026-11-01
+
+- Final local suites/builds and IconFlow source-bound ship pass. Root entry
+  points/store drafts now match 0.5.1 and the supported model profiles.
+- Phone is disconnected; preserve the successful clean-install evidence and
+  existing app data. Reconnect/unlock, verify foreground UI and Inspect only,
+  then owner-operated physical model and recipient-phone tests close MBL07.
+- The owner requested a GitHub checkpoint on `work/android-multi-tag`; exact
+  push and hosted-check outcomes belong in the session report, not a release badge.
+
+## Owner-requested Halloween installation — 2026-10-31
+
+- Complete: IconFlow card-sleeve seasonal master, monochrome source, evidence
+  receipt, exact generated Android resources, local store artwork and case.
+- Complete: explicitly authorized removal of old app/data and clean 0.5.1
+  installation; package/version and installed APK hash verified.
+- MBL07 phone follow-up: owner unlocks the phone and opens nfcraft, verify
+  foreground UI and Inspect only, then owner-operated one-card tests per model.
+  The earlier installation-signature blocker is resolved by authorized reinstall.
+- Physical NFC, recipient QA and release/store identity gates remain open.
+
+## Owner-prioritized multi-model Android rewrite — 2026-10-31
+
+- MBL07 complete locally: NTAG213/215/216 exact profiles, model-bound fences,
+  factory NTAG213 Lock Control TLV, capacity refusal, strict ACK framing,
+  UID BCC checks and full-area verification; simulator and JVM regressions pass.
+- Earlier signer mismatch was resolved by the owner-authorized clean 0.5.1
+  installation documented above; the removed data is not migration evidence.
+- Next bounded task: reconnect the phone with installed 0.5.1, verify Inspect
+  only, then owner-test one expendable card per model, rewrite, torn
+  recovery and an independent recipient-phone scan. Physical gates stay open.
+- Additional families need separate evidence; do not broaden desktop support
+  or silently use Android generic NDEF formatting to accept unknown chips.
+
 ## Portable links checkpoint — 2026-10-09
 
 - Phone follow-up: clean install of 0.4.2 passed after an owner-authorized

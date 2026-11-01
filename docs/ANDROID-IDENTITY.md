@@ -23,7 +23,7 @@ independent of the test website. Alternative: `me.dokoii.nfcraft` if the owner
 prefers a publisher prefix. Neither is selected, registered or verified as
 available in Play Console. No ownership of a corresponding domain is implied.
 
-The current 0.4.2 build deliberately remains a compatible **legacy test build**
+The current 0.5.1 build deliberately remains a compatible **legacy test build**
 under `best.tgs.cardwriter` while independent quality work proceeds. Its ID is
 not a renewed recommendation for the public release. Do not publish this build.
 

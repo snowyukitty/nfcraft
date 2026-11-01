@@ -670,14 +670,14 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
             Outcome outcome;
             NfcA nfcA = NfcA.get(tag);
             if (nfcA == null) {
-                outcome = new Outcome(Nb.TERRACOTTA, "Not NTAG215",
+                outcome = new Outcome(Nb.TERRACOTTA, "Unsupported tag",
                         "This tag does not speak NFC-A. Nothing was attempted.", null, SOUND_FAIL);
             } else {
                 // Declared outside the try so the failure copy can still report
                 // what the link cost before it gave out.
-                Tag215 card = null;
+                Tag21x card = null;
                 try {
-                    card = Tag215.open(nfcA);
+                    card = Tag21x.open(nfcA);
                     // The operator is holding the card right now, and the only
                     // thing they can do about a weak link is stop moving. Say
                     // so while it still helps, not in the receipt afterwards.
@@ -685,7 +685,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                             "Hold the card still against the back of the phone."
                                     + " Still trying.", null, SOUND_NONE)));
                     outcome = handle(card, destination, inspect, allow, revision);
-                } catch (Tag215.Refusal refusal) {
+                } catch (Tag21x.Refusal refusal) {
                     outcome = new Outcome(Nb.TERRACOTTA, refusal.headline, refusal.getMessage(),
                             receipt(card, null), SOUND_FAIL);
                 } catch (IOException e) {
@@ -712,7 +712,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
      * and the operator has to be told which one happened. "Tap it again" is
      * only honest before the first page write.
      */
-    private Outcome lostContact(Tag215 card, IOException e) {
+    private Outcome lostContact(Tag21x card, IOException e) {
         // Every exchange has already been retried and the link re-established
         // where it could be, so reaching here means the card really is gone,
         // not that one command was unlucky.
@@ -744,7 +744,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
      * because a card that needed four reconnects to succeed is a warning about
      * the next hundred, not a success to be filed away silently.
      */
-    private String receipt(Tag215 card, String facts) {
+    private String receipt(Tag21x card, String facts) {
         String body = facts == null ? RESTING_RECEIPT : facts;
         if (card == null || !card.struggled()) {
             return body;
@@ -753,19 +753,20 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         return body + "\nlink   " + card.effort() + (path.isEmpty() ? "" : " · " + path);
     }
 
-    private Outcome handle(Tag215 card, String target, boolean inspect, boolean allow,
-                           long revision) throws IOException, Tag215.Refusal {
-        Tag215.Inspection before = card.inspect();
-        String identity = "uid    " + before.uidHex();
+    private Outcome handle(Tag21x card, String target, boolean inspect, boolean allow,
+                           long revision) throws IOException, Tag21x.Refusal {
+        Tag21x.Inspection before = card.inspect();
+        String identity = "tag    " + before.profile.name + " \u00b7 " + before.profile.capacity
+                + " NDEF bytes\nuid    " + before.uidHex();
         String problem = before.unsafe();
         if (problem != null) {
             return new Outcome(Nb.TERRACOTTA, "Refused", problem, receipt(card, identity), SOUND_FAIL);
         }
 
         byte[] original = card.readArea();
-        if (original.length != Ndef.NDEF_CAPACITY) {
+        if (original.length != before.profile.capacity) {
             return new Outcome(Nb.TERRACOTTA, "Unexpected geometry",
-                    "Read " + original.length + " bytes where " + Ndef.NDEF_CAPACITY
+                    "Read " + original.length + " bytes where " + before.profile.capacity
                             + " were expected. Nothing was written.", receipt(card, identity), SOUND_FAIL);
         }
         String held = Ndef.decodeArea(original);
@@ -773,7 +774,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         if (inspect) {
             String label = held != null
                     ? held
-                    : (Ndef.isEmpty(original) ? "(blank)" : "(content this app does not recognise)");
+                    : (Ndef.isEmpty(original, before.profile.capacity) ? "(blank)" : "(content this app does not recognise)");
             return new Outcome(Nb.SKY, "Inspected",
                     held != null ? "This card points at " + held
                             : "No recognisable URL record on this card.",
@@ -792,9 +793,9 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
 
         byte[] area;
         try {
-            area = Ndef.encodeArea(target);
+            area = Ndef.encodeArea(target, before.profile, original);
         } catch (IllegalArgumentException e) {
-            return new Outcome(Nb.TERRACOTTA, "No destination", e.getMessage(), receipt(card, identity), SOUND_FAIL);
+            return new Outcome(Nb.TERRACOTTA, "Link does not fit", e.getMessage(), receipt(card, identity), SOUND_FAIL);
         }
 
         boolean resumable = Ndef.isOurStagedWrite(original, area);
@@ -802,7 +803,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                 ? held
                 : resumable
                 ? "(an interrupted write by this app)"
-                : Ndef.isEmpty(original) ? "(blank)" : "(content this app does not recognise)";
+                : Ndef.isEmpty(original, before.profile.capacity) ? "(blank)" : "(content this app does not recognise)";
         String facts = identity + "\nheld   " + heldLabel;
 
         if (target.equals(held)) {
@@ -812,7 +813,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         }
 
         if (!allow && !resumable) {
-            if (held == null && !Ndef.isEmpty(original)) {
+            if (held == null && !Ndef.isEmpty(original, before.profile.capacity)) {
                 return new Outcome(Nb.TERRACOTTA, "Unfamiliar content",
                         "This card holds data this app does not recognise. Nothing was written."
                                 + " Turn on OVERWRITE UNKNOWN if you are sure it is yours.",
@@ -835,7 +836,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
         // The stage moves before each attempt, not after it: a write that
         // threw may still have reached the tag, so the failure copy must never
         // claim the card is untouched once a page has been sent.
-        List<Ndef.Step> plan = Ndef.writePlan(target, original);
+        List<Ndef.Step> plan = Ndef.writePlan(target, original, before.profile);
         for (int i = 0; i < plan.size(); i++) {
             writeStage = STAGE_WRITING;
             Ndef.Step step = plan.get(i);
@@ -856,7 +857,7 @@ public final class MainActivity extends Activity implements NfcAdapter.ReaderCal
                     "The full user-area readback does not match the intended write and the"
                             + " preserved tail. Set this card aside.", receipt(card, facts), SOUND_FAIL);
         }
-        Tag215.Inspection after = card.inspect();
+        Tag21x.Inspection after = card.inspect();
         if (!after.sameAs(before)) {
             return new Outcome(Nb.TERRACOTTA, "Identity changed",
                     "Tag identity or protected configuration changed during the write."

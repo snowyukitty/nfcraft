@@ -5,21 +5,23 @@ master = "master.svg"
 output = "icons"
 casebook = "casebook"
 [brief]
-app_intent = "Pocket NFC card writer with reusable web destinations"
-user_job = "Keep destinations handy and give each card the right link"
+app_intent = "A pocket NFC workshop for reusable physical link cards"
+user_job = "Keep destinations handy and give each reusable card the right link"
 essence = "keep"
-personality = ["tactile", "calm", "precise"]
+personality = ["tactile", "precise", "quietly magical"]
 [design]
-palette = ["#214b40", "#e2a13c", "#fff4de"]
-cliches = ["NFC radio arcs", "letter tile", "pen over card", "check badge"]
-signature_device = "Broad thumb-cut sleeve cradling one brass destination card"
+palette = ["#214b40", "#f7a24a", "#fff4de"]
+cliches = ["generic pumpkin emoji", "NFC radio arcs", "letter tile", "tiny seasonal props"]
+signature_device = "A jack-o-lantern card sleeve whose emerging cream card replaces the pumpkin stem"
 device_family = "negative-space"
-device_detail = "256-unit mouth cut into the pocket silhouette"
-concept_lens = "metaphor"
+device_detail = "Broad chiseled eyes and a bat-wing thumb cut make the reusable pocket itself the lantern"
+concept_lens = "object-action"
 [build]
-targets = ["web", "electron"]
+targets = ["web", "android"]
 theme_color = "#214b40"
 background_color = "#214b40"
+maskable_scale = 0.8
+monochrome_svg = "monochrome.svg"
 electron_radius = 0
 tray_ts = false
 tray_svg = ""
@@ -28,7 +30,7 @@ color_scheme = "light"
 optimize_png = true
 [neighbours]
 avoid = ["@collision"]
-family = ["../master.svg"]
+family = []
 portfolio = []
 [review]
 status = "pending"

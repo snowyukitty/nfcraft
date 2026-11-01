@@ -1,0 +1,40 @@
+{
+  "schema": 1,
+  "source": "master.svg",
+  "source_sha256": "ba227e9f1e046e857fefc7e98171432c6810a83533ea464d25103c2c57c00700",
+  "contract_sha256": "cfb6d91a3f3c5271864877fc29b06ff8f72bd32813c734b2ba4ec9507ae35a73",
+  "project": "nfcraft",
+  "user_job": "Keep destinations handy and give each card the right link",
+  "essence": "keep",
+  "personality": "tactile, calm, precise",
+  "signature_device": "Broad thumb-cut sleeve cradling one brass destination card",
+  "cliches": [
+    "NFC radio arcs",
+    "letter tile",
+    "pen over card",
+    "check badge"
+  ],
+  "targets": [
+    "web",
+    "electron"
+  ],
+  "build": {
+    "theme_color": "#214B40",
+    "background_color": "#214B40",
+    "electron_radius": 0,
+    "tray_template_mode": "alpha",
+    "color_scheme": "light",
+    "tray_source_sha256": null
+  },
+  "warnings": [],
+  "scores": {
+    "legibility": 4,
+    "distinctiveness": 4,
+    "balance": 4,
+    "color": 5,
+    "scalability": 4,
+    "craft": 4
+  },
+  "notes": "Card sleeve with a tilted brass card and broad thumb cut. The tilted card removes the printer reading of the upright draft. The sleeve is visible at 16px; no waves or letter tile. Native-size, white/dark/gray and adaptive crop checks retain the pocket. Foreground bake-off inspected separately because full-card alpha is a tile. The house-corpus emoji advisory was visually rejected: the sleeve has straight walls, a mouth and a separate card, not a face. No avoid-set collisions.",
+  "status": "ready"
+}

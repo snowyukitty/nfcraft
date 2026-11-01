@@ -1,6 +1,75 @@
 # nfcraft — current project state
 
-Updated: 2026-10-09 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.4.2**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+Updated: 2026-11-01 (Asia/Tokyo). Desktop version: **0.2.2**; Android version: **0.5.1**. Treat this file as the index for the next agent, not as evidence in place of test logs.
+
+## Session checkpoint — 2026-11-01
+
+Android source/artifacts remain **0.5.1 / code 8**, with exact NTAG213/215/216
+profiles and the reviewed IconFlow Halloween sleeve. Final local verification
+passes: 118 Python / 16 Worker tests, 44 Android tests, lint 0 errors / 5 warnings,
+APK/AAB checks, encoder parity, 1,087 plans, ten link behaviours, 621 model
+safety assertions and the source-bound IconFlow ship gate. No runtime change
+was needed during this checkpoint.
+
+ADB now reports no attached device. The successful authorized clean install
+and installed-APK comparison below remain historical evidence, not a current
+phone probe. Foreground UI, real tag rewriting/recovery and recipient-phone QA
+are still pending. Preserve the installed 0.5.1 data; reconnect/unlock and start
+with Inspect only. Public Android ID, release signing, store upload and cloud
+publication remain separate gates.
+
+The owner requested a GitHub checkpoint. Work is prepared on
+`work/android-multi-tag`; see the
+[final checkpoint report](../reports/2026-11-01-session-checkpoint/REPORT.md) for
+publication status, exact commands, remaining work and continuation. Root entry
+points and store drafts now describe the current tag support and limitations.
+
+## Halloween icon and authorized phone reinstall — 2026-10-31
+
+The owner explicitly authorized removal of the old phone app/data and requested
+an IconFlow Halloween identity before installing the new version. The reviewed
+lantern card sleeve now ships as Android adaptive/themed/legacy icons and local
+store artwork. Master, monochrome source, source-bound receipt, reproducible
+copy script and case record are retained. The superseded mark is archived.
+IconFlow check/ship pass without warnings; scores 4/4/4/5/4/5, headless review.
+
+Android **0.5.1 / code 8** was installed successfully after the authorized
+uninstall. Package manager confirms the version; the installed APK SHA-256
+matches the tested local APK exactly. The former 0.2.0 preferences were removed
+by uninstall; no preserved-data migration is claimed. NFC is on. App launch
+creates a process without an AndroidRuntime crash, but the phone remains
+keyguard-locked and the Activity is stopped, so foreground UI acceptance is
+BLOCKED pending the owner's unlock. No PIN, unlock bypass or tag write was used.
+
+Local checks: 44 Android tests, lint 0 errors / 5 warnings, APK/AAB and artifact
+checks, 118 Python / 16 Worker tests, parity, 1,087 plan states, ten link
+behaviours and 621 multi-model safety assertions pass. AAB is unsigned; no store
+upload or physical NFC/recipient-phone acceptance. See
+[session report](../reports/2026-10-31-halloween-install/REPORT.md).
+
+## Android multi-model rewriting — 2026-10-31
+
+Android now recognises exact NTAG213/215/216 vectors, checks model-specific CC,
+locks/configuration and UID BCC, and enforces each advertised NDEF page fence.
+NTAG213 factory Lock Control TLV is preserved, including its unaligned NDEF
+length commit. Existing layouts stay in place; oversized links refuse before
+writing. Full target/preserved-tail readback and identity comparison remain
+required. No generic NDEF fallback, lock/password command or desktop expansion.
+See [profile contract](ANDROID-TAGS.md).
+
+Local verification: 44 Android tests, lint 0 errors / 17 warnings, APK/AAB,
+legacy encoder parity, 1,087 plan states, ten link behaviours and 621 simulated
+multi-model safety assertions pass; 118 Python / 16 Worker tests pass.
+The debug APK is 0.5.0 / code 7; release AAB remains unsigned.
+
+At this earlier checkpoint, the attached NFC-enabled Android 11 phone had 0.2.0 / code 2,
+which differs from the historical installation checkpoint below. Its signer
+also differs; `adb install -r` was refused with
+`INSTALL_FAILED_UPDATE_INCOMPATIBLE`. Old app/data remained intact until the later authorized reinstall above. Removal and
+fresh installation required a new explicit owner decision for this device;
+prior permission for another checkpoint is not assumed. Physical NFC and
+recipient-phone acceptance are NOT_RUN. See the
+[session report](../reports/2026-10-31-android-multi-tag/REPORT.md).
 
 ## Phone installation checkpoint — 2026-10-09
 
@@ -173,7 +242,7 @@ No `.git` existed in the handoff. A local `work/local-bootstrap` branch was init
 | Search, filters, card details, live recipient preview | Implemented in 0.2.0; browser acceptance passed |
 | Public export review | Implemented with stale-content refusal and shared-profile warning; not deployment/receipt tracking |
 | Multiple profiles, advanced labels, multilingual UI | Backlog, not shipped |
-| Android writing app | Native standalone nfcraft 0.4.0 in `android/`; local share/history/safety/build tests pass; physical release acceptance outstanding |
+| Android writing app | Native standalone nfcraft 0.5.0 in `android/`; NTAG213/215/216 profiles and local tests pass; installation signer and physical acceptance gates remain open |
 | iPhone writing app | Not implemented; Core NFC prototype and Mac/iPhone validation required |
 | Signed installer, auto-update, physical write protection | Not implemented |
 

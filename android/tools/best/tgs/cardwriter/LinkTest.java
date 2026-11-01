@@ -15,7 +15,7 @@ import java.util.List;
  * one exchange out of thirty goes wrong, which on real hardware is both common
  * and impossible to schedule. So the link is simulated here instead: a card
  * that drops exchanges, truncates answers, swallows acknowledgements or
- * answers NAK, and the checks say what Tag215 must do about each.
+ * answers NAK, and the checks say what Tag21x must do about each.
  *
  * Every property below is a claim the app makes to the operator. A write that
  * is reported as done must have been confirmed by the card, and a card that
@@ -43,8 +43,9 @@ public final class LinkTest {
 
     private static void cleanCardReadsAndWrites() throws Exception {
         Card card = new Card();
-        Tag215 tag = Tag215.open(card);
-        Tag215.Inspection inspection = tag.inspect();
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
+        Tag21x.Inspection inspection = tag.inspect();
         is("a factory card is safe to write", null, inspection.unsafe());
         is("the whole advertised area is read", Ndef.NDEF_CAPACITY, tag.readArea().length);
         tag.writePage(0x04, new byte[]{0x03, 0x00, (byte) 0xD1, 0x01});
@@ -59,7 +60,8 @@ public final class LinkTest {
         // and the presentation must still complete.
         Card card = new Card();
         card.dropEvery = 3;
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         tag.inspect();
         byte[] area = tag.readArea();
         is("the area survives a lossy link", Ndef.NDEF_CAPACITY, area.length);
@@ -78,7 +80,8 @@ public final class LinkTest {
         // different to say, so it is retried rather than believed.
         Card card = new Card();
         card.truncateEvery = 4;
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         tag.inspect();
         is("a truncating link still yields the area", Ndef.NDEF_CAPACITY, tag.readArea().length);
         passed++;
@@ -87,7 +90,8 @@ public final class LinkTest {
     private static void swallowedAckIsConfirmedByReadback() throws Exception {
         Card card = new Card();
         card.swallowAcks = true;
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         tag.writePage(0x05, new byte[]{0x11, 0x22, 0x33, 0x44});
         is("a swallowed ACK is settled by reading the page back", "11 22 33 44",
                 render(card.page(0x05)));
@@ -100,7 +104,8 @@ public final class LinkTest {
         Card card = new Card();
         card.swallowAcks = true;
         card.ignoreWrites = true;
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         threw("an unconfirmed write is a failure", tag, 0x06, new byte[]{1, 2, 3, 4});
         passed++;
     }
@@ -111,7 +116,8 @@ public final class LinkTest {
         Card card = new Card();
         card.nakWrites = 0x01;
         card.nakBudget = 2;
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         tag.writePage(0x07, new byte[]{(byte) 0xAA, 0x00, 0x00, 0x00});
         is("a CRC NAK is ridden out", "AA 00 00 00", render(card.page(0x07)));
         ok("and is counted as effort", tag.struggled());
@@ -124,7 +130,8 @@ public final class LinkTest {
         Card card = new Card();
         card.nakWrites = 0x00;
         card.nakBudget = Integer.MAX_VALUE;
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         threw("a refusal stops the run", tag, 0x08, new byte[]{1, 2, 3, 4});
         is("and the card was asked exactly once", 1, card.writeCommands);
         passed++;
@@ -132,7 +139,8 @@ public final class LinkTest {
 
     private static void deadLinkGivesUpAndSaysSo() throws Exception {
         Card card = new Card();
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         card.dead = true;
         try {
             tag.readArea();
@@ -147,7 +155,8 @@ public final class LinkTest {
     private static void fastReadLadderFallsBackToPlainRead() throws Exception {
         Card card = new Card();
         card.refuseFastRead = true;
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         byte[] area = tag.readArea();
         is("plain READ completes the area", Ndef.NDEF_CAPACITY, area.length);
         is("and the receipt names the path that answered", "READ 4p", tag.readPath());
@@ -157,14 +166,15 @@ public final class LinkTest {
     private static void openRetriesAWeakFirstContact() throws Exception {
         Card card = new Card();
         card.failConnects = 2;
-        Tag215 tag = Tag215.open(card);
+        Tag21x tag = Tag21x.open(card);
+        tag.inspect();
         is("a weak first contact is retried, not refused", 3, card.connects);
         ok("and the retries show on the receipt", tag.struggled());
 
         Card hopeless = new Card();
         hopeless.failConnects = Integer.MAX_VALUE;
         try {
-            Tag215.open(hopeless);
+            Tag21x.open(hopeless);
             throw new AssertionError("An absent card must not open.");
         } catch (IOException expected) {
             ok("an absent card still gives up", true);
@@ -288,7 +298,7 @@ public final class LinkTest {
 
     // --------------------------------------------------------------- helpers
 
-    private static void threw(String what, Tag215 tag, int page, byte[] data) {
+    private static void threw(String what, Tag21x tag, int page, byte[] data) {
         try {
             tag.writePage(page, data);
         } catch (IOException expected) {

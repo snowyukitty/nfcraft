@@ -4,7 +4,7 @@ import java.io.IOException;
 
 /**
  * A desktop stand-in for the platform class, so the retry, reconnect and
- * acknowledgement logic in Tag215 can be exercised without a phone.
+ * acknowledgement logic in Tag21x can be exercised without a phone.
  *
  * This file is compiled only by tools/parity.sh, never by the app: the real
  * android.nfc.tech.NfcA always wins on a device, because android.jar is ahead

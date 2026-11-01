@@ -36,7 +36,7 @@ def build() -> None:
     with Image.open(STORE / "google-play-icon.png") as source:
         mark = source.convert("RGB").resize((256 * scale, 256 * scale), Image.Resampling.LANCZOS)
     image.paste(mark, (729 * scale, 88 * scale))
-    text(756, 365, "NTAG215", 22, mono=True, color="#fff4de")
+    text(704, 365, "NTAG213 / 215 / 216", 18, mono=True, color="#fff4de")
     target = STORE / "feature-graphic.png"
     image.resize((1024, 500), Image.Resampling.LANCZOS).save(target, optimize=True)
     print(f"Created {target.relative_to(ANDROID)} (1024 x 500, RGB)")

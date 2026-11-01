@@ -2,6 +2,7 @@ package best.tgs.cardwriter;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
@@ -22,6 +23,8 @@ final class Ndef {
     static final int FIRST_PAGE = 0x04;
     static final int LAST_NDEF_PAGE = 0x7F;
     static final int MAX_URL_BYTES = 200;
+    // NXP factory NTAG213 Lock Control TLV. Preserve it in rewritten records.
+    private static final byte[] LOCK_TLV = {0x01, 0x03, (byte) 0xA0, 0x0C, 0x34};
 
     private Ndef() {
     }
@@ -150,12 +153,43 @@ final class Ndef {
         return area;
     }
 
+    static byte[] encodeArea(String url, TagProfile profile) {
+        return encodeArea(url, profile, profile == TagProfile.NTAG213);
+    }
+
+    static byte[] encodeArea(String url, TagProfile profile, byte[] current) {
+        return encodeArea(url, profile, messageOffset(current) == 5);
+    }
+
+    private static byte[] encodeArea(String url, TagProfile profile, boolean keepLockTlv) {
+        byte[] area = encodeArea(url);
+        if (keepLockTlv) {
+            byte[] record = uriRecord(url);
+            int size = LOCK_TLV.length + record.length + 3;
+            area = new byte[(size + 3) / 4 * 4];
+            System.arraycopy(LOCK_TLV, 0, area, 0, LOCK_TLV.length);
+            area[5] = 0x03;
+            area[6] = (byte) record.length;
+            System.arraycopy(record, 0, area, 7, record.length);
+            area[7 + record.length] = (byte) 0xFE;
+        }
+        profile.requireFits(area);
+        return area;
+    }
+
+    private static int messageOffset(byte[] area) {
+        if (area != null && area.length >= 8
+                && Arrays.equals(Arrays.copyOf(area, LOCK_TLV.length), LOCK_TLV)) return 5;
+        return 0;
+    }
+
     /**
      * Strictly decode our own canonical record, or null. Arbitrary tag data is
      * deliberately not interpreted: anything this does not recognise is treated
      * as unfamiliar content, not as something safe to replace.
      */
     static String decodeArea(byte[] area) {
+        if (messageOffset(area) == 5) area = Arrays.copyOfRange(area, 5, area.length);
         if (area == null || area.length < 8 || area[0] != 0x03 || area[1] == 0) {
             return null;
         }
@@ -185,10 +219,15 @@ final class Ndef {
 
     /** Factory-initialised empty TLV, or an all-zero unpopulated user area. */
     static boolean isEmpty(byte[] area) {
-        if (area.length != NDEF_CAPACITY) {
+        return isEmpty(area, NDEF_CAPACITY);
+    }
+
+    static boolean isEmpty(byte[] area, int capacity) {
+        if (area.length != capacity) {
             return false;
         }
-        if (area[0] == 0x03 && area[1] == 0x00 && area[2] == (byte) 0xFE) {
+        int offset = messageOffset(area);
+        if (area[offset] == 0x03 && area[offset + 1] == 0x00 && area[offset + 2] == (byte) 0xFE) {
             return true;
         }
         for (byte b : area) {
@@ -201,6 +240,9 @@ final class Ndef {
 
     /** True when an empty TLV is hiding data inside the region about to be written. */
     static boolean hidesDataUnderEmptyTlv(byte[] area, int plannedLength) {
+        if (messageOffset(area) == 5) {
+            return hidesDataUnderEmptyTlv(Arrays.copyOfRange(area, 5, area.length), plannedLength - 5);
+        }
         if (area.length < 3 || area[0] != 0x03 || area[1] != 0x00 || area[2] != (byte) 0xFE) {
             return false;
         }
@@ -225,6 +267,10 @@ final class Ndef {
      * through recovery_matches(); this is the single-destination equivalent.
      */
     static boolean isOurStagedWrite(byte[] area, byte[] target) {
+        if (messageOffset(area) == 5 && messageOffset(target) == 5) {
+            // Length and D1 share page 05; byte 01 starts the next body page.
+            return area[5] == 0x03 && area[6] == 0 && area[7] == target[7];
+        }
         return area.length >= 4 && target.length >= 4
                 && area[0] == 0x03 && area[1] == 0x00
                 && area[2] == target[2] && area[3] == target[3];
@@ -264,8 +310,33 @@ final class Ndef {
      * while the body is in flight — holds in every case.
      */
     static List<Step> writePlan(String url, byte[] current) {
+        return writePlan(url, current, NDEF_CAPACITY);
+    }
+
+    static List<Step> writePlan(String url, byte[] current, TagProfile profile) {
+        if (current == null || current.length != profile.capacity) {
+            throw new IllegalArgumentException("A complete original NDEF area is required.");
+        }
+        byte[] target = encodeArea(url, profile, current);
+        int commitOffset = (messageOffset(target) + 1) / 4 * 4;
+        byte[] staged = Arrays.copyOfRange(target, commitOffset, commitOffset + 4);
+        staged[messageOffset(target) + 1 - commitOffset] = 0;
+        List<Step> steps = new ArrayList<Step>();
+        Step stage = new Step(FIRST_PAGE + commitOffset / 4, staged);
+        if (!alreadyHolds(current, stage)) steps.add(stage);
+        for (int i = 0; i < target.length; i += 4) {
+            if (i == commitOffset) continue;
+            Step step = new Step(FIRST_PAGE + i / 4, Arrays.copyOfRange(target, i, i + 4));
+            if (!alreadyHolds(current, step)) steps.add(step);
+        }
+        steps.add(new Step(FIRST_PAGE + commitOffset / 4,
+                Arrays.copyOfRange(target, commitOffset, commitOffset + 4)));
+        return steps;
+    }
+
+    private static List<Step> writePlan(String url, byte[] current, int capacity) {
         List<Step> full = writePlan(url);
-        if (current == null || current.length < NDEF_CAPACITY) {
+        if (current == null || current.length != capacity) {
             return full;
         }
         List<Step> pruned = new ArrayList<Step>();

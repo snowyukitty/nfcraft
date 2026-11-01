@@ -8,15 +8,25 @@ Open the guide locally, or choose **Guide / 使用說明** inside the app. The *
 
 **A small, local-first workshop for your NTAG215 business cards.**
 
-**Prelaunch checkpoint (2026-10-09):** Android 0.4.2 adds explicit recent-link
-transfer with preview, validation and lossless merging, following the visual
-and gesture refinements in 0.4.1. The legacy test application ID is on hold for
-store creation; a product-centered ID still needs selection. This is not a
-store-ready or physically qualified release. Start with the
+**Checkpoint (2026-11-01):** Android **0.5.1** adds exact NTAG213/215/216
+profiles, model-specific capacity/write fences and an IconFlow Halloween
+card-sleeve identity. The owner-authorized clean phone install succeeded;
+the installed APK hash matched the tested build. The phone is now disconnected,
+so foreground UI and physical tag acceptance remain pending. The desktop
+writer stays NTAG215-only. The legacy Android ID is still on hold for store
+creation; the release AAB is unsigned. Start with the
 [current state](docs/PROJECT-STATE.md), [identity decision](docs/ANDROID-IDENTITY.md)
-and [phone acceptance checklist](android/store/TESTING.md).
+and [checkpoint report](reports/2026-11-01-session-checkpoint/REPORT.md).
 
-Two programs share one encoder. The desktop workshop drives a USB PC/SC reader and keeps the journal; [Card Writer](android/README.md) puts one card's destination on a phone with no PC at all. What they write is byte-for-byte identical, and a check proves it on every commit.
+[Android icon preview](reports/2026-10-31-halloween-install/icon-preview.png) ·
+[Supported tags and safety contract](docs/ANDROID-TAGS.md) ·
+[Phone acceptance checklist](android/store/TESTING.md)
+
+The desktop workshop drives a USB PC/SC reader and keeps the journal;
+[the Android writer](android/README.md) rewrites one card's destination without
+a PC. Their NTAG215 encoding is byte-for-byte identical, verified by a shared
+parity check. Android additionally preserves NTAG213's factory Lock Control TLV
+and checks the capacity and memory map of each supported model.
 
 Prepare a batch with an AI agent. Approve it in the app. Present one card at a time. Keep every assignment and uncertain outcome in a durable journal.
 
@@ -41,7 +51,7 @@ This release adds safer legacy-data handling, stricter public exports, an occupi
 | ACS ACR1552U PC/SC adapter | Experimental source; **no physical tests**; read-only by default |
 | Desktop window / tray integration | Unsigned Windows portable build; browser/native lifecycle tested on this host; clean-machine and tray-menu visual QA outstanding |
 | Public card page and contact.vcf | Shared recipient renderer; real local Worker/D1 and narrow-browser tests pass; **not remotely deployed** |
-| Android phone writer (`android/`) | Implemented as a separate single-card tool; one physical card written and verified, no batch station |
+| Android phone writer (`android/`) | 0.5.1 single-card tool, NTAG213/215/216 local checks pass; clean install verified; current physical qualification remains pending |
 | Permanent locking, password changes, arbitrary rewrites | Deliberately absent |
 | Signed installer, automatic cloud synchronization, multilingual UI, public AI chat | Not included in v0.1 |
 

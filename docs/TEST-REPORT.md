@@ -1,5 +1,42 @@
 # nfcraft — verification evidence
 
+## Final session checkpoint — 2026-11-01
+
+PASS: 118 Python / 16 Worker tests, compile/syntax and disposable daemon/CLI/MCP
+smoke; 44 Android tests, lint 0 errors / 5 warnings, APK/AAB; five artifact-checker
+tests; encoder parity, 1,087 plans, ten link behaviours, history and 621 model
+assertions; IconFlow check and source-bound ship with the reviewed plan.
+APK hash remains the exact previously installed 0.5.1 build.
+BLOCKED: current phone UI/NFC verification; ADB reports no devices attached.
+NOT_RUN: physical tag/recipient-phone qualification, signed release/store/cloud.
+See [checkpoint report](../reports/2026-11-01-session-checkpoint/REPORT.md) for
+GitHub/hosted checks and final status.
+
+## Android 0.5.1 Halloween and installation — 2026-10-31
+
+PASS: IconFlow doctor/check/ship and case lint; 44 Android tests, lint 0 errors /
+5 warnings, APK/AAB and artifact checker, five checker tests, 118 Python /
+16 Worker tests, parity, 1,087 plan states, ten link behaviours and 621 model
+safety assertions. Adaptive/themed icons and feature graphic visually reviewed.
+PASS: explicitly authorized old-app uninstall and 0.5.1 / code 8 installation;
+installed APK hash equals tested APK. Old settings were removed by uninstall.
+BLOCKED: actual foreground UI; keyguard remains locked. App process exists
+without AndroidRuntime crash output, but is stopped behind keyguard.
+NOT_RUN: physical card rewriting, independent recipient scan and store upload.
+See [session report](../reports/2026-10-31-halloween-install/REPORT.md).
+
+## Android 0.5.0 — 2026-10-31
+
+PASS: 44 Android tests, lint 0 errors / 17 warnings, APK/AAB builds, local
+artifact checker and five checker tests; legacy Python/Java parity, 1,087
+plan states, ten link behaviours, history and 621 multi-model safety assertions;
+118 Python / 16 Worker tests and disposable demo/CLI/MCP smoke.
+FAIL (signing enforcement): this phone carries 0.2.0 with a different signer,
+so `adb install -r` returned `INSTALL_FAILED_UPDATE_INCOMPATIBLE`; original
+version remains. Fresh install requires explicit data-loss approval.
+NOT_RUN: physical tag writes, independent recipient scan and store upload.
+See [session report](../reports/2026-10-31-android-multi-tag/REPORT.md).
+
 ## Physical phone installation — 2026-10-09
 
 **FAIL (expected signing enforcement):** `adb install -r` from installed 0.2.0

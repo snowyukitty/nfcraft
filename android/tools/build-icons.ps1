@@ -9,13 +9,21 @@ try {
         if ($LASTEXITCODE -ne 0) { throw 'IconFlow gate or render failed.' }
     }
     Invoke-IconFlow ship --config iconflow.toml --review master-review.json
-    $densities = @{ mdpi = 48; hdpi = 72; xhdpi = 96; xxhdpi = 144; xxxhdpi = 192 }
-    foreach ($density in $densities.Keys) {
-        $directory = "app/src/main/res/mipmap-$density"
-        Invoke-IconFlow render master.svg --sizes $densities[$density] --out "$directory/ic_launcher.png"
-        Copy-Item -LiteralPath "$directory/ic_launcher.png" -Destination "$directory/ic_launcher_round.png"
+    # Copy the reviewed Android target bytes; do not redraw adaptive layers.
+    $generatedRoot = (Resolve-Path 'icons/android/res').Path
+    $resourceRoot = (Resolve-Path 'app/src/main/res').Path
+    foreach ($source in Get-ChildItem -LiteralPath $generatedRoot -File -Recurse) {
+        $relative = $source.FullName.Substring($generatedRoot.Length + 1)
+        $target = Join-Path $resourceRoot $relative
+        New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
+        Copy-Item -LiteralPath $source.FullName -Destination $target
     }
-    Invoke-IconFlow render master.svg --sizes 512 --bg '#214b40' --out store/google-play-icon.png
+    # Existing API-33 resources must resolve to the same generated layers.
+    foreach ($name in @('ic_launcher.xml', 'ic_launcher_round.xml')) {
+        Copy-Item -LiteralPath "icons/android/res/mipmap-anydpi-v26/$name" `
+            -Destination "app/src/main/res/mipmap-anydpi-v33/$name"
+    }
+    Copy-Item -LiteralPath 'icons/android/play-store-512.png' -Destination 'store/google-play-icon.png'
     Invoke-IconFlow render master.svg --sizes 1024 --bg '#214b40' --out store/app-store-icon.png
 } finally {
     Pop-Location

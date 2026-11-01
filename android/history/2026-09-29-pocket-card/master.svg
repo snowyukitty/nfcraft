@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024">
+  <rect id="iconflow-background" width="1024" height="1024" rx="224" fill="#214b40"/>
+  <!-- A reusable card in a thumb-cut sleeve. Shared with native Android layers. -->
+  <g id="iconflow-mark">
+    <path id="iconflow-core" transform="rotate(-14 512 400)" d="M344 216H632Q696 216 696 280V400H344Z" fill="#e2a13c"/>
+    <path id="iconflow-signature" d="M240 432H384Q512 608 640 432H784V684Q784 760 708 760H316Q240 760 240 684Z" fill="#fff4de"/>
+  </g>
+</svg>

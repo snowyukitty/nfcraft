@@ -7,16 +7,11 @@ import java.io.IOException;
 import java.util.Arrays;
 
 /**
- * NTAG215 command layer over Android's raw NFC-A transceive.
+ * NTAG213/215/216 command layer over Android's raw NFC-A transceive.
  *
- * The safety checks are a port of Inspection.require_safe() in
- * nfcraft/adapters/base.py, and the page mapping matches the PC/SC adapter:
- * READ 0x00 gives pages 0..3 (UID, static locks, capability container) and
- * READ 0x82 gives pages 0x82..0x85 (dynamic locks, CFG0, CFG1).
- *
- * Nothing here can write outside pages 0x04..0x7F, and no command that changes
- * locks, configuration, password or the capability container is implemented at
- * all — not disabled, absent.
+ * Geometry is selected only from exact GET_VERSION vectors. All writes are
+ * four-byte writes inside that model's CC-advertised NDEF area. Locks,
+ * configuration, password and capability-container writes are absent.
  *
  * <h2>Why every exchange is retried</h2>
  *
@@ -35,7 +30,7 @@ import java.util.Arrays;
  * way — so a write whose answer was lost is settled by reading the page back
  * rather than by assuming either outcome.
  */
-final class Tag215 {
+final class Tag21x {
 
     /** Attempts per exchange. The first is plain; later ones reconnect first. */
     private static final int ATTEMPTS = 4;
@@ -67,6 +62,8 @@ final class Tag215 {
 
     /** The identity and protected configuration this app reads but never writes. */
     static final class Inspection {
+        final TagProfile profile;
+        final boolean validBcc;
         final byte[] version;
         final byte[] uid;
         final byte[] cc;
@@ -75,8 +72,10 @@ final class Tag215 {
         final byte[] cfg0;
         final byte[] cfg1;
 
-        Inspection(byte[] version, byte[] uid, byte[] cc, byte[] staticLocks,
+        Inspection(TagProfile profile, boolean validBcc, byte[] version, byte[] uid, byte[] cc, byte[] staticLocks,
                    byte[] dynamicLocks, byte[] cfg0, byte[] cfg1) {
+            this.profile = profile;
+            this.validBcc = validBcc;
             this.version = version;
             this.uid = uid;
             this.cc = cc;
@@ -88,12 +87,13 @@ final class Tag215 {
 
         /** Returns why this card must not be written, or null when it is safe. */
         String unsafe() {
-            if (!Arrays.equals(version, Ndef.VERSION)) {
-                return "Exact NTAG215 GET_VERSION response is required; no geometry guessing.";
+            if (profile == null || TagProfile.identify(version) != profile) {
+                return "Exact NTAG213/215/216 GET_VERSION response is required.";
             }
-            if (!Arrays.equals(cc, Ndef.CC)) {
-                return "Expected writable factory NTAG215 capability container E1103E00.";
+            if (!profile.matchesCc(cc)) {
+                return "Expected the writable factory capability container for " + profile.name + ".";
             }
+            if (!validBcc) return "UID block check bytes do not match. Nothing was written.";
             if (any(staticLocks) || any(dynamicLocks)) {
                 return "Lock bits are set. This app never clears or changes locks.";
             }
@@ -110,7 +110,8 @@ final class Tag215 {
         }
 
         boolean sameAs(Inspection o) {
-            return Arrays.equals(version, o.version)
+            return profile == o.profile && validBcc == o.validBcc
+                    && Arrays.equals(version, o.version)
                     && Arrays.equals(uid, o.uid)
                     && Arrays.equals(cc, o.cc)
                     && Arrays.equals(staticLocks, o.staticLocks)
@@ -141,6 +142,8 @@ final class Tag215 {
     }
 
     private final NfcA nfcA;
+    private TagProfile profile;
+    private boolean safeInspection;
 
     /** Pages per FAST_READ. Halved when the link will not carry the answer. */
     private int fastReadPages;
@@ -175,7 +178,7 @@ final class Tag215 {
         watcher.struggling();
     }
 
-    private Tag215(NfcA nfcA, int retriesSoFar) {
+    private Tag21x(NfcA nfcA, int retriesSoFar) {
         this.nfcA = nfcA;
         this.retries = retriesSoFar;
         this.fastReadPages = maxFastReadPages();
@@ -191,7 +194,7 @@ final class Tag215 {
      * presentation to repeat — nothing has been read, nothing decided, nothing
      * written.
      */
-    static Tag215 open(NfcA nfcA) throws IOException {
+    static Tag21x open(NfcA nfcA) throws IOException {
         IOException last = null;
         for (int attempt = 0; attempt < ATTEMPTS; attempt++) {
             if (attempt > 0) {
@@ -206,7 +209,7 @@ final class Tag215 {
             }
             try {
                 nfcA.connect();
-                return new Tag215(nfcA, attempt);
+                return new Tag21x(nfcA, attempt);
             } catch (IOException e) {
                 last = e;
             } catch (RuntimeException e) {
@@ -242,30 +245,38 @@ final class Tag215 {
      * unknown chip is never probed at addresses that may mean something else.
      */
     Inspection inspect() throws IOException, Refusal {
+        safeInspection = false;
+        profile = null;
         byte[] version = exchange(new byte[]{0x60}, 8);
-        if (!Arrays.equals(version, Ndef.VERSION)) {
-            throw new Refusal("Not an NTAG215",
-                    "GET_VERSION does not match NTAG215, so no further pages were read.");
+        TagProfile identified = TagProfile.identify(version);
+        if (identified == null) {
+            throw new Refusal("Unsupported tag",
+                    "GET_VERSION does not match NTAG213/215/216. No memory pages were read.");
         }
         byte[] head = read(0x00);
-        byte[] tail = read(0x82);
+        byte[] tail = read(identified.dynamicLockPage);
 
         byte[] uid = new byte[7];
         System.arraycopy(head, 0, uid, 0, 3);
         System.arraycopy(head, 4, uid, 3, 4);
 
-        return new Inspection(
-                version,
+        boolean validBcc = head[3] == (byte) (0x88 ^ head[0] ^ head[1] ^ head[2])
+                && head[8] == (byte) (head[4] ^ head[5] ^ head[6] ^ head[7]);
+        Inspection inspection = new Inspection(
+                identified, validBcc, version,
                 uid,
                 Arrays.copyOfRange(head, 12, 16),
                 Arrays.copyOfRange(head, 10, 12),
                 Arrays.copyOfRange(tail, 0, 3),
                 Arrays.copyOfRange(tail, 4, 8),
                 Arrays.copyOfRange(tail, 8, 12));
+        profile = identified;
+        safeInspection = inspection.unsafe() == null;
+        return inspection;
     }
 
     /**
-     * The whole CC-advertised NDEF area: pages 0x04..0x7F, 496 bytes.
+     * The whole CC-advertised NDEF area of the inspected model.
      *
      * A chunk size this link will not carry is not a reason to abandon
      * FAST_READ altogether. It is a reason to ask for less of the card at a
@@ -273,6 +284,7 @@ final class Tag215 {
      * supports before plain four-page READs take over.
      */
     byte[] readArea() throws IOException {
+        requireSafeInspection();
         while (fastReadPages >= 4) {
             try {
                 byte[] area = fastReadArea(fastReadPages);
@@ -282,18 +294,22 @@ final class Tag215 {
                 fastReadPages /= 2;
             }
         }
-        ByteArrayOutputStream out = new ByteArrayOutputStream(Ndef.NDEF_CAPACITY);
-        for (int page = Ndef.FIRST_PAGE; page <= Ndef.LAST_NDEF_PAGE; page += 4) {
-            out.write(read(page));
+        ByteArrayOutputStream out = new ByteArrayOutputStream(profile.capacity);
+        for (int page = Ndef.FIRST_PAGE; page <= profile.lastPage; page += 4) {
+            // Keep the four-page READ wholly inside the advertised area.
+            int start = Math.min(page, profile.lastPage - 3);
+            byte[] block = read(start);
+            int count = Math.min(4, profile.lastPage - page + 1);
+            out.write(block, (page - start) * 4, count * 4);
         }
         readPath = "READ 4p";
         return out.toByteArray();
     }
 
     private byte[] fastReadArea(int perCall) throws IOException {
-        ByteArrayOutputStream out = new ByteArrayOutputStream(Ndef.NDEF_CAPACITY);
-        for (int page = Ndef.FIRST_PAGE; page <= Ndef.LAST_NDEF_PAGE; page += perCall) {
-            int end = Math.min(Ndef.LAST_NDEF_PAGE, page + perCall - 1);
+        ByteArrayOutputStream out = new ByteArrayOutputStream(profile.capacity);
+        for (int page = Ndef.FIRST_PAGE; page <= profile.lastPage; page += perCall) {
+            int end = Math.min(profile.lastPage, page + perCall - 1);
             out.write(exchange(new byte[]{0x3A, (byte) page, (byte) end}, (end - page + 1) * 4));
         }
         return out.toByteArray();
@@ -312,7 +328,8 @@ final class Tag215 {
      * second attempt.
      */
     void writePage(int page, byte[] data) throws IOException {
-        Ndef.assertSafePage(page, data);
+        requireSafeInspection();
+        profile.assertSafePage(page, data);
         byte[] command = new byte[]{
                 (byte) 0xA2, (byte) page, data[0], data[1], data[2], data[3]};
         IOException last = null;
@@ -339,7 +356,10 @@ final class Tag215 {
             try {
                 byte[] response = nfcA.transceive(command);
                 if (response != null && response.length > 0) {
-                    int answer = response[0] & 0x0F;
+                    if (response.length != 1 || (response[0] & 0xFF) > 0x0F) {
+                        throw new Rejected("Unexplained WRITE response; refusing to assume an ACK.");
+                    }
+                    int answer = response[0] & 0xFF;
                     if (answer == 0x0A) {
                         return;
                     }
@@ -368,6 +388,12 @@ final class Tag215 {
             }
         }
         throw last == null ? new IOException("Page " + hexPage(page) + " was not written.") : last;
+    }
+
+    private void requireSafeInspection() throws IOException {
+        if (!safeInspection || profile == null) {
+            throw new IOException("A safe, exact model inspection is required before NDEF access.");
+        }
     }
 
     /** One unretried look at a page, used to settle what a lost answer meant. */

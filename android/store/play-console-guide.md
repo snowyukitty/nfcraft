@@ -1,9 +1,9 @@
-# Play Console preparation sheet — Android 0.4.0
+# Play Console preparation sheet — Android 0.5.1
 
 **2026-10-09 hold:** the owner rejected tying public identity to the test website.
 Pause Create app until the new application ID is chosen and availability is
 checked. `app.nfcraft` is the recommended candidate, not an approved reservation.
-Current 0.4.2 binaries still use the legacy test ID for data compatibility;
+Current 0.5.1 binaries still use the legacy test ID for data compatibility;
 see [identity and migration](../../docs/ANDROID-IDENTITY.md). This supersedes
 the earlier instruction to create the public record under `best.tgs.cardwriter`.
 
@@ -33,7 +33,7 @@ describes the current flow. Default language is not a territory selection.
 | App access | All functionality is available without login; hardware is needed for NFC, see reviewer note below |
 | Ads | No ads; no advertising SDK or advertising ID permission |
 | Account creation | None |
-| In-app purchases | None in 0.4.0; voluntary-support product is a future proposal |
+| In-app purchases | None in 0.5.1; voluntary-support product is a future proposal |
 | Category | Tools is the proposed best fit; select only relevant available tags |
 | Target audience | Owner must choose actual intended age groups; do not select children just for reach |
 | Content rating | Complete IARC for the actual NFC utility; do not invent an assigned rating |
@@ -66,8 +66,9 @@ answers as soon as payment, diagnostics, hosting or a third-party SDK is added.
 ## Reviewer instructions (copy after physical acceptance)
 
 No account, credentials or purchase is required. nfcraft writes a single HTTPS
-link to an unlocked factory-default NTAG215 tag. NFC-capable Android hardware
-and that tag type are needed. Other NFC chips, bank cards and access badges
+link to an unlocked factory-default NTAG213, NTAG215 or NTAG216 tag. NFC-capable
+Android hardware and a supported tag are needed; NTAG213 needs a shorter link.
+Other NFC chips, bank cards and access badges
 are unsupported. Save a public test URL, use Inspect only to read first, then
 turn Inspect only off when ready to write an expendable tag. Hold it still
 until Written, Finished or Already done. Inspect mode does not write. Dialogs

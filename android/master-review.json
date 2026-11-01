@@ -1,40 +1,213 @@
 {
   "schema": 1,
   "source": "master.svg",
-  "source_sha256": "ba227e9f1e046e857fefc7e98171432c6810a83533ea464d25103c2c57c00700",
-  "contract_sha256": "cfb6d91a3f3c5271864877fc29b06ff8f72bd32813c734b2ba4ec9507ae35a73",
+  "source_sha256": "0813762000b5e502eb210eedb6095ac78332f56c72ca997fe8f5b2b07c3c8698",
+  "contract_sha256": "f52cee4e6da4f6188e8500c9aeede3ca243b835a6cc55095a3e4dce908dc07a4",
   "project": "nfcraft",
-  "user_job": "Keep destinations handy and give each card the right link",
+  "user_job": "Keep destinations handy and give each reusable card the right link",
   "essence": "keep",
-  "personality": "tactile, calm, precise",
-  "signature_device": "Broad thumb-cut sleeve cradling one brass destination card",
+  "personality": "tactile, precise, quietly magical",
+  "signature_device": "A jack-o-lantern card sleeve whose emerging cream card replaces the pumpkin stem",
   "cliches": [
+    "generic pumpkin emoji",
     "NFC radio arcs",
     "letter tile",
-    "pen over card",
-    "check badge"
+    "tiny seasonal props"
   ],
   "targets": [
     "web",
-    "electron"
+    "android"
   ],
   "build": {
     "theme_color": "#214B40",
     "background_color": "#214B40",
-    "electron_radius": 0,
+    "electron_radius": 0.0,
     "tray_template_mode": "alpha",
     "color_scheme": "light",
-    "tray_source_sha256": null
+    "tray_source_sha256": null,
+    "monochrome_source_sha256": "66a81ee4345c42caf87dccfa5d83172818a80c16eaf87298db01d9a8ae2cd5a6"
   },
   "warnings": [],
+  "plan": {
+    "schema": 1,
+    "digest": "a5107b7e89dd24be875d80c72ac77ae0044dc8cbdf136aa0d5a48e7591fc35d5",
+    "artifact_digest": "3cd793a07d39877ac68ce2140c30fdcc193b03eb23a0155e7d5870c206f9af9f",
+    "provenance_digest": "5f8dddec039a30511235a0f00d05100748938451a3089a1a3fad23c6bca57ab7",
+    "files": {
+      "favicon.svg": {
+        "content": "fcba9c5e9f380226a3adeee753e60b39d4394eb25961bd6307b568ee1162c634",
+        "sha256": "579099de1758763337e9b995a8128059165fc725a163724f485d0515db5b8180"
+      },
+      "favicon.ico": {
+        "content": "a9fcc0159f1f372bdba4b4252f90ec9c4e533cf853e7152fa1c4aa266a052ca4",
+        "sha256": "d07fb4792f954013c78e092ad2f86fde9974dec0eedb30839d7d4f2a99ec32f2"
+      },
+      "apple-touch-icon.png": {
+        "content": "ba09562ff012de18daa60a78af0e63ba7732de29e5429fa4bf60443763c3ef75",
+        "sha256": "00e5814c82a27bd2c42eae2b73ae87407ea9a2926c7625ed9b3ca4b7ba37dbd8"
+      },
+      "icon-192.png": {
+        "content": "1e3483e463b348c9bbd4e69ea6e8ba62d5edb840c1211db7e41e5103a89a4f5b",
+        "sha256": "0b42c477b091cce257d2ba209eaa548f07ae4e09a750141ec62c7d67ec6e6041"
+      },
+      "icon-512.png": {
+        "content": "c85ad4fe433f92c3c1f0aebf28f07e739b8a1e59de50db3080e7f136875cd860",
+        "sha256": "308da26cdd2bb248e0c1374105b831549563008071dfaa4bb33adf4a37c1109e"
+      },
+      "icon-512-maskable.png": {
+        "content": "109f12466efaf038b0c2eb6de8860c76248ba94f96e9e9709ab1ad5dda8769bf",
+        "sha256": "a7a10fd93993ec80059cea033205a0af723b38cb2239556ae64e8ec1d40947f6"
+      },
+      "site.webmanifest": {
+        "content": "32b675fac02125bb0479c9867ddda3d50db1b470a114ce20d7b8a6c3c2aa7373",
+        "sha256": "9e4e755c9626b934c6943095d19b603625cb74ffd5a4dcd651d3ff2d9db93dd2"
+      },
+      "favicon-head.html": {
+        "content": "9b386d8f0142f3cff3befa02d96c446a5bd21c6a862707b4cc76e0ff15533a99",
+        "sha256": "647308c2f2ecc47ccb7b6853c8b2a237d0d63b858b4a5d49d090fa2f89bad634"
+      },
+      "android/res/mipmap-mdpi/ic_launcher_foreground.png": {
+        "content": "aa93544024eb0b8d3e330cac3e11bfa05874f46f550a4031c3a2c0d39b8f9e00",
+        "sha256": "09b00c3a0fba3f38de13dd88981bf834cd9568b8eb43da7db31812faf3005b44"
+      },
+      "android/res/mipmap-mdpi/ic_launcher_monochrome.png": {
+        "content": "b7d3847098d9548558dff915c90f29d6dd9aa7106a5e784cc7d25b9fbe9b8250",
+        "sha256": "865165b31c15822be7ea0611db8aacafd2016c0c24d0493972117fd5bd644362"
+      },
+      "android/res/mipmap-mdpi/ic_launcher.png": {
+        "content": "72cb52d89f82250cfd22ba54624fb42452ee09b89d91cc864dd01999df2e9841",
+        "sha256": "752d7d3160616767d370530d56b6b6ced5be0b42137199953525d9adc5b1b09e"
+      },
+      "android/res/mipmap-mdpi/ic_launcher_round.png": {
+        "content": "5dcd7fb15bb2330491e5d2d2494a67f234fe5f4acb3a6fdb5a18ad3a88ec20eb",
+        "sha256": "4505fe558410a2149894a35d6ee44801d3d729fec931559307d10a4dca43377a"
+      },
+      "android/res/mipmap-hdpi/ic_launcher_foreground.png": {
+        "content": "bb7507549c69b4ba5ad41ff8b6f2d913acd5468e94494354859cee7f15bc93ac",
+        "sha256": "add21556703f083398406337d10609ac320e2f47782991fbc5f421fab7f7da79"
+      },
+      "android/res/mipmap-hdpi/ic_launcher_monochrome.png": {
+        "content": "04ce0dcd0c7a52a1478716279a328810e1b7f70cd2217f043cdc1c73734efedc",
+        "sha256": "b1271f20fba4df0914235e8d95e61e4b36b6602e25c160d7f98f6f3517bc0719"
+      },
+      "android/res/mipmap-hdpi/ic_launcher.png": {
+        "content": "3d8661633dbdc793d0f5f27eb5959f1a55df213e95d1fbe49ceb30d425a68d40",
+        "sha256": "ca976dba7f63326f43c65b532b448ed3d64d454eceec2b5a60fc46849fda4b46"
+      },
+      "android/res/mipmap-hdpi/ic_launcher_round.png": {
+        "content": "f1bb6a323ab879ecd0dc9d37ef0bea7998254d444161267f5c5442c2c5352ce3",
+        "sha256": "c4a71d0235cee06851369c6236fdcebd63630bea391a1b5c168075ca2a8efd80"
+      },
+      "android/res/mipmap-xhdpi/ic_launcher_foreground.png": {
+        "content": "bf4334b3161badd5f8a54fdc4e615fa5459bb909b4a4866a3969164001af7316",
+        "sha256": "bcc998c0521271ec95e3b957a371297b7d47d20b6eb150913450dd63bee71c15"
+      },
+      "android/res/mipmap-xhdpi/ic_launcher_monochrome.png": {
+        "content": "a7741ab47011b06bcbd7b1406f7c038d4485bbf2093776e046a32acabaf23be1",
+        "sha256": "f2d6f1d857133b5062241b9dfbdb709b65c1892e6812e243291e25c43ce4a68f"
+      },
+      "android/res/mipmap-xhdpi/ic_launcher.png": {
+        "content": "cdc5b728fa142c4d1673cd5405ce96ee7452e0dbcf1a5a97db68ddf57d34df8f",
+        "sha256": "589c57e510b891c8ec1330f768a788be84b677eb02fab79f58a7aafdfe61229a"
+      },
+      "android/res/mipmap-xhdpi/ic_launcher_round.png": {
+        "content": "80807c11b17dc8f83deb9b3e9866a81818f791b08e2afe6be01a6b16b0d66354",
+        "sha256": "c2784d20494f5356e5882837254599df7c6089018a4652b652143856c97925f5"
+      },
+      "android/res/mipmap-xxhdpi/ic_launcher_foreground.png": {
+        "content": "6d9e3c72359cd08765e2cfd9ef20905c952bacfd3019cd726caa6a9f5ecc2be1",
+        "sha256": "93034d04d1f63dd8d4e720c4f508450f1cdbcaae51efacbb99eb909ee71ff4f8"
+      },
+      "android/res/mipmap-xxhdpi/ic_launcher_monochrome.png": {
+        "content": "e3747e1d13a1a507d90ae269ae65093efb2400d64498467465712f3453592f6a",
+        "sha256": "2c4f8e5d98785c7dd2b383ae65e621ce65be8e0d64081e2f582e18305095b11f"
+      },
+      "android/res/mipmap-xxhdpi/ic_launcher.png": {
+        "content": "8ab640dfa829d1437dbdea433b362396a4fdbabc9b3c415e6f6f087954d3b29c",
+        "sha256": "e66bf72f1006fbbca097cc6fc3f4953cdb215797518196aefcd2b280164b7d44"
+      },
+      "android/res/mipmap-xxhdpi/ic_launcher_round.png": {
+        "content": "a998915c6362ea08830971dfb0a799511801c3cbe60dfaea85e47b4a20e8408a",
+        "sha256": "964608e47e519ca6e242941a8ff2a0336a0da5b1010fa6ca9bca1014bad9a1a4"
+      },
+      "android/res/mipmap-xxxhdpi/ic_launcher_foreground.png": {
+        "content": "5711fdfbf843081f85e2ade8618d070c2b7e4ba62e516ea6dc50ada068a5d8a9",
+        "sha256": "ad59eee2e3e53223948d88b0a856e6c81a6de9ccab43dae676a33d959b4a83c2"
+      },
+      "android/res/mipmap-xxxhdpi/ic_launcher_monochrome.png": {
+        "content": "ffa49766ee8f6f765db6a092e03a4b89cc0bac33ed08794df69c470e5d3300a3",
+        "sha256": "bcefb18a70fd46c568b53346dfa4138b8502e6563587de1d953384e61849c198"
+      },
+      "android/res/mipmap-xxxhdpi/ic_launcher.png": {
+        "content": "e46f1aff573e24e39abe2fc1d65bb54a9491208f3d1154d76ded132a83cf71c4",
+        "sha256": "3855e47f5e6910e64847820177ebc5959227afc4012c4c94785d6c67faad82b5"
+      },
+      "android/res/mipmap-xxxhdpi/ic_launcher_round.png": {
+        "content": "cb0e0674c495d486c97b5febabc7f07c6ed9193aeb91aca484da9d1d1d076b6f",
+        "sha256": "e2959de65bf8f8319c788ba87d6dcd2d353a91105c8236c80789f2a36a3432fb"
+      },
+      "android/play-store-512.png": {
+        "content": "c84678c3d5781ae1c385c9ac4b3822b106b8742e2e0fa827500689b56a97154a",
+        "sha256": "506f6e07a31cd30bf5c947de51f41a37b2809f86c4bd3ba9ffba6384acaad892"
+      },
+      "android/res/mipmap-anydpi-v26/ic_launcher.xml": {
+        "content": "4b28eb939abfdc82d027e8e6ad14f8b8489e58065e235bc0872890f299f1d3ed",
+        "sha256": "4b28eb939abfdc82d027e8e6ad14f8b8489e58065e235bc0872890f299f1d3ed"
+      },
+      "android/res/mipmap-anydpi-v26/ic_launcher_round.xml": {
+        "content": "4b28eb939abfdc82d027e8e6ad14f8b8489e58065e235bc0872890f299f1d3ed",
+        "sha256": "4b28eb939abfdc82d027e8e6ad14f8b8489e58065e235bc0872890f299f1d3ed"
+      },
+      "android/res/values/ic_launcher_background.xml": {
+        "content": "42c8ecad4e2d2dcf81e8d417f7a68363977198189780ed2fedeeb85d60ca5093",
+        "sha256": "42c8ecad4e2d2dcf81e8d417f7a68363977198189780ed2fedeeb85d60ca5093"
+      }
+    },
+    "toolchain": {
+      "iconflow": "0.10.1",
+      "chromium": "149.0.7827.55",
+      "pillow": "12.3.0",
+      "platform": "Windows"
+    }
+  },
   "scores": {
     "legibility": 4,
     "distinctiveness": 4,
     "balance": 4,
     "color": 5,
     "scalability": 4,
-    "craft": 4
+    "craft": 5
   },
-  "notes": "Card sleeve with a tilted brass card and broad thumb cut. The tilted card removes the printer reading of the upright draft. The sleeve is visible at 16px; no waves or letter tile. Native-size, white/dark/gray and adaptive crop checks retain the pocket. Foreground bake-off inspected separately because full-card alpha is a tile. The house-corpus emoji advisory was visually rejected: the sleeve has straight walls, a mouth and a separate card, not a face. No avoid-set collisions.",
-  "status": "ready"
+  "notes": "Widening the first drafts eye cuts made both own two pixels. A headless source-bound review was used; no interactive Lab or independent review is claimed.",
+  "status": "ready",
+  "rationale": {
+    "legibility": "The contact-sheet 16px zoom preserves two open eye cuts and the emerging cream card; the grin is a subordinate one-pixel cue.",
+    "distinctiveness": "The foreground bake-off names a jack-o-lantern card sleeve, while the plain control loses Halloween and the ghost candidate reads as chat. The neighbourhood sheet has no avoid-set collision.",
+    "balance": "The target sheet keeps the card and sleeve comfortably inside circle and squircle crops, with the tilted card counterbalanced by the broad pocket.",
+    "color": "Forest, pumpkin orange and neutral warm paper keep clear value separation on white, dark and grey in the contact sheet and actual Android targets.",
+    "scalability": "The contact and target sheets keep the same lantern sleeve from 16px to store scale, and the exact alpha-derived Android themed icon retains its face and card.",
+    "craft": "The 128px and 256px contours are clean with controlled radii, even eye cuts, a deliberate thumb notch and no spikes or stray nodes."
+  },
+  "reviewer": {
+    "kind": "agent",
+    "name": "Codex",
+    "declared_at": "2026-10-31T06:33:51+00:00"
+  },
+  "toolchain": {
+    "iconflow": "0.10.1",
+    "chromium": "149.0.7827.55",
+    "pillow": "12.3.0"
+  },
+  "artifacts": {
+    "contact_sheet_sha256": "a37d47af1d7a3e41dd189a35a538dd5a91d5d4c2b687d146a132c185629d7395",
+    "neighbours_sha256": "6738d71806b6bb10974431c8b896b1c341a08f808c61ec3f41063c1a91a3a3c0",
+    "targets_sha256": "3497367e24fc765b62bc947aa8b79184148d5d69f59658f560ce0db7b132b25b"
+  },
+  "review_surface": {
+    "kind": "headless-evidence",
+    "interactive_lab": false,
+    "findings_sha256": "058ecb9b20c6792cf5c8458e54ffbae37a70c68dcc528ea6f87d3011bc03e220",
+    "audited_plan": true,
+    "note": "Scored from IconFlow's deterministic evidence sheets; the interactive Review Lab was not opened."
+  }
 }

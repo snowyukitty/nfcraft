@@ -1,8 +1,8 @@
 # Mobile store preparation
 
-**2026-10-09 update:** do not create or upload the public app under the legacy
+**2026-11-01 checkpoint:** do not create or upload the public app under the legacy
 test ID yet. The owner wants a product-centered identity and further quality
-work before release. Current local build is Android 0.4.2 / code 6 under the
+work before release. Current local build is Android 0.5.1 / code 8 under the
 old test ID; public identity selection and migration are pending. Read
 [ANDROID-IDENTITY.md](ANDROID-IDENTITY.md) before following the older steps below.
 
@@ -16,16 +16,22 @@ next screens and [the revenue design](MONETIZATION.md) for payment activation.
 
 ## Current release candidate
 
-Android 0.4.0 / versionCode 4 retains `best.tgs.cardwriter` and the `card-writer`
+Android 0.5.1 / versionCode 8 retains `best.tgs.cardwriter` and the `card-writer`
 preference store so an update with the same signing identity preserves data.
 Recent destinations are local choices, not successful-write evidence. The
 desktop nfcraft version remains 0.2.2 and its journal is unchanged.
+
+The owner-authorized clean installation on 2026-10-31 removed the old app's
+settings; it is not preserved-data update evidence. The installed APK matched
+the tested build. The phone is disconnected at this checkpoint; foreground UI
+and physical NTAG213/215/216 acceptance remain pending. See the
+[session checkpoint](../reports/2026-11-01-session-checkpoint/REPORT.md).
 
 | Deliverable | Status |
 | --- | --- |
 | Ten recent HTTPS destinations; reuse, deduplication, clear | Implemented and tested |
 | Confirmed browser sharing, modal scan isolation, guide and session-only overwrite | Implemented; local tests pass, physical QA outstanding |
-| Android launcher label nfcraft and reviewed pocket-card identity | Prepared |
+| Android launcher label nfcraft and IconFlow Halloween card sleeve | Generated adaptive/themed/legacy assets reviewed; installed APK verified |
 | Target/compile API 36; AGP 8.10.1; wrapper 8.11.1 | Built locally |
 | Debug APK | Local sideload/test artifact, not a store release |
 | Release AAB | Unsigned preparation artifact; not upload-ready |

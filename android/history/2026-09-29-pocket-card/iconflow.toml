@@ -1,0 +1,38 @@
+schema_version = 1
+[project]
+name = "nfcraft"
+master = "master.svg"
+output = "icons"
+casebook = "casebook"
+[brief]
+app_intent = "Pocket NFC card writer with reusable web destinations"
+user_job = "Keep destinations handy and give each card the right link"
+essence = "keep"
+personality = ["tactile", "calm", "precise"]
+[design]
+palette = ["#214b40", "#e2a13c", "#fff4de"]
+cliches = ["NFC radio arcs", "letter tile", "pen over card", "check badge"]
+signature_device = "Broad thumb-cut sleeve cradling one brass destination card"
+device_family = "negative-space"
+device_detail = "256-unit mouth cut into the pocket silhouette"
+concept_lens = "metaphor"
+[build]
+targets = ["web", "electron"]
+theme_color = "#214b40"
+background_color = "#214b40"
+electron_radius = 0
+tray_ts = false
+tray_svg = ""
+tray_template_mode = "alpha"
+color_scheme = "light"
+optimize_png = true
+[neighbours]
+avoid = ["@collision"]
+family = ["../master.svg"]
+portfolio = []
+[review]
+status = "pending"
+source_sha256 = ""
+contract_sha256 = ""
+scores = {}
+notes = ""

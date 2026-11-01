@@ -41,17 +41,21 @@ mkdir -p "$out/src/best/tgs/cardwriter"
 cp "$root/app/src/main/java/best/tgs/cardwriter/Ndef.java" "$out/src/best/tgs/cardwriter/"
 cp "$here/best/tgs/cardwriter/Harness.java" "$out/src/best/tgs/cardwriter/"
 cp "$here/best/tgs/cardwriter/PlanTest.java" "$out/src/best/tgs/cardwriter/"
-cp "$root/app/src/main/java/best/tgs/cardwriter/Tag215.java" "$out/src/best/tgs/cardwriter/"
+cp "$root/app/src/main/java/best/tgs/cardwriter/Tag21x.java" "$out/src/best/tgs/cardwriter/"
 cp "$here/best/tgs/cardwriter/LinkTest.java" "$out/src/best/tgs/cardwriter/"
 cp "$root/app/src/main/java/best/tgs/cardwriter/RecentUrls.java" "$out/src/best/tgs/cardwriter/"
 cp "$here/best/tgs/cardwriter/HistoryTest.java" "$out/src/best/tgs/cardwriter/"
+cp "$root/app/src/main/java/best/tgs/cardwriter/TagProfile.java" "$out/src/best/tgs/cardwriter/"
+cp "$here/best/tgs/cardwriter/ProfileTest.java" "$out/src/best/tgs/cardwriter/"
 mkdir -p "$out/src/android/nfc/tech"
 cp "$here/stub/android/nfc/tech/NfcA.java" "$out/src/android/nfc/tech/"
 
 "$javac" -d "$out/classes" -sourcepath "$out/src" \
     "$out/src/android/nfc/tech/NfcA.java" \
     "$out/src/best/tgs/cardwriter/Ndef.java" \
-    "$out/src/best/tgs/cardwriter/Tag215.java" \
+    "$out/src/best/tgs/cardwriter/TagProfile.java" \
+    "$out/src/best/tgs/cardwriter/ProfileTest.java" \
+    "$out/src/best/tgs/cardwriter/Tag21x.java" \
     "$out/src/best/tgs/cardwriter/Harness.java" \
     "$out/src/best/tgs/cardwriter/PlanTest.java" \
     "$out/src/best/tgs/cardwriter/LinkTest.java" \
@@ -70,3 +74,5 @@ echo "PASS: the Android encoder matches nfcraft/ndef.py byte for byte."
 "$java" -cp "$out/classes" best.tgs.cardwriter.PlanTest
 "$java" -cp "$out/classes" best.tgs.cardwriter.LinkTest
 "$java" -cp "$out/classes" best.tgs.cardwriter.HistoryTest
+
+"$java" -cp "$out/classes" best.tgs.cardwriter.ProfileTest

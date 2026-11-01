@@ -10,8 +10,8 @@ android {
         applicationId = "best.tgs.cardwriter"
         minSdk = 21
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.4.2"
+        versionCode = 8
+        versionName = "0.5.1"
     }
 
     val signingValues = listOf("NFCRAFT_UPLOAD_STORE_FILE", "NFCRAFT_UPLOAD_STORE_PASSWORD",

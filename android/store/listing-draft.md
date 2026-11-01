@@ -3,22 +3,24 @@
 English matches the current app UI. Public support: dokoii@proton.me. Developer
 identity, privacy/support URLs, countries and audience are unresolved. Download is free. Do not
 upload this draft until those fields and physical acceptance are complete.
+Android 0.5.1 implements NTAG213/215/216 profiles; the current physical model
+matrix is still pending. This copy is preparation, not a compatibility receipt.
 
 ## Google Play
 
 Name: nfcraft
 
-Short description: Write HTTPS links to NTAG215 cards. Keep your last 10 destinations handy.
+Short description: Write HTTPS links to NTAG213, 215 and 216. Keep 10 recent destinations.
 
 Full description:
 
 Give an NFC card the right destination with nfcraft.
 
-Enter an HTTPS link, hold a compatible NTAG215 card against your Android phone,
+Enter an HTTPS link, hold a compatible NTAG213, NTAG215 or NTAG216 card against your Android phone,
 and keep it still while nfcraft writes and checks the result. Save up to 10
 recent destinations on your phone, select one to use again, or clear the list.
 
-- Write one HTTPS link to one NTAG215 card at a time.
+- Write one HTTPS link to one supported NTAG213/215/216 card at a time.
 - Inspect a card without writing to it.
 - Verify the written data by reading it back.
 - Reuse recent links without typing them again.
@@ -27,8 +29,10 @@ recent destinations on your phone, select one to use again, or clear the list.
 - Work without an account, ads or an Internet connection for NFC operations.
 - Get help from the local guide or contact dokoii@proton.me.
 
-Requires an NFC-capable Android phone and compatible, writable NTAG215 tags.
-Other tag models and protected cards are not supported. Keep the card in place
+Requires an NFC-capable Android phone and compatible, writable NTAG213,
+NTAG215 or NTAG216 tags. The app checks the detected model's capacity before
+writing; NTAG213 needs a shorter link. Other models and protected cards are
+not supported. Keep the card in place
 until verification completes. nfcraft does not lock cards or set passwords.
 A saved link is not proof of a successful write. Test a written card with a
 recipient phone before sharing it. Opening its destination requires whatever

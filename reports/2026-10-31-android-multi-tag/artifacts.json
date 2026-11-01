@@ -1,0 +1,58 @@
+{
+  "status": "PASS",
+  "scope": "Local artifact checks only. Rebuild after source changes; this is not store or hardware approval.",
+  "checks": {
+    "debug_apk": {
+      "bytes": 475998,
+      "sha256": "9e69a92b98a67e88a7c4869ed9c6a59ac7ba7846bc91d5d7ba7a7302df7e0344",
+      "native_library_count": 0,
+      "jar_signature_entries_present": true
+    },
+    "release_aab": {
+      "bytes": 421432,
+      "sha256": "23f63482c4e562708ea702e148d49859c2900f8ddbf1c50e6389724d49040188",
+      "native_library_count": 0,
+      "jar_signature_entries_present": false
+    },
+    "apk_metadata": {
+      "package": "best.tgs.cardwriter",
+      "version": "0.5.0",
+      "version_code": 7,
+      "permissions": [
+        "android.permission.NFC",
+        "android.permission.VIBRATE"
+      ]
+    },
+    "play_icon": {
+      "dimensions": [
+        512,
+        512
+      ],
+      "color_type": 2
+    },
+    "feature_graphic": {
+      "dimensions": [
+        1024,
+        500
+      ],
+      "color_type": 2
+    },
+    "unit_results": {
+      "tests": 44,
+      "scope": "local JVM/Robolectric; no physical NFC proof"
+    },
+    "lint": {
+      "errors": 0,
+      "warnings": 17
+    }
+  },
+  "failed_checks": [],
+  "upload_signature_verified": false,
+  "manual_release_gates": [
+    "Owner-approved public privacy and support details",
+    "Physical NFC and same-key update acceptance",
+    "Real store screenshots and final content declarations",
+    "Play internal/closed testing and production access",
+    "Final owner review of account, track, certificate and build hash"
+  ]
+}
