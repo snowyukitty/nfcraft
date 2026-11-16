@@ -1,5 +1,5 @@
 param(
-    [string]$IconFlowPython = (Join-Path $PSScriptRoot '../../../ai-iconflow/.venv/Scripts/python.exe')
+    [string]$IconFlowPython = (Join-Path $PSScriptRoot '../../../art/ai-iconflow/.venv/Scripts/python.exe')
 )
 $ErrorActionPreference = 'Stop'
 Push-Location (Join-Path $PSScriptRoot '..')

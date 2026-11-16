@@ -7,7 +7,7 @@ $ErrorActionPreference = 'Stop'
 $ProjectRoot = Split-Path $PSScriptRoot -Parent
 $Executable = Join-Path $ProjectRoot 'dist\nfcraft\nfcraft-desktop.exe'
 $Icon = Join-Path $ProjectRoot 'nfcraft\web\icons\build\icon.ico'
-$IconFlowPython = Join-Path (Split-Path $ProjectRoot -Parent) 'ai-iconflow\.venv\Scripts\python.exe'
+$IconFlowPython = Join-Path (Split-Path $ProjectRoot -Parent) 'art\ai-iconflow\.venv\Scripts\python.exe'
 if (-not (Test-Path -LiteralPath $Executable)) { throw 'Build the desktop executable first.' }
 & $IconFlowPython -m iconflow shortcut --target $Executable --icon $Icon --name $Name --workdir (Split-Path $Executable -Parent) --out $Destination --content-address-icon
 if ($LASTEXITCODE -ne 0) { throw 'IconFlow shortcut creation failed.' }
